@@ -25,13 +25,13 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .signals-container { background: #111a24; border-radius: 16px; border: 1px solid #1e2c3b; overflow: hidden; margin-bottom: 24px; }
-    .signals-header { display: grid; grid-template-columns: 50px 40px 80px 1fr 80px 80px 80px 70px; gap: 4px; padding: 8px 12px; background: #0a111a; border-bottom: 1px solid #1e2c3b; color: #5f7d9a; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .signals-header { display: grid; grid-template-columns: 50px 40px 80px 1fr 80px 80px 100px 70px; gap: 4px; padding: 8px 12px; background: #0a111a; border-bottom: 1px solid #1e2c3b; color: #5f7d9a; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .signals-grid { display: flex; flex-direction: column; max-height: 420px; overflow-y: auto; }
     .signals-grid::-webkit-scrollbar { width: 4px; }
     .signals-grid::-webkit-scrollbar-track { background: #0a111a; }
     .signals-grid::-webkit-scrollbar-thumb { background: #2d3f52; border-radius: 4px; }
     .signal-row {
-      display: grid; grid-template-columns: 50px 40px 80px 1fr 80px 80px 80px 70px; gap: 4px;
+      display: grid; grid-template-columns: 50px 40px 80px 1fr 80px 80px 100px 70px; gap: 4px;
       padding: 6px 12px; align-items: center; border-bottom: 1px solid #1a2533;
       font-size: 13px; transition: background 0.15s; background: #111a24;
     }
@@ -44,10 +44,12 @@
     .signal-row .col-entry { color: #9ab0c9; font-size: 12px; white-space: nowrap; }
     .signal-row .col-tp { color: #33d9a8; font-weight: 500; font-size: 12px; }
     .signal-row .col-sl { color: #f25b6a; font-weight: 500; font-size: 12px; }
-    .signal-row .col-conf { font-weight: 700; font-size: 14px; text-align: center; }
-    .signal-row .col-conf.high { color: #33d9a8; }
-    .signal-row .col-conf.medium { color: #f4c95d; }
-    .signal-row .col-conf.low { color: #f25b6a; }
+    .signal-row .col-conf { font-weight: 700; font-size: 13px; text-align: center; display: flex; align-items: center; gap: 4px; justify-content: center; }
+    .conf-bar-container { width: 40px; height: 4px; background: #1e2c3b; border-radius: 2px; overflow: hidden; }
+    .conf-bar { height: 100%; border-radius: 2px; }
+    .conf-bar.high { background: #33d9a8; }
+    .conf-bar.medium { background: #f4c95d; }
+    .conf-bar.low { background: #f25b6a; }
     .signal-row .col-time { color: #5f7d9a; font-size: 11px; text-align: right; white-space: nowrap; }
     .signal-row.long { border-left: 3px solid #33d9a8; }
     .signal-row.short { border-left: 3px solid #f25b6a; }
@@ -92,7 +94,7 @@
       .signal-row .col-entry { grid-column: 1 / 3; grid-row: 2 / 3; font-size: 11px; color: #7a94af; }
       .signal-row .col-tp { grid-column: 1 / 2; grid-row: 3 / 4; font-size: 11px; }
       .signal-row .col-sl { grid-column: 2 / 3; grid-row: 3 / 4; font-size: 11px; }
-      .signal-row .col-conf { grid-column: 3 / 4; grid-row: 3 / 4; font-size: 14px; text-align: right; }
+      .signal-row .col-conf { grid-column: 3 / 4; grid-row: 3 / 4; font-size: 14px; text-align: right; justify-content: flex-end; }
       .signal-row .col-time { display: none; }
       .history-item { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 2px 6px; padding: 6px 10px; }
       .history-item .h-sym { grid-column: 1 / 2; grid-row: 1 / 2; font-size: 14px; }
@@ -159,6 +161,7 @@
   const COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','LINKUSDT'];
   const SCAN_INTERVAL = 15000;
   const HISTORY_INTERVAL = 30000;
+  const SIGNAL_EXPIRY_MINUTES = 30;   // signals expire after 30 minutes if not hit
 
   const $ = id => document.getElementById(id);
   const signalsGrid = $('signalsGrid');
@@ -172,7 +175,7 @@
   //  HELPERS
   // ================================================================
   function getTick(symbol) { return TICK_SIZE[symbol] || 0.01; }
-  function roundToTick(value, tick) { if (tick === 0) return value; return Math.round(value / tick) * tick; }
+  function roundToTick(value, tick) { const factor = 1 / tick; return Math.round(value * factor) / factor; }
   function formatPrice(value, tick) { if (!tick) return '$' + value.toFixed(2); const decimals = Math.max(0, Math.ceil(-Math.log10(tick))); return '$' + value.toFixed(decimals); }
   function fmtTime(iso) { if (!iso) return '—'; try { const d = new Date(iso); return d.toLocaleTimeString('en-US', { hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit' }); } catch { return iso; } }
   function fmtDuration(ms) { if (!ms || ms < 0) return '—'; const totalSec = Math.floor(ms / 1000); if (totalSec < 60) return totalSec + 's'; const min = Math.floor(totalSec / 60); const sec = totalSec % 60; return min + 'm ' + sec + 's'; }
@@ -180,59 +183,317 @@
   function formatPriceShort(value, tick) { if (!tick) return value.toFixed(2); const decimals = Math.max(0, Math.ceil(-Math.log10(tick))); return value.toFixed(decimals); }
 
   // ================================================================
-  //  TECHNICAL ANALYSIS
+  //  TECHNICAL INDICATORS
   // ================================================================
-  function calcEMA(data, p) { const ema = [], k = 2/(p+1); let sum = 0; for (let i=0; i<data.length; i++) { if (i < p-1) { sum += data[i]; ema.push(null); } else if (i === p-1) { sum += data[i]; ema.push(sum/p); } else { ema.push(data[i]*k + ema[i-1]*(1-k)); } } return ema; }
-  function calcRSI(closes, p=14) { const rsi = []; let gain=0, loss=0; for (let i=1; i<closes.length; i++) { const diff = closes[i] - closes[i-1]; if (i <= p) { if (diff>=0) gain += diff; else loss += Math.abs(diff); if (i === p) { let ag = gain/p, al = loss/p; const rs = al===0 ? 0 : ag/al; rsi.push(al===0 ? 100 : 100 - (100/(1+rs))); } else rsi.push(null); } else { const ag = ((gain*(p-1)) + (diff>=0 ? diff : 0))/p; const al = ((loss*(p-1)) + (diff<0 ? Math.abs(diff) : 0))/p; gain = ag*p; loss = al*p; const rs = al===0 ? 0 : ag/al; rsi.push(al===0 ? 100 : 100 - (100/(1+rs))); } } return rsi; }
-  function calcBB(closes, p=20, sd=2) { const upper=[], lower=[]; for (let i=0; i<closes.length; i++) { if (i < p-1) { upper.push(null); lower.push(null); continue; } let sum=0; for (let j=i-p+1; j<=i; j++) sum += closes[j]; const mean = sum/p; let sq=0; for (let j=i-p+1; j<=i; j++) sq += (closes[j]-mean)**2; const stdev = Math.sqrt(sq/p); upper.push(mean + sd*stdev); lower.push(mean - sd*stdev); } return { upper, lower }; }
-  function calcVWAP(highs, lows, closes, vols) { const vwap = []; let cumPV=0, cumVol=0; for (let i=0; i<closes.length; i++) { const typical = (highs[i]+lows[i]+closes[i])/3; cumPV += typical * vols[i]; cumVol += vols[i]; vwap.push(cumVol===0 ? null : cumPV/cumVol); } return vwap; }
+  function calcEMA(data, p) {
+    const ema = [], k = 2/(p+1);
+    let sum = 0;
+    for (let i=0; i<data.length; i++) {
+      if (i < p-1) { sum += data[i]; ema.push(null); }
+      else if (i === p-1) { sum += data[i]; ema.push(sum/p); }
+      else { ema.push(data[i]*k + ema[i-1]*(1-k)); }
+    }
+    return ema;
+  }
 
-  function analyzeCoin(data, symbol) {
-    const closes = data.map(d=>d.close); const highs = data.map(d=>d.high); const lows = data.map(d=>d.low); const vols = data.map(d=>d.volume);
-    const len = closes.length; if (len < 60) return null;
-    const ema5 = calcEMA(closes,5); const ema20 = calcEMA(closes,20); const rsi = calcRSI(closes,14); const bb = calcBB(closes,20,2); const vwap = calcVWAP(highs,lows,closes,vols);
-    const idx = len-1; const price = closes[idx]; const e5 = ema5[idx], e20 = ema20[idx]; const r = rsi[idx]; const upper = bb.upper[idx], lower = bb.lower[idx]; const vwapVal = vwap[idx]; const vol = vols[idx]; const avgVol = vols.slice(-20).reduce((a,b)=>a+b,0)/20; const volSpike = vol > avgVol * 1.8;
-    let longC=0, shortC=0; let conditions = { EMA: false, RSI: false, BB: false, VWAP: false, VOL: false };
-    if (e5!==null && e20!==null) { if (e5>e20) { longC++; conditions.EMA = true; } else if (e5<e20) { shortC++; conditions.EMA = true; } }
-    if (r!==null && r<30) { longC++; conditions.RSI = true; } else if (r!==null && r>70) { shortC++; conditions.RSI = true; }
-    if (lower!==null && price < lower*1.005) { longC++; conditions.BB = true; }
-    if (upper!==null && price > upper*0.995) { shortC++; conditions.BB = true; }
-    if (volSpike) { longC++; shortC++; conditions.VOL = true; }
-    if (vwapVal!==null && price > vwapVal) { longC++; conditions.VWAP = true; }
-    if (vwapVal!==null && price < vwapVal) { shortC++; conditions.VWAP = true; }
-    let direction = 'NEUTRAL'; let strength = 0;
-    if (longC >= shortC && longC >= 3) { direction = 'LONG'; strength = longC; }
-    else if (shortC > longC && shortC >= 3) { direction = 'SHORT'; strength = shortC; }
-    else { return null; }
-    const condDisplay = { EMA: conditions.EMA ? '✓' : '✗', RSI: conditions.RSI ? '✓' : '✗', BB: conditions.BB ? '✓' : '✗', VWAP: conditions.VWAP ? '✓' : '✗', VOL: conditions.VOL ? '✓' : '✗' };
-    return { direction, strength, price, condDisplay };
+  function calcRSI(closes, p=14) {
+    const rsi = [];
+    let gain=0, loss=0;
+    for (let i=1; i<closes.length; i++) {
+      const diff = closes[i] - closes[i-1];
+      if (i <= p) {
+        if (diff>=0) gain += diff; else loss += Math.abs(diff);
+        if (i === p) {
+          let ag = gain/p, al = loss/p;
+          const rs = al===0 ? 0 : ag/al;
+          rsi.push(al===0 ? 100 : 100 - (100/(1+rs)));
+        } else rsi.push(null);
+      } else {
+        const ag = ((gain*(p-1)) + (diff>=0 ? diff : 0))/p;
+        const al = ((loss*(p-1)) + (diff<0 ? Math.abs(diff) : 0))/p;
+        gain = ag*p; loss = al*p;
+        const rs = al===0 ? 0 : ag/al;
+        rsi.push(al===0 ? 100 : 100 - (100/(1+rs)));
+      }
+    }
+    return rsi;
+  }
+
+  function calcBB(closes, p=20, sd=2) {
+    const upper=[], lower=[];
+    for (let i=0; i<closes.length; i++) {
+      if (i < p-1) { upper.push(null); lower.push(null); continue; }
+      let sum=0;
+      for (let j=i-p+1; j<=i; j++) sum += closes[j];
+      const mean = sum/p;
+      let sq=0;
+      for (let j=i-p+1; j<=i; j++) sq += (closes[j]-mean)**2;
+      const stdev = Math.sqrt(sq/p);
+      upper.push(mean + sd*stdev);
+      lower.push(mean - sd*stdev);
+    }
+    return { upper, lower };
+  }
+
+  function calcVWAP(highs, lows, closes, vols) {
+    const vwap = [];
+    let cumPV=0, cumVol=0;
+    for (let i=0; i<closes.length; i++) {
+      const typical = (highs[i]+lows[i]+closes[i])/3;
+      cumPV += typical * vols[i];
+      cumVol += vols[i];
+      vwap.push(cumVol===0 ? null : cumPV/cumVol);
+    }
+    return vwap;
+  }
+
+  function calcATR(highs, lows, closes, period = 14) {
+    const atr = [];
+    if (highs.length < 2) return atr;
+    const trueRanges = [];
+    for (let i = 1; i < highs.length; i++) {
+      const tr = Math.max(
+        highs[i] - lows[i],
+        Math.abs(highs[i] - closes[i-1]),
+        Math.abs(lows[i] - closes[i-1])
+      );
+      trueRanges.push(tr);
+    }
+    // Wilder's smoothing
+    let atrSum = 0;
+    for (let i = 0; i < period && i < trueRanges.length; i++) {
+      atrSum += trueRanges[i];
+      atr.push(null);
+    }
+    if (trueRanges.length >= period) {
+      let prevATR = atrSum / period;
+      atr[period-1] = prevATR;
+      for (let i = period; i < trueRanges.length; i++) {
+        prevATR = (prevATR * (period - 1) + trueRanges[i]) / period;
+        atr.push(prevATR);
+      }
+    }
+    return atr;
   }
 
   // ================================================================
-  //  FETCH COINS
+  //  ENHANCED ANALYSIS WITH WEIGHTED CONFIDENCE
   // ================================================================
+  function analyzeCoin(data, symbol) {
+    const closes = data.map(d=>d.close);
+    const highs = data.map(d=>d.high);
+    const lows = data.map(d=>d.low);
+    const vols = data.map(d=>d.volume);
+    const len = closes.length;
+    if (len < 60) return null;
+
+    const ema5 = calcEMA(closes,5);
+    const ema20 = calcEMA(closes,20);
+    const rsi = calcRSI(closes,14);
+    const bb = calcBB(closes,20,2);
+    const vwap = calcVWAP(highs,lows,closes,vols);
+    const atr = calcATR(highs,lows,closes,14);
+
+    const idx = len-1;
+    const price = closes[idx];
+    const e5 = ema5[idx], e20 = ema20[idx];
+    const r = rsi[idx];
+    const upper = bb.upper[idx], lower = bb.lower[idx];
+    const vwapVal = vwap[idx];
+    const vol = vols[idx];
+    const avgVol = vols.slice(-20).reduce((a,b)=>a+b,0)/20;
+    const volSpike = vol > avgVol * 1.8;
+    const currentATR = atr[idx];
+
+    // Weight definitions (total 1.0 without bonus)
+    const WEIGHTS = {
+      EMA: 0.20,
+      RSI: 0.20,
+      BB: 0.15,
+      VWAP: 0.15,
+      VOLUME: 0.10,
+      STRENGTH_BONUS: 0.20   // distributed in the chosen direction
+    };
+
+    let longScore = 0, shortScore = 0;
+    const conditions = { EMA: false, RSI: false, BB: false, VWAP: false, VOL: false };
+
+    // EMA crossover
+    if (e5 !== null && e20 !== null) {
+      if (e5 > e20) { longScore += WEIGHTS.EMA; conditions.EMA = true; }
+      else if (e5 < e20) { shortScore += WEIGHTS.EMA; conditions.EMA = true; }
+    }
+
+    // RSI extremes
+    if (r !== null) {
+      if (r < 30) { longScore += WEIGHTS.RSI; conditions.RSI = true; }
+      else if (r > 70) { shortScore += WEIGHTS.RSI; conditions.RSI = true; }
+    }
+
+    // Bollinger Bands
+    if (lower !== null && price < lower * 1.005) { longScore += WEIGHTS.BB; conditions.BB = true; }
+    if (upper !== null && price > upper * 0.995) { shortScore += WEIGHTS.BB; conditions.BB = true; }
+
+    // VWAP relation
+    if (vwapVal !== null) {
+      if (price > vwapVal) { longScore += WEIGHTS.VWAP; conditions.VWAP = true; }
+      if (price < vwapVal) { shortScore += WEIGHTS.VWAP; conditions.VWAP = true; }
+    }
+
+    // Volume spike (symmetric)
+    if (volSpike) { longScore += WEIGHTS.VOLUME; shortScore += WEIGHTS.VOLUME; conditions.VOL = true; }
+
+    // Determine direction and add strength bonus
+    let direction = 'NEUTRAL';
+    let finalConfidence = 0;
+    if (longScore >= shortScore && longScore > 0) {
+      direction = 'LONG';
+      finalConfidence = longScore;
+      // Bonus for strong signals
+      if (r !== null && r < 25) finalConfidence += 0.05;
+      if (volSpike) finalConfidence += 0.05;
+      if (e5 && e20 && (e5 - e20) / e20 > 0.005) finalConfidence += 0.05;
+    } else if (shortScore > longScore && shortScore > 0) {
+      direction = 'SHORT';
+      finalConfidence = shortScore;
+      if (r !== null && r > 75) finalConfidence += 0.05;
+      if (volSpike) finalConfidence += 0.05;
+      if (e5 && e20 && (e20 - e5) / e20 > 0.005) finalConfidence += 0.05;
+    } else {
+      return null;
+    }
+
+    // Cap at 1.0 (100%)
+    finalConfidence = Math.min(finalConfidence, 1.0);
+    const confidencePercent = Math.round(finalConfidence * 100);
+
+    const condDisplay = {
+      EMA: conditions.EMA ? '✓' : '✗',
+      RSI: conditions.RSI ? '✓' : '✗',
+      BB: conditions.BB ? '✓' : '✗',
+      VWAP: conditions.VWAP ? '✓' : '✗',
+      VOL: conditions.VOL ? '✓' : '✗'
+    };
+
+    return {
+      direction,
+      strength: confidencePercent,   // percentage 0-100
+      price,
+      condDisplay,
+      atr: currentATR                // used for dynamic TP/SL
+    };
+  }
+
+  // ================================================================
+  //  DYNAMIC TP/SL BASED ON ATR
+  // ================================================================
+  function generateSignalParams(symbol, price, direction, atr) {
+    const tick = getTick(symbol);
+    // Use ATR as volatility measure, fallback to 0.3% of price
+    const volatility = atr && atr > 0 ? atr : price * 0.003;
+
+    const tpMultiplier = 1.5;
+    const slMultiplier = 1.0;
+    const spreadMultiplier = 0.5;
+
+    const spread = roundToTick(volatility * spreadMultiplier, tick);
+    let entryLow, entryHigh, tp, sl;
+
+    if (direction === 'LONG') {
+      entryLow = roundToTick(price - spread, tick);
+      entryHigh = roundToTick(price + spread, tick);
+      tp = roundToTick(entryHigh + volatility * tpMultiplier, tick);
+      sl = roundToTick(entryLow - volatility * slMultiplier, tick);
+    } else {
+      entryLow = roundToTick(price - spread, tick);
+      entryHigh = roundToTick(price + spread, tick);
+      tp = roundToTick(entryLow - volatility * tpMultiplier, tick);
+      sl = roundToTick(entryHigh + volatility * slMultiplier, tick);
+    }
+
+    // Ensure TP and SL are not inside entry zone
+    if (direction === 'LONG') {
+      if (tp <= entryHigh) tp = roundToTick(entryHigh + tick, tick);
+      if (sl >= entryLow) sl = roundToTick(entryLow - tick, tick);
+    } else {
+      if (tp >= entryLow) tp = roundToTick(entryLow - tick, tick);
+      if (sl <= entryHigh) sl = roundToTick(entryHigh + tick, tick);
+    }
+
+    const actualTpMove = Math.abs(tp - (direction === 'LONG' ? entryHigh : entryLow));
+    const actualSlMove = Math.abs(sl - (direction === 'LONG' ? entryLow : entryHigh));
+    const rr = actualSlMove > 0 ? actualTpMove / actualSlMove : 0;
+
+    return { entryLow, entryHigh, tp, sl, rr, tick };
+  }
+
+  // ================================================================
+  //  FETCH COINS WITH CACHED ANALYSIS
+  // ================================================================
+  const analysisCache = new Map(); // symbol -> { closeTime, analysis }
+
   async function fetchAllCoins() {
-    const promises = COINS.map(async (symbol) => {
+    const results = [];
+    for (const symbol of COINS) {
       try {
         const kResp = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=120`);
         if (!kResp.ok) throw new Error('Klines fail');
         const raw = await kResp.json();
-        const data = raw.map(c => ({ open: parseFloat(c[1]), high: parseFloat(c[2]), low: parseFloat(c[3]), close: parseFloat(c[4]), volume: parseFloat(c[5]) }));
-        if (data.length < 60) return null;
+        const lastCandle = raw[raw.length-1];
+        const closeTime = lastCandle[6]; // candle close timestamp
+
+        const cached = analysisCache.get(symbol);
+        // If the latest candle hasn't closed yet, reuse the cached analysis
+        if (cached && cached.closeTime === closeTime) {
+          const tResp = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+          if (!tResp.ok) throw new Error('Ticker fail');
+          const ticker = await tResp.json();
+          const livePrice = parseFloat(ticker.lastPrice);
+          results.push({
+            symbol,
+            livePrice,
+            changePercent: parseFloat(ticker.priceChangePercent),
+            direction: cached.analysis.direction,
+            strength: cached.analysis.strength,
+            price: cached.analysis.price,
+            condDisplay: cached.analysis.condDisplay,
+            atr: cached.analysis.atr
+          });
+          continue;
+        }
+
+        // New candle, full analysis needed
+        const data = raw.map(c => ({
+          open: parseFloat(c[1]), high: parseFloat(c[2]), low: parseFloat(c[3]),
+          close: parseFloat(c[4]), volume: parseFloat(c[5])
+        }));
+        if (data.length < 60) continue;
+
+        const analysis = analyzeCoin(data, symbol);
+        if (analysis) {
+          analysisCache.set(symbol, { closeTime, analysis });
+        }
+
         const tResp = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
         if (!tResp.ok) throw new Error('Ticker fail');
         const ticker = await tResp.json();
-        const analysis = analyzeCoin(data, symbol);
-        if (!analysis) return null;
-        return { symbol, livePrice: parseFloat(ticker.lastPrice), changePercent: parseFloat(ticker.priceChangePercent), ...analysis };
-      } catch { return null; }
-    });
-    const results = await Promise.allSettled(promises);
-    return results.map(r => r.status === 'fulfilled' ? r.value : null).filter(r => r !== null).sort((a,b) => b.strength - a.strength);
+        if (analysis) {
+          results.push({
+            symbol,
+            livePrice: parseFloat(ticker.lastPrice),
+            changePercent: parseFloat(ticker.priceChangePercent),
+            ...analysis
+          });
+        }
+      } catch (err) {
+        console.warn(`Skipping ${symbol}:`, err.message);
+      }
+    }
+    return results.sort((a,b) => b.strength - a.strength);
   }
 
   // ================================================================
-  //  GOOGLE SHEETS API (no-cors to avoid CORS preflight)
+  //  GOOGLE SHEETS API (kept as-is; improvement recommended later)
   // ================================================================
   let lastSheetError = null;
 
@@ -307,37 +568,12 @@
   function saveLocalHistory(h) { try { localStorage.setItem('scalpHistory', JSON.stringify(h)); } catch {} }
 
   // ================================================================
-  //  CORE LOGIC
+  //  CORE LOGIC WITH SIGNAL EXPIRY
   // ================================================================
   let isProcessing = false;
   const activeSignals = new Map();
   function generateId() { return 'sig_' + Date.now() + '_' + Math.random().toString(36).substr(2,4); }
 
-  function generateSignalParams(symbol, price, direction) {
-    const tick = getTick(symbol);
-    const minMove = Math.max(tick * 3, 0.001);
-    const tpMoveRaw = Math.max(price * 0.008, minMove);
-    const slMoveRaw = Math.max(price * 0.006, minMove);
-    const spreadRaw = Math.max(price * 0.002, tick * 2);
-    let tpMove = roundToTick(tpMoveRaw, tick);
-    let slMove = roundToTick(slMoveRaw, tick);
-    let spread = roundToTick(spreadRaw, tick);
-    if (tpMove <= spread/2) tpMove = roundToTick(spread/2 + tick, tick);
-    if (slMove <= spread/2) slMove = roundToTick(spread/2 + tick, tick);
-    let entryLow, entryHigh, tp, sl;
-    if (direction === 'LONG') { entryLow = roundToTick(price - spread/2, tick); entryHigh = roundToTick(price + spread/2, tick); tp = roundToTick(entryHigh + tpMove, tick); sl = roundToTick(entryLow - slMove, tick); }
-    else { entryLow = roundToTick(price - spread/2, tick); entryHigh = roundToTick(price + spread/2, tick); tp = roundToTick(entryLow - tpMove, tick); sl = roundToTick(entryHigh + slMove, tick); }
-    if (tp === entryLow || tp === entryHigh) tp = roundToTick(tp + (direction === 'LONG' ? tick : -tick), tick);
-    if (sl === entryLow || sl === entryHigh) sl = roundToTick(sl + (direction === 'SHORT' ? tick : -tick), tick);
-    const actualTpMove = Math.abs(tp - (direction === 'LONG' ? entryHigh : entryLow));
-    const actualSlMove = Math.abs(sl - (direction === 'LONG' ? entryLow : entryHigh));
-    const rr = actualSlMove > 0 ? actualTpMove / actualSlMove : 0;
-    return { entryLow, entryHigh, tp, sl, rr, tick };
-  }
-
-  // ================================================================
-  //  PROCESS SCAN
-  // ================================================================
   async function processScan() {
     if (isProcessing) return;
     isProcessing = true;
@@ -346,23 +582,49 @@
 
     try {
       const all = await fetchAllCoins();
-      if (!all || all.length === 0) throw new Error('No data');
-      const priceMap = {}; all.forEach(c => priceMap[c.symbol] = c.livePrice);
+      if (!all || all.length === 0) throw new Error('No coin data fetched');
 
+      const priceMap = {}; all.forEach(c => priceMap[c.symbol] = c.livePrice);
       const history = getLocalHistory();
 
+      // Check for expired signals before processing new ones
+      const now = Date.now();
+      const toExpire = [];
+      for (const [symbol, signal] of activeSignals) {
+        if (signal.expireTime && now > signal.expireTime && signal.status === 'OPEN') {
+          toExpire.push(symbol);
+          signal.status = 'EXPIRED';
+          signal.result = '⏰ Expired';
+          signal.closedPrice = priceMap[symbol] || signal.livePrice;
+          signal.closeTime = now;
+          await updateSignalStatus(signal.id, 'EXPIRED', signal.closedPrice, now);
+
+          // Update local history
+          const histIdx = history.findIndex(h => h.id === signal.id);
+          if (histIdx >= 0) {
+            history[histIdx].status = 'EXPIRED';
+            history[histIdx].result = '⏰ Expired';
+            history[histIdx].closedPrice = signal.closedPrice;
+            history[histIdx].closeTime = now;
+          }
+        }
+      }
+      for (const sym of toExpire) activeSignals.delete(sym);
+      if (toExpire.length > 0) saveLocalHistory(history);
+
+      // Process new signals for coins not already active
       for (const s of all) {
         if (!activeSignals.has(s.symbol)) {
-          const params = generateSignalParams(s.symbol, s.livePrice, s.direction);
-          const now = Date.now();
+          const params = generateSignalParams(s.symbol, s.livePrice, s.direction, s.atr);
           const newSig = {
             id: generateId(), symbol: s.symbol, direction: s.direction,
             entryLow: params.entryLow, entryHigh: params.entryHigh,
             tp: params.tp, sl: params.sl, rr: params.rr, tick: params.tick,
             condDisplay: s.condDisplay, strength: s.strength,
-            timestamp: new Date().toISOString(), openTime: now,
+            timestamp: new Date().toISOString(), openTime: Date.now(),
             livePrice: s.livePrice, changePercent: s.changePercent,
-            status: 'OPEN'
+            status: 'OPEN',
+            expireTime: Date.now() + SIGNAL_EXPIRY_MINUTES * 60 * 1000
           };
           activeSignals.set(s.symbol, newSig);
           await addSignalToSheet(newSig);
@@ -370,19 +632,26 @@
           hist.push({ ...newSig, result: '—', closedPrice: null, closeTime: null });
           saveLocalHistory(hist);
         } else {
+          // Update live price for existing signal
           const existing = activeSignals.get(s.symbol);
           if (existing) { existing.livePrice = s.livePrice; existing.changePercent = s.changePercent; }
         }
       }
 
+      // Check TP/SL hits for open signals
       let historyUpdated = false;
       const toRemove = [];
       for (const [symbol, signal] of activeSignals) {
         const currentPrice = priceMap[symbol];
-        if (!currentPrice) continue;
+        if (!currentPrice || signal.status !== 'OPEN') continue;
         let hitStatus = null;
-        if (signal.direction === 'LONG') { if (currentPrice >= signal.tp) hitStatus = 'PROFIT'; else if (currentPrice <= signal.sl) hitStatus = 'LOSS'; }
-        else { if (currentPrice <= signal.tp) hitStatus = 'PROFIT'; else if (currentPrice >= signal.sl) hitStatus = 'LOSS'; }
+        if (signal.direction === 'LONG') {
+          if (currentPrice >= signal.tp) hitStatus = 'PROFIT';
+          else if (currentPrice <= signal.sl) hitStatus = 'LOSS';
+        } else {
+          if (currentPrice <= signal.tp) hitStatus = 'PROFIT';
+          else if (currentPrice >= signal.sl) hitStatus = 'LOSS';
+        }
         if (hitStatus) {
           const closeTime = Date.now();
           signal.status = hitStatus;
@@ -428,7 +697,7 @@
   }
 
   // ================================================================
-  //  RENDER SIGNALS (Confidence % based on Strength)
+  //  RENDER SIGNALS (with confidence bar)
   // ================================================================
   function renderSignals(signals) {
     if (!signals || signals.length === 0) {
@@ -436,14 +705,14 @@
       return;
     }
     let html = '';
-    signals.slice(0, 10).forEach(s => {
+    const maxDisplay = 10;
+    const displayed = signals.slice(0, maxDisplay);
+    displayed.forEach(s => {
       const dirClass = s.direction.toLowerCase();
       const dirDisplay = s.direction === 'LONG' ? '▲' : '▼';
       const tick = s.tick || 0.01;
 
-      // 📊 CONFIDENCE % = (strength / 5) * 100
-      const confidence = Math.round((s.strength / 5) * 100);
-      let confDisplay = confidence + '%';
+      const confidence = s.strength || 0;
       let confClass = 'low';
       if (confidence >= 80) confClass = 'high';
       else if (confidence >= 60) confClass = 'medium';
@@ -456,19 +725,27 @@
           <span class="col-entry">${formatPriceShort(s.entryLow, tick)} – ${formatPriceShort(s.entryHigh, tick)}</span>
           <span class="col-tp">${formatPriceShort(s.tp, tick)}</span>
           <span class="col-sl">${formatPriceShort(s.sl, tick)}</span>
-          <span class="col-conf ${confClass}">${confDisplay}</span>
+          <span class="col-conf ${confClass}">
+            <div class="conf-bar-container">
+              <div class="conf-bar ${confClass}" style="width:${confidence}%"></div>
+            </div>
+            ${confidence}%
+          </span>
           <span class="col-time">${fmtTime(s.timestamp)}</span>
         </div>
       `;
     });
+    if (signals.length > maxDisplay) {
+      html += `<div class="empty-state" style="padding:8px;">+ ${signals.length - maxDisplay} more signals not shown</div>`;
+    }
     signalsGrid.innerHTML = html;
   }
 
   // ================================================================
-  //  RENDER HISTORY (Unchanged, shows closed trades)
+  //  RENDER HISTORY (unchanged but with expiry handling)
   // ================================================================
   function renderHistory(history) {
-    const closedTrades = history.filter(h => h.status === 'PROFIT' || h.status === 'LOSS');
+    const closedTrades = history.filter(h => h.status === 'PROFIT' || h.status === 'LOSS' || h.status === 'EXPIRED');
     if (!closedTrades || closedTrades.length === 0) {
       historyList.innerHTML = `<div class="empty-state">No completed trades yet.</div>`;
       historyCount.textContent = '0 entries';
@@ -483,6 +760,7 @@
       let resultText = '—', resultClass = '';
       if (h.status === 'PROFIT') { resultText = '✅ TP'; resultClass = 'win'; }
       else if (h.status === 'LOSS') { resultText = '❌ SL'; resultClass = 'loss'; }
+      else if (h.status === 'EXPIRED') { resultText = '⏰ Exp'; resultClass = 'loss'; }
       let durationStr = '—', durClass = '';
       if (h.openTime && h.closeTime) {
         const durMs = h.closeTime - h.openTime;
