@@ -5,401 +5,121 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
   <title>ScalpScanner Pro</title>
   <style>
-    /* ── Reset & Base ── */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-    body {
-      background: #0a0d14;
-      min-height: 100vh;
-      padding: 14px;
-      display: flex;
-      justify-content: center;
-    }
-    .app {
-      max-width: 780px;
-      width: 100%;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
+    body { background: #080c14; min-height: 100vh; padding: 12px; display: flex; justify-content: center; }
+    .app { max-width: 820px; width: 100%; }
 
-    /* ── Header ── */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .header h1 {
-      color: #f0f4fa;
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .header h1 span {
-      background: linear-gradient(135deg, #33d9a8, #20c997);
-      font-size: 13px;
-      font-weight: 600;
-      padding: 2px 12px;
-      border-radius: 30px;
-      color: #0a0d14;
-    }
-    .badge {
-      background: #1a2430;
-      padding: 6px 14px;
-      border-radius: 40px;
-      color: #9ab0c9;
-      font-size: 12px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid #253240;
-    }
-    .badge .dot {
-      width: 8px;
-      height: 8px;
-      background: #33d9a8;
-      border-radius: 50%;
-      display: inline-block;
-      animation: pulse-dot 1.6s infinite;
-    }
-    @keyframes pulse-dot {
-      0% { opacity: 0.3; transform: scale(0.9); }
-      50% { opacity: 1; transform: scale(1.2); }
-      100% { opacity: 0.3; transform: scale(0.9); }
-    }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+    .header h1 { color: #f0f4fa; font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .header h1 span { background: linear-gradient(135deg, #33d9a8, #1db883); font-size: 12px; font-weight: 600; padding: 2px 12px; border-radius: 30px; color: #080c14; }
+    .badge { background: #161f2b; padding: 6px 14px; border-radius: 40px; color: #9ab0c9; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid #253240; }
+    .badge .dot { width: 8px; height: 8px; background: #33d9a8; border-radius: 50%; display: inline-block; animation: pulse-dot 1.6s infinite; }
+    @keyframes pulse-dot { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.3; transform: scale(0.9); } }
 
-    /* ── Top Bar ── */
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #111a24;
-      padding: 10px 18px;
-      border-radius: 18px;
-      border: 1px solid #1e2c3b;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .top-bar .status {
-      color: #7a94af;
-      font-size: 13px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .top-bar .status .live {
-      color: #33d9a8;
-      font-weight: 600;
-    }
-    .refresh-btn {
-      background: #1e2c3b;
-      border: none;
-      color: #d6e4f0;
-      padding: 6px 20px;
-      border-radius: 40px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid #2d3f52;
-    }
-    .refresh-btn:hover:not(:disabled) {
-      background: #2d3f52;
-    }
-    .refresh-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .refresh-btn .spinner {
-      width: 14px;
-      height: 14px;
-      border: 2px solid #5f7d9a;
-      border-top-color: #d6e4f0;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      display: inline-block;
-    }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; background: #111a24; padding: 10px 16px; border-radius: 16px; border: 1px solid #1e2c3b; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+    .top-bar .status { color: #7a94af; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    .top-bar .status .live { color: #33d9a8; font-weight: 600; }
+    .refresh-btn { background: #1e2c3b; border: none; color: #d6e4f0; padding: 6px 18px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; border: 1px solid #2d3f52; transition: 0.2s; }
+    .refresh-btn:hover:not(:disabled) { background: #2d3f52; }
+    .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .refresh-btn .spinner { width: 14px; height: 14px; border: 2px solid #5f7d9a; border-top-color: #d6e4f0; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Signal Cards ── */
-    .signals-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    .signal-card {
-      background: #111a24;
-      border-radius: 20px;
-      padding: 16px 18px;
-      border-left: 5px solid #3a4d62;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-      transition: 0.2s;
-      animation: fadeUp 0.35s ease;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .signals-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .signal-card { background: #111a24; border-radius: 18px; padding: 16px; border-left: 5px solid #3a4d62; box-shadow: 0 4px 12px rgba(0,0,0,0.4); animation: fadeUp 0.35s ease; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .signal-card.long { border-left-color: #33d9a8; }
     .signal-card.short { border-left-color: #f25b6a; }
 
-    .card-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 6px 12px;
-    }
-    .card-symbol {
-      font-size: 20px;
-      font-weight: 700;
-      color: #f0f4fa;
-      letter-spacing: -0.2px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .card-symbol .lock-badge {
-      font-size: 10px;
-      background: #253240;
-      color: #9ab0c9;
-      padding: 1px 10px;
-      border-radius: 30px;
-      font-weight: 500;
-    }
-    .card-direction {
-      font-size: 15px;
-      font-weight: 600;
-      padding: 2px 14px;
-      border-radius: 30px;
-      background: #1a2430;
-    }
+    .card-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 6px 10px; }
+    .card-left { display: flex; flex-direction: column; gap: 4px; }
+    .card-symbol { font-size: 20px; font-weight: 700; color: #f0f4fa; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .card-symbol .lock { font-size: 10px; background: #1f2c3c; color: #7a94af; padding: 1px 10px; border-radius: 30px; font-weight: 500; }
+    .card-direction { font-size: 14px; font-weight: 600; padding: 2px 14px; border-radius: 30px; background: #1a2430; display: inline-block; }
     .card-direction.long { color: #33d9a8; }
     .card-direction.short { color: #f25b6a; }
-    .card-score {
-      background: #1a2430;
-      padding: 2px 12px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #f4c95d;
-      border: 1px solid #2d3f52;
-    }
 
-    .card-meta {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      gap: 8px;
-      margin-top: 12px;
-      background: #0d151e;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid #1a2633;
-    }
-    .card-meta .m-item {
-      text-align: center;
-    }
-    .card-meta .m-label {
-      color: #5f7d9a;
-      font-size: 9px;
-      text-transform: uppercase;
-      font-weight: 600;
-      letter-spacing: 0.4px;
-    }
-    .card-meta .m-value {
-      color: #f0f4fa;
-      font-size: 14px;
-      font-weight: 600;
-      margin-top: 2px;
-    }
-    .card-meta .m-value.live-price {
-      color: #33d9a8;
-    }
-    .card-time {
-      color: #5f7d9a;
-      font-size: 11px;
-      margin-top: 8px;
-      text-align: right;
-      border-top: 1px solid #1a2633;
-      padding-top: 8px;
-    }
-    .card-time .highlight {
-      color: #9ab0c9;
-      font-weight: 500;
-    }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .tag { font-size: 11px; font-weight: 500; padding: 2px 10px; border-radius: 20px; background: #1a2430; color: #9ab0c9; border: 1px solid #2a3a4a; }
+    .tag.rr { color: #f4c95d; border-color: #4a3a1a; }
+    .tag.strong { color: #33d9a8; border-color: #1a4a3a; }
+    .tag.cond { color: #7a94af; border-color: #1a2633; }
+    .tag.cond .pass { color: #33d9a8; }
+    .tag.cond .fail { color: #f25b6a; }
 
-    /* ── History ── */
-    .history-section {
-      background: #111a24;
-      border-radius: 20px;
-      padding: 16px 16px 12px;
-      border: 1px solid #1e2c3b;
-      margin-top: 4px;
-    }
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .history-header h3 {
-      color: #9ab0c9;
-      font-size: 14px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .history-header .count {
-      background: #1a2430;
-      padding: 2px 12px;
-      border-radius: 30px;
-      font-size: 12px;
-      color: #7a94af;
-    }
+    .card-meta { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 12px; background: #0d151e; padding: 10px 12px; border-radius: 12px; border: 1px solid #1a2633; }
+    .card-meta .m-item { text-align: center; }
+    .card-meta .m-label { color: #5f7d9a; font-size: 9px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.3px; }
+    .card-meta .m-value { color: #f0f4fa; font-size: 14px; font-weight: 600; margin-top: 2px; }
+    .card-meta .m-value.live { color: #33d9a8; }
+    .card-meta .m-value .chg { font-weight: 400; font-size: 11px; color: #7a94af; margin-left: 2px; }
 
-    .history-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-height: 340px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
+    .card-time { color: #5f7d9a; font-size: 11px; margin-top: 10px; text-align: right; border-top: 1px solid #1a2633; padding-top: 8px; }
+    .card-time .hl { color: #9ab0c9; font-weight: 500; }
+
+    .history-section { background: #111a24; border-radius: 18px; padding: 16px; border: 1px solid #1e2c3b; }
+    .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .history-header h3 { color: #9ab0c9; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .history-header .count { background: #1a2430; padding: 2px 12px; border-radius: 30px; font-size: 12px; color: #7a94af; }
+
+    .history-list { display: flex; flex-direction: column; gap: 5px; max-height: 350px; overflow-y: auto; padding-right: 4px; }
     .history-list::-webkit-scrollbar { width: 4px; }
     .history-list::-webkit-scrollbar-track { background: #0d151e; border-radius: 4px; }
     .history-list::-webkit-scrollbar-thumb { background: #2d3f52; border-radius: 4px; }
 
-    .history-item {
-      display: grid;
-      grid-template-columns: 58px 38px 50px 1fr 55px 52px;
-      gap: 4px 8px;
-      padding: 8px 10px;
-      background: #0d151e;
-      border-radius: 12px;
-      font-size: 12px;
-      align-items: center;
-      border: 1px solid #1a2633;
-      transition: 0.15s;
-    }
-    .history-item .h-sym {
-      font-weight: 700;
-      color: #f0f4fa;
-      font-size: 13px;
-    }
-    .history-item .h-dir {
-      font-weight: 600;
-      font-size: 11px;
-    }
+    .history-item { display: grid; grid-template-columns: 50px 32px 50px 1fr 60px 45px; gap: 4px 8px; padding: 7px 10px; background: #0d151e; border-radius: 10px; font-size: 12px; align-items: center; border: 1px solid #1a2633; }
+    .history-item .h-sym { font-weight: 700; color: #f0f4fa; font-size: 13px; }
+    .history-item .h-dir { font-weight: 600; font-size: 11px; }
     .history-item .h-dir.long { color: #33d9a8; }
     .history-item .h-dir.short { color: #f25b6a; }
-    .history-item .h-time {
-      color: #5f7d9a;
-      font-size: 10px;
-      white-space: nowrap;
-    }
-    .history-item .h-duration {
-      color: #7a94af;
-      font-size: 10px;
-      font-weight: 500;
-      background: #1a2430;
-      padding: 1px 8px;
-      border-radius: 20px;
-      text-align: center;
-      white-space: nowrap;
-    }
+    .history-item .h-time { color: #5f7d9a; font-size: 10px; white-space: nowrap; }
+    .history-item .h-duration { font-size: 10px; font-weight: 600; text-align: center; background: #1a2430; padding: 1px 8px; border-radius: 20px; white-space: nowrap; }
     .history-item .h-duration.fast { color: #33d9a8; }
     .history-item .h-duration.medium { color: #f4c95d; }
     .history-item .h-duration.slow { color: #f25b6a; }
-    .history-item .h-result {
-      font-weight: 700;
-      font-size: 13px;
-      text-align: right;
-    }
+    .history-item .h-result { font-weight: 700; font-size: 12px; text-align: right; }
     .history-item .h-result.win { color: #33d9a8; }
     .history-item .h-result.loss { color: #f25b6a; }
-    .history-item .h-result.open { color: #f4c95d; }
 
-    .empty-state {
-      color: #5f7d9a;
-      text-align: center;
-      padding: 28px 10px;
-      font-size: 14px;
-    }
+    .empty-state { color: #5f7d9a; text-align: center; padding: 24px 10px; font-size: 14px; }
 
-    /* ── Responsive ── */
     @media (max-width: 600px) {
-      .card-meta {
-        grid-template-columns: 1fr 1fr;
-        gap: 4px 14px;
-      }
-      .history-item {
-        grid-template-columns: 48px 30px 44px 1fr 48px 44px;
-        font-size: 11px;
-        padding: 6px 8px;
-        gap: 3px 6px;
-      }
-      .header h1 { font-size: 19px; }
-      .top-bar .status { font-size: 12px; }
-      .refresh-btn { font-size: 12px; padding: 4px 14px; min-width: 80px; }
+      .card-meta { grid-template-columns: 1fr 1fr; gap: 4px 12px; }
+      .history-item { grid-template-columns: 42px 26px 42px 1fr 48px 38px; font-size: 11px; padding: 5px 6px; gap: 3px 4px; }
+      .header h1 { font-size: 18px; }
       .card-symbol { font-size: 17px; }
+      .card-tags .tag { font-size: 10px; }
     }
     @media (max-width: 420px) {
-      .history-item {
-        grid-template-columns: 40px 26px 38px 1fr 40px 38px;
-        font-size: 10px;
-        gap: 2px 4px;
-        padding: 5px 6px;
-      }
+      .history-item { grid-template-columns: 36px 22px 38px 1fr 40px 32px; font-size: 10px; }
       .history-item .h-sym { font-size: 11px; }
-      .card-meta .m-value { font-size: 12px; }
     }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- Header -->
   <div class="header">
     <h1>📡 ScalpScanner <span>PRO</span></h1>
-    <span class="badge"><span class="dot"></span> <span id="liveCount">0</span> signals</span>
+    <span class="badge"><span class="dot"></span> <span id="liveCount">0</span> active</span>
   </div>
 
-  <!-- Top Bar -->
   <div class="top-bar">
     <span class="status" id="statusText">🟢 <span class="live">Live</span> · scanning...</span>
     <button class="refresh-btn" id="refreshBtn">⟳ Refresh</button>
   </div>
 
-  <!-- Signals -->
   <div class="signals-grid" id="signalsGrid">
-    <div style="color:#5f7d9a; text-align:center; padding:24px; font-size:14px;">Loading signals...</div>
+    <div class="empty-state">Loading signals...</div>
   </div>
 
-  <!-- History -->
   <div class="history-section">
     <div class="history-header">
       <h3>📜 Trade History</h3>
       <span class="count" id="historyCount">0 entries</span>
     </div>
     <div class="history-list" id="historyList">
-      <div class="empty-state">No history yet. Signals will appear here.</div>
+      <div class="empty-state">No history yet.</div>
     </div>
   </div>
 
@@ -412,9 +132,17 @@
   const GOOGLE_SCRIPT_URL =
     'https://script.google.com/macros/s/AKfycbwx0DbnzzDfAKKgktyQICoruc1cKQ3MDhStMfdto3yqBHJLiPTkTg0AstOgMRL7IMOB/exec';
 
+  // Precisely defined tick sizes for each coin (Binance standards)
+  const TICK_SIZE = {
+    'BTCUSDT': 0.01, 'ETHUSDT': 0.01, 'BNBUSDT': 0.01,
+    'SOLUSDT': 0.001, 'AVAXUSDT': 0.001, 'DOTUSDT': 0.001, 'LINKUSDT': 0.001,
+    'XRPUSDT': 0.0001, 'ADAUSDT': 0.0001,
+    'DOGEUSDT': 0.00001
+  };
+
   const COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','LINKUSDT'];
-  const SCAN_INTERVAL = 15000;   // 15s
-  const HISTORY_INTERVAL = 30000; // 30s
+  const SCAN_INTERVAL = 15000;
+  const HISTORY_INTERVAL = 30000;
 
   // ================================================================
   //  DOM REFS
@@ -430,14 +158,24 @@
   // ================================================================
   //  HELPERS
   // ================================================================
-  function fmtPrice(v) { return '$' + Number(v).toFixed(2); }
+  function getTick(symbol) { return TICK_SIZE[symbol] || 0.01; }
+
+  function roundToTick(value, tick) {
+    if (tick === 0) return value;
+    return Math.round(value / tick) * tick;
+  }
+
+  function formatPrice(value, tick) {
+    if (!tick) return '$' + value.toFixed(2);
+    const decimals = Math.max(0, Math.ceil(-Math.log10(tick)));
+    return '$' + value.toFixed(decimals);
+  }
+
   function fmtTime(iso) {
     if (!iso) return '—';
-    try {
-      const d = new Date(iso);
-      return d.toLocaleTimeString('en-US', { hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit' });
-    } catch { return iso; }
+    try { const d = new Date(iso); return d.toLocaleTimeString('en-US', { hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit' }); } catch { return iso; }
   }
+
   function fmtDuration(ms) {
     if (!ms || ms < 0) return '—';
     const totalSec = Math.floor(ms / 1000);
@@ -446,14 +184,14 @@
     const sec = totalSec % 60;
     return min + 'm ' + sec + 's';
   }
+
   function getSymbol(s) { return s.replace('USDT',''); }
 
   // ================================================================
-  //  TECHNICAL ANALYSIS (signal detection only)
+  //  TECHNICAL ANALYSIS (returns conditions map)
   // ================================================================
   function calcEMA(data, p) {
-    const ema = [], k = 2/(p+1);
-    let sum = 0;
+    const ema = [], k = 2/(p+1); let sum = 0;
     for (let i=0; i<data.length; i++) {
       if (i < p-1) { sum += data[i]; ema.push(null); }
       else if (i === p-1) { sum += data[i]; ema.push(sum/p); }
@@ -462,17 +200,13 @@
     return ema;
   }
   function calcRSI(closes, p=14) {
-    const rsi = [];
-    let gain=0, loss=0;
+    const rsi = []; let gain=0, loss=0;
     for (let i=1; i<closes.length; i++) {
       const diff = closes[i] - closes[i-1];
       if (i <= p) {
         if (diff>=0) gain += diff; else loss += Math.abs(diff);
-        if (i === p) {
-          let ag = gain/p, al = loss/p;
-          const rs = al===0 ? 0 : ag/al;
-          rsi.push(al===0 ? 100 : 100 - (100/(1+rs)));
-        } else rsi.push(null);
+        if (i === p) { let ag = gain/p, al = loss/p; const rs = al===0 ? 0 : ag/al; rsi.push(al===0 ? 100 : 100 - (100/(1+rs))); }
+        else rsi.push(null);
       } else {
         const ag = ((gain*(p-1)) + (diff>=0 ? diff : 0))/p;
         const al = ((loss*(p-1)) + (diff<0 ? Math.abs(diff) : 0))/p;
@@ -488,28 +222,23 @@
     for (let i=0; i<closes.length; i++) {
       if (i < p-1) { upper.push(null); lower.push(null); continue; }
       let sum=0; for (let j=i-p+1; j<=i; j++) sum += closes[j];
-      const mean = sum/p;
-      let sq=0; for (let j=i-p+1; j<=i; j++) sq += (closes[j]-mean)**2;
+      const mean = sum/p; let sq=0; for (let j=i-p+1; j<=i; j++) sq += (closes[j]-mean)**2;
       const stdev = Math.sqrt(sq/p);
-      upper.push(mean + sd*stdev);
-      lower.push(mean - sd*stdev);
+      upper.push(mean + sd*stdev); lower.push(mean - sd*stdev);
     }
     return { upper, lower };
   }
   function calcVWAP(highs, lows, closes, vols) {
-    const vwap = [];
-    let cumPV=0, cumVol=0;
+    const vwap = []; let cumPV=0, cumVol=0;
     for (let i=0; i<closes.length; i++) {
       const typical = (highs[i]+lows[i]+closes[i])/3;
-      cumPV += typical * vols[i];
-      cumVol += vols[i];
+      cumPV += typical * vols[i]; cumVol += vols[i];
       vwap.push(cumVol===0 ? null : cumPV/cumVol);
     }
     return vwap;
   }
 
-  // Returns { signal, confidence, winRate } ONLY – no entry/tp/sl
-  function detectSignal(data) {
+  function analyzeCoin(data, symbol) {
     const closes = data.map(d=>d.close);
     const highs = data.map(d=>d.high);
     const lows = data.map(d=>d.low);
@@ -533,36 +262,43 @@
     const avgVol = vols.slice(-20).reduce((a,b)=>a+b,0)/20;
     const volSpike = vol > avgVol * 1.8;
 
-    let longC=0, shortC=0, total=5;
-    if (e5!==null && e20!==null) { if (e5>e20) longC++; else if (e5<e20) shortC++; }
-    if (r!==null && r<30) longC++; else if (r!==null && r>70) shortC++;
-    if (lower!==null && price < lower*1.005) longC++;
-    if (upper!==null && price > upper*0.995) shortC++;
-    if (volSpike) { longC++; shortC++; }
-    if (vwapVal!==null && price > vwapVal) longC++;
-    if (vwapVal!==null && price < vwapVal) shortC++;
+    // Determine conditions
+    let longC=0, shortC=0;
+    let conditions = { EMA: false, RSI: false, BB: false, VWAP: false, VOL: false };
 
-    const longScore = longC/total;
-    const shortScore = shortC/total;
-    let signal='NEUTRAL', confidence=0, winRate=0;
-    const threshold=0.55;
-
-    if (longScore>=threshold && longScore>shortScore) {
-      signal='LONG';
-      confidence = Math.min(95, Math.round(longScore*100));
-      winRate = Math.min(82, 55 + confidence*0.3);
-    } else if (shortScore>=threshold && shortScore>longScore) {
-      signal='SHORT';
-      confidence = Math.min(95, Math.round(shortScore*100));
-      winRate = Math.min(82, 55 + confidence*0.3);
-    } else {
-      return null; // neutral or too weak
+    if (e5!==null && e20!==null) {
+      if (e5>e20) { longC++; conditions.EMA = true; }
+      else if (e5<e20) { shortC++; conditions.EMA = true; }
     }
-    return { signal, confidence, winRate: Math.round(winRate) };
+    if (r!==null && r<30) { longC++; conditions.RSI = true; }
+    else if (r!==null && r>70) { shortC++; conditions.RSI = true; }
+    if (lower!==null && price < lower*1.005) { longC++; conditions.BB = true; }
+    if (upper!==null && price > upper*0.995) { shortC++; conditions.BB = true; }
+    if (volSpike) { longC++; shortC++; conditions.VOL = true; }
+    if (vwapVal!==null && price > vwapVal) { longC++; conditions.VWAP = true; }
+    if (vwapVal!==null && price < vwapVal) { shortC++; conditions.VWAP = true; }
+
+    let direction = 'NEUTRAL';
+    let strength = 0;
+    let usedConds = [];
+    if (longC >= shortC && longC >= 3) { direction = 'LONG'; strength = longC; }
+    else if (shortC > longC && shortC >= 3) { direction = 'SHORT'; strength = shortC; }
+    else { return null; }
+
+    // For display, show which conditions contributed
+    const condDisplay = {
+      EMA: conditions.EMA ? '✓' : '✗',
+      RSI: conditions.RSI ? '✓' : '✗',
+      BB: conditions.BB ? '✓' : '✗',
+      VWAP: conditions.VWAP ? '✓' : '✗',
+      VOL: conditions.VOL ? '✓' : '✗'
+    };
+
+    return { direction, strength, price, condDisplay };
   }
 
   // ================================================================
-  //  FETCH COINS (returns raw data + ticker)
+  //  FETCH COINS
   // ================================================================
   async function fetchAllCoins() {
     const promises = COINS.map(async (symbol) => {
@@ -570,27 +306,24 @@
         const kResp = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=120`);
         if (!kResp.ok) throw new Error('Klines fail');
         const raw = await kResp.json();
-        const data = raw.map(c => ({
-          open: parseFloat(c[1]), high: parseFloat(c[2]), low: parseFloat(c[3]),
-          close: parseFloat(c[4]), volume: parseFloat(c[5])
-        }));
+        const data = raw.map(c => ({ open: parseFloat(c[1]), high: parseFloat(c[2]), low: parseFloat(c[3]), close: parseFloat(c[4]), volume: parseFloat(c[5]) }));
         if (data.length < 60) return null;
         const tResp = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
         if (!tResp.ok) throw new Error('Ticker fail');
         const ticker = await tResp.json();
-        const signal = detectSignal(data);
-        if (!signal) return null;
+        const analysis = analyzeCoin(data, symbol);
+        if (!analysis) return null;
         return {
           symbol,
           livePrice: parseFloat(ticker.lastPrice),
           changePercent: parseFloat(ticker.priceChangePercent),
-          ...signal
+          ...analysis
         };
       } catch { return null; }
     });
     const results = await Promise.allSettled(promises);
     return results.map(r => r.status === 'fulfilled' ? r.value : null).filter(r => r !== null)
-      .sort((a,b) => b.confidence - a.confidence);
+      .sort((a,b) => b.strength - a.strength);
   }
 
   // ================================================================
@@ -598,65 +331,75 @@
   // ================================================================
   async function addSignalToSheet(signal) {
     try {
-      const payload = {
-        action: 'add',
-        symbol: signal.symbol,
-        direction: signal.direction,
-        entryMin: signal.entryLow,
-        entryMax: signal.entryHigh,
-        tp: signal.tp,
-        sl: signal.sl
-      };
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    } catch (e) { console.warn('Sheet add failed:', e); }
+      const payload = { action: 'add', symbol: signal.symbol, direction: signal.direction, entryMin: signal.entryLow, entryMax: signal.entryHigh, tp: signal.tp, sl: signal.sl };
+      await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    } catch (e) {}
   }
-
   async function updateSignalStatus(id, status, closedPrice) {
     try {
       const payload = { action: 'update', id, status, closedPrice };
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    } catch (e) { console.warn('Sheet update failed:', e); }
+      await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    } catch (e) {}
   }
-
   async function fetchHistoryFromSheet() {
-    try {
-      const resp = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now());
-      if (!resp.ok) return [];
-      const json = await resp.json();
-      if (json.success && json.data) return json.data;
-      return [];
-    } catch { return []; }
+    try { const resp = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now()); if (!resp.ok) return []; const json = await resp.json(); if (json.success && json.data) return json.data; return []; } catch { return []; }
   }
 
   // ================================================================
-  //  LOCAL STORAGE FALLBACK
+  //  LOCAL STORAGE
   // ================================================================
-  function getLocalHistory() {
-    try { const raw = localStorage.getItem('scalpHistory'); return raw ? JSON.parse(raw) : []; } catch { return []; }
-  }
-  function saveLocalHistory(h) {
-    try { localStorage.setItem('scalpHistory', JSON.stringify(h)); } catch {}
-  }
+  function getLocalHistory() { try { const raw = localStorage.getItem('scalpHistory'); return raw ? JSON.parse(raw) : []; } catch { return []; } }
+  function saveLocalHistory(h) { try { localStorage.setItem('scalpHistory', JSON.stringify(h)); } catch {} }
 
   // ================================================================
-  //  CORE LOGIC (with frozen signals)
+  //  CORE LOGIC (Tick-Aligned, Calculative)
   // ================================================================
   let isProcessing = false;
-  // Active signals store: key = symbol, value = { id, symbol, direction, entryLow, entryHigh, tp, sl, timestamp, openTime, livePrice, changePercent, confidence, winRate }
   const activeSignals = new Map();
 
-  function generateId() {
-    return 'sig_' + Date.now() + '_' + Math.random().toString(36).substr(2,4);
+  function generateId() { return 'sig_' + Date.now() + '_' + Math.random().toString(36).substr(2,4); }
+
+  function generateSignalParams(symbol, price, direction) {
+    const tick = getTick(symbol);
+    // Minimum absolute move must be at least 3 ticks to be meaningful
+    const minMove = Math.max(tick * 3, 0.001);
+
+    // Desired moves: 0.8% for TP, 0.6% for SL, 0.2% spread for entry
+    const tpMoveRaw = Math.max(price * 0.008, minMove);
+    const slMoveRaw = Math.max(price * 0.006, minMove);
+    const spreadRaw = Math.max(price * 0.002, tick * 2);
+
+    // Round to exact tick
+    let tpMove = roundToTick(tpMoveRaw, tick);
+    let slMove = roundToTick(slMoveRaw, tick);
+    let spread = roundToTick(spreadRaw, tick);
+
+    // Ensure TP/SL are strictly greater than spread to avoid overlap
+    if (tpMove <= spread/2) tpMove = roundToTick(spread/2 + tick, tick);
+    if (slMove <= spread/2) slMove = roundToTick(spread/2 + tick, tick);
+
+    let entryLow, entryHigh, tp, sl;
+    if (direction === 'LONG') {
+      entryLow = roundToTick(price - spread/2, tick);
+      entryHigh = roundToTick(price + spread/2, tick);
+      tp = roundToTick(entryHigh + tpMove, tick);
+      sl = roundToTick(entryLow - slMove, tick);
+    } else { // SHORT
+      entryLow = roundToTick(price - spread/2, tick);
+      entryHigh = roundToTick(price + spread/2, tick);
+      tp = roundToTick(entryLow - tpMove, tick);
+      sl = roundToTick(entryHigh + slMove, tick);
+    }
+
+    // Final safety: ensure TP and SL are different from entry
+    if (tp === entryLow || tp === entryHigh) tp = roundToTick(tp + (direction === 'LONG' ? tick : -tick), tick);
+    if (sl === entryLow || sl === entryHigh) sl = roundToTick(sl + (direction === 'SHORT' ? tick : -tick), tick);
+
+    const actualTpMove = Math.abs(tp - (direction === 'LONG' ? entryHigh : entryLow));
+    const actualSlMove = Math.abs(sl - (direction === 'LONG' ? entryLow : entryHigh));
+    const rr = actualSlMove > 0 ? actualTpMove / actualSlMove : 0;
+
+    return { entryLow, entryHigh, tp, sl, rr, tick };
   }
 
   async function processScan() {
@@ -666,67 +409,46 @@
     refreshBtn.innerHTML = '<span class="spinner"></span>';
 
     try {
-      // 1. Fetch fresh market data
       const all = await fetchAllCoins();
       if (!all || all.length === 0) throw new Error('No data');
-
-      // 2. Create price map for quick lookup
       const priceMap = {};
       all.forEach(c => priceMap[c.symbol] = c.livePrice);
 
-      // 3. Check for new signals (only if not already active)
+      // 1. Add new signals
       for (const s of all) {
         if (!activeSignals.has(s.symbol)) {
-          // Generate FIXED Entry/TP/SL based on current price
-          const price = s.livePrice;
-          let entryLow, entryHigh, tp, sl;
-          if (s.signal === 'LONG') {
-            entryLow = price * 0.997;   // -0.3%
-            entryHigh = price * 1.003;  // +0.3%
-            tp = price * 1.008;         // +0.8% (GUARANTEED > entryHigh)
-            sl = price * 0.994;         // -0.6% (GUARANTEED < entryLow)
-          } else { // SHORT
-            entryLow = price * 0.997;
-            entryHigh = price * 1.003;
-            tp = price * 0.992;         // -0.8% (GUARANTEED < entryLow)
-            sl = price * 1.006;         // +0.6% (GUARANTEED > entryHigh)
-          }
-
+          const params = generateSignalParams(s.symbol, s.livePrice, s.direction);
           const now = Date.now();
-          const newSignal = {
+          const newSig = {
             id: generateId(),
             symbol: s.symbol,
-            direction: s.signal,
-            entryLow,
-            entryHigh,
-            tp,
-            sl,
+            direction: s.direction,
+            entryLow: params.entryLow,
+            entryHigh: params.entryHigh,
+            tp: params.tp,
+            sl: params.sl,
+            rr: params.rr,
+            tick: params.tick,
+            condDisplay: s.condDisplay,
+            strength: s.strength,
             timestamp: new Date().toISOString(),
             openTime: now,
-            livePrice: price,
+            livePrice: s.livePrice,
             changePercent: s.changePercent,
-            confidence: s.confidence,
-            winRate: s.winRate,
             status: 'OPEN'
           };
-          activeSignals.set(s.symbol, newSignal);
-          // Send to backend
-          addSignalToSheet(newSignal);
-          // Save to local history (as OPEN)
+          activeSignals.set(s.symbol, newSig);
+          addSignalToSheet(newSig);
           let hist = getLocalHistory();
-          hist.push({ ...newSignal, result: '—', closedPrice: null, closeTime: null });
+          hist.push({ ...newSig, result: '—', closedPrice: null, closeTime: null });
           saveLocalHistory(hist);
         } else {
-          // Update live price for existing active signal
           const existing = activeSignals.get(s.symbol);
-          if (existing) {
-            existing.livePrice = s.livePrice;
-            existing.changePercent = s.changePercent;
-          }
+          if (existing) { existing.livePrice = s.livePrice; existing.changePercent = s.changePercent; }
         }
       }
 
-      // 4. Check TP/SL hits for all active signals
+      // 2. Check TP/SL hits
       const history = getLocalHistory();
       let historyUpdated = false;
       const toRemove = [];
@@ -734,25 +456,20 @@
       for (const [symbol, signal] of activeSignals) {
         const currentPrice = priceMap[symbol];
         if (!currentPrice) continue;
-
         let hitStatus = null;
         if (signal.direction === 'LONG') {
           if (currentPrice >= signal.tp) hitStatus = 'PROFIT';
           else if (currentPrice <= signal.sl) hitStatus = 'LOSS';
-        } else if (signal.direction === 'SHORT') {
+        } else {
           if (currentPrice <= signal.tp) hitStatus = 'PROFIT';
           else if (currentPrice >= signal.sl) hitStatus = 'LOSS';
         }
-
         if (hitStatus) {
-          // Close this signal
           signal.status = hitStatus;
-          signal.result = hitStatus === 'PROFIT' ? '✅ WIN' : '❌ LOSS';
+          signal.result = hitStatus === 'PROFIT' ? 'TP Hit ✅' : 'SL Hit ❌';
           signal.closedPrice = currentPrice;
           signal.closeTime = Date.now();
           toRemove.push(symbol);
-
-          // Update in local history
           for (let i=0; i<history.length; i++) {
             if (history[i].id === signal.id) {
               history[i].status = hitStatus;
@@ -763,27 +480,19 @@
               break;
             }
           }
-          // Update backend
           updateSignalStatus(signal.id, hitStatus, currentPrice);
         }
       }
 
-      // Remove closed signals from active map
-      for (const sym of toRemove) {
-        activeSignals.delete(sym);
-      }
+      for (const sym of toRemove) activeSignals.delete(sym);
+      if (historyUpdated) saveLocalHistory(history);
 
-      if (historyUpdated) {
-        saveLocalHistory(history);
-      }
-
-      // 5. Render everything
-      const activeArray = Array.from(activeSignals.values()).filter(s => s.status === 'OPEN');
-      liveCount.textContent = activeArray.length;
-      renderSignals(activeArray);
+      // 3. Render
+      const active = Array.from(activeSignals.values()).filter(s => s.status === 'OPEN');
+      liveCount.textContent = active.length;
+      renderSignals(active);
       renderHistory(history);
-
-      statusText.innerHTML = `🟢 <span class="live">Live</span> · ${activeArray.length} active · ${new Date().toLocaleTimeString()}`;
+      statusText.innerHTML = `🟢 <span class="live">Live</span> · ${active.length} active · ${new Date().toLocaleTimeString()}`;
 
     } catch (err) {
       console.error(err);
@@ -796,34 +505,53 @@
   }
 
   // ================================================================
-  //  RENDER FUNCTIONS
+  //  RENDER
   // ================================================================
   function renderSignals(signals) {
     if (!signals || signals.length === 0) {
-      signalsGrid.innerHTML = `<div style="color:#5f7d9a; text-align:center; padding:24px; font-size:14px;">No active signals. Waiting for setup...</div>`;
+      signalsGrid.innerHTML = `<div class="empty-state">No active signals. Waiting for setup...</div>`;
       return;
     }
     let html = '';
     signals.slice(0, 10).forEach(s => {
       const dirClass = s.direction.toLowerCase();
       const dirDisplay = s.direction === 'LONG' ? '▲ BUY' : '▼ SELL';
+      const tick = s.tick || 0.01;
+
+      // Build condition string
+      const conds = s.condDisplay || { EMA: '✗', RSI: '✗', BB: '✗', VWAP: '✗', VOL: '✗' };
+      const condStr = `EMA ${conds.EMA}  RSI ${conds.RSI}  BB ${conds.BB}  VWAP ${conds.VWAP}  VOL ${conds.VOL}`;
+
+      // Calculate percentage moves for display
+      const tpPct = ((s.tp - s.entryHigh) / s.entryHigh * 100);
+      const slPct = ((s.sl - s.entryLow) / s.entryLow * 100);
+
       html += `
         <div class="signal-card ${dirClass}">
           <div class="card-row">
-            <span class="card-symbol">
-              ${getSymbol(s.symbol)}
-              <span class="lock-badge">🔒 Locked</span>
-            </span>
-            <span class="card-direction ${dirClass}">${dirDisplay}</span>
-            <span class="card-score">⭐ ${s.confidence}%</span>
+            <div class="card-left">
+              <div class="card-symbol">${getSymbol(s.symbol)} <span class="lock">🔒 Locked</span></div>
+              <span class="card-direction ${dirClass}">${dirDisplay}</span>
+            </div>
+            <div style="text-align:right;">
+              <div class="card-tags" style="justify-content:flex-end;">
+                <span class="tag strong">📊 ${s.strength}/5</span>
+                <span class="tag rr">📈 R:R ${s.rr ? s.rr.toFixed(2) : '—'}</span>
+              </div>
+              <div class="card-tags" style="justify-content:flex-end; margin-top:4px;">
+                <span class="tag cond">${condStr}</span>
+              </div>
+            </div>
           </div>
+
           <div class="card-meta">
-            <div class="m-item"><div class="m-label">Price</div><div class="m-value live-price">${fmtPrice(s.livePrice)}</div></div>
-            <div class="m-item"><div class="m-label">Entry (fixed)</div><div class="m-value">${fmtPrice(s.entryLow)} – ${fmtPrice(s.entryHigh)}</div></div>
-            <div class="m-item"><div class="m-label">TP (fixed)</div><div class="m-value">${fmtPrice(s.tp)}</div></div>
-            <div class="m-item"><div class="m-label">SL (fixed)</div><div class="m-value">${fmtPrice(s.sl)}</div></div>
+            <div class="m-item"><div class="m-label">Price</div><div class="m-value live">${formatPrice(s.livePrice, tick)}</div></div>
+            <div class="m-item"><div class="m-label">Entry (fixed)</div><div class="m-value">${formatPrice(s.entryLow, tick)} – ${formatPrice(s.entryHigh, tick)}</div></div>
+            <div class="m-item"><div class="m-label">TP (fixed)</div><div class="m-value">${formatPrice(s.tp, tick)} <span class="chg">(${tpPct > 0 ? '+' : ''}${tpPct.toFixed(2)}%)</span></div></div>
+            <div class="m-item"><div class="m-label">SL (fixed)</div><div class="m-value">${formatPrice(s.sl, tick)} <span class="chg">(${slPct > 0 ? '+' : ''}${slPct.toFixed(2)}%)</span></div></div>
           </div>
-          <div class="card-time">⏱ Signal added: <span class="highlight">${fmtTime(s.timestamp)}</span> · Est. win ${s.winRate}%</div>
+
+          <div class="card-time">⏱ Added: <span class="hl">${fmtTime(s.timestamp)}</span> · ${s.direction}</div>
         </div>
       `;
     });
@@ -838,15 +566,11 @@
     }
     const sorted = [...history].reverse().slice(0, 50);
     historyCount.textContent = sorted.length + ' entries';
-
     let html = '';
     for (const h of sorted) {
       const dirClass = h.direction ? h.direction.toLowerCase() : 'neutral';
       const resultClass = h.status === 'PROFIT' ? 'win' : h.status === 'LOSS' ? 'loss' : 'open';
-      const resultText = h.result || h.status || '—';
-
-      let durationStr = '—';
-      let durClass = '';
+      let durationStr = '—', durClass = '';
       if (h.status !== 'OPEN' && h.openTime && h.closeTime) {
         const durMs = h.closeTime - h.openTime;
         durationStr = fmtDuration(durMs);
@@ -854,15 +578,15 @@
         else if (durMs < 600000) durClass = 'medium';
         else durClass = 'slow';
       }
-
+      const resultDisplay = h.result || h.status || '—';
       html += `
         <div class="history-item">
           <span class="h-sym">${getSymbol(h.symbol)}</span>
-          <span class="h-dir ${dirClass}">${h.direction === 'LONG' ? 'L' : h.direction === 'SHORT' ? 'S' : '—'}</span>
+          <span class="h-dir ${dirClass}">${h.direction === 'LONG' ? 'L' : 'S'}</span>
           <span class="h-time">${fmtTime(h.timestamp)}</span>
           <span class="h-duration ${durClass}">${durationStr}</span>
-          <span class="h-result ${resultClass}">${resultText}</span>
-          <span style="font-size:10px; color:#5f7d9a;">${h.closedPrice ? fmtPrice(h.closedPrice) : ''}</span>
+          <span class="h-result ${resultClass}">${resultDisplay}</span>
+          <span style="font-size:10px; color:#5f7d9a;">${h.closedPrice ? formatPrice(h.closedPrice, h.tick || 0.01) : ''}</span>
         </div>
       `;
     }
@@ -870,38 +594,28 @@
   }
 
   // ================================================================
-  //  SYNC REMOTE HISTORY
+  //  SYNC REMOTE
   // ================================================================
   async function syncRemoteHistory() {
     try {
       const remote = await fetchHistoryFromSheet();
       if (remote && remote.length > 0) {
         const transformed = remote.map(r => ({
-          id: r.ID || r.id,
-          symbol: r.Symbol || r.symbol,
-          direction: r.Direction || r.direction,
-          entryLow: parseFloat(r.EntryMin || r.entryMin),
-          entryHigh: parseFloat(r.EntryMax || r.entryMax),
-          tp: parseFloat(r.TP || r.tp),
-          sl: parseFloat(r.SL || r.sl),
-          timestamp: r.Timestamp || r.timestamp,
-          status: r.Status || r.status,
-          result: r.Result || r.result,
-          closedPrice: parseFloat(r.ClosedPrice || r.closedPrice) || null,
-          openTime: r.openTime ? parseInt(r.openTime) : null,
-          closeTime: r.closeTime ? parseInt(r.closeTime) : null
+          id: r.ID || r.id, symbol: r.Symbol || r.symbol, direction: r.Direction || r.direction,
+          entryLow: parseFloat(r.EntryMin || r.entryMin), entryHigh: parseFloat(r.EntryMax || r.entryMax),
+          tp: parseFloat(r.TP || r.tp), sl: parseFloat(r.SL || r.sl),
+          timestamp: r.Timestamp || r.timestamp, status: r.Status || r.status,
+          result: r.Result || r.result, closedPrice: parseFloat(r.ClosedPrice || r.closedPrice) || null,
+          openTime: r.openTime ? parseInt(r.openTime) : null, closeTime: r.closeTime ? parseInt(r.closeTime) : null,
+          tick: 0.001 // fallback
         }));
-        // Merge with local: only overwrite if remote has more data
         const local = getLocalHistory();
         const merged = [...local];
-        for (const r of transformed) {
-          const exists = merged.some(l => l.id === r.id);
-          if (!exists) merged.push(r);
-        }
+        for (const r of transformed) { if (!merged.some(l => l.id === r.id)) merged.push(r); }
         saveLocalHistory(merged);
         renderHistory(merged);
       }
-    } catch (e) { /* ignore */ }
+    } catch (e) {}
   }
 
   // ================================================================
@@ -909,20 +623,14 @@
   // ================================================================
   let scanInterval = null, historyInterval = null;
 
-  async function fullUpdate() {
-    await processScan();
-    await syncRemoteHistory();
-  }
+  async function fullUpdate() { await processScan(); await syncRemoteHistory(); }
 
   function startAutoRefresh() {
     if (scanInterval) clearInterval(scanInterval);
     if (historyInterval) clearInterval(historyInterval);
     fullUpdate();
     scanInterval = setInterval(processScan, SCAN_INTERVAL);
-    historyInterval = setInterval(() => {
-      const hist = getLocalHistory();
-      renderHistory(hist);
-    }, HISTORY_INTERVAL);
+    historyInterval = setInterval(() => { const hist = getLocalHistory(); renderHistory(hist); }, HISTORY_INTERVAL);
   }
 
   refreshBtn.addEventListener('click', () => {
