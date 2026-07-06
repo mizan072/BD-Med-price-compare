@@ -8,14 +8,12 @@
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
     body { background: #080c14; min-height: 100vh; padding: 12px; display: flex; justify-content: center; }
     .app { max-width: 820px; width: 100%; }
-
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
     .header h1 { color: #f0f4fa; font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
     .header h1 span { background: linear-gradient(135deg, #33d9a8, #1db883); font-size: 12px; font-weight: 600; padding: 2px 12px; border-radius: 30px; color: #080c14; }
     .badge { background: #161f2b; padding: 6px 14px; border-radius: 40px; color: #9ab0c9; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid #253240; }
     .badge .dot { width: 8px; height: 8px; background: #33d9a8; border-radius: 50%; display: inline-block; animation: pulse-dot 1.6s infinite; }
     @keyframes pulse-dot { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.3; transform: scale(0.9); } }
-
     .top-bar { display: flex; justify-content: space-between; align-items: center; background: #111a24; padding: 10px 16px; border-radius: 16px; border: 1px solid #1e2c3b; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
     .top-bar .status { color: #7a94af; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
     .top-bar .status .live { color: #33d9a8; font-weight: 600; }
@@ -24,13 +22,11 @@
     .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .refresh-btn .spinner { width: 14px; height: 14px; border: 2px solid #5f7d9a; border-top-color: #d6e4f0; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .signals-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
     .signal-card { background: #111a24; border-radius: 18px; padding: 16px; border-left: 5px solid #3a4d62; box-shadow: 0 4px 12px rgba(0,0,0,0.4); animation: fadeUp 0.35s ease; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .signal-card.long { border-left-color: #33d9a8; }
     .signal-card.short { border-left-color: #f25b6a; }
-
     .card-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 6px 10px; }
     .card-left { display: flex; flex-direction: column; gap: 4px; }
     .card-symbol { font-size: 20px; font-weight: 700; color: #f0f4fa; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -38,7 +34,6 @@
     .card-direction { font-size: 14px; font-weight: 600; padding: 2px 14px; border-radius: 30px; background: #1a2430; display: inline-block; }
     .card-direction.long { color: #33d9a8; }
     .card-direction.short { color: #f25b6a; }
-
     .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
     .tag { font-size: 11px; font-weight: 500; padding: 2px 10px; border-radius: 20px; background: #1a2430; color: #9ab0c9; border: 1px solid #2a3a4a; }
     .tag.rr { color: #f4c95d; border-color: #4a3a1a; }
@@ -46,27 +41,22 @@
     .tag.cond { color: #7a94af; border-color: #1a2633; }
     .tag.cond .pass { color: #33d9a8; }
     .tag.cond .fail { color: #f25b6a; }
-
     .card-meta { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 12px; background: #0d151e; padding: 10px 12px; border-radius: 12px; border: 1px solid #1a2633; }
     .card-meta .m-item { text-align: center; }
     .card-meta .m-label { color: #5f7d9a; font-size: 9px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.3px; }
     .card-meta .m-value { color: #f0f4fa; font-size: 14px; font-weight: 600; margin-top: 2px; }
     .card-meta .m-value.live { color: #33d9a8; }
     .card-meta .m-value .chg { font-weight: 400; font-size: 11px; color: #7a94af; margin-left: 2px; }
-
     .card-time { color: #5f7d9a; font-size: 11px; margin-top: 10px; text-align: right; border-top: 1px solid #1a2633; padding-top: 8px; }
     .card-time .hl { color: #9ab0c9; font-weight: 500; }
-
     .history-section { background: #111a24; border-radius: 18px; padding: 16px; border: 1px solid #1e2c3b; }
     .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .history-header h3 { color: #9ab0c9; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .history-header .count { background: #1a2430; padding: 2px 12px; border-radius: 30px; font-size: 12px; color: #7a94af; }
-
     .history-list { display: flex; flex-direction: column; gap: 5px; max-height: 350px; overflow-y: auto; padding-right: 4px; }
     .history-list::-webkit-scrollbar { width: 4px; }
     .history-list::-webkit-scrollbar-track { background: #0d151e; border-radius: 4px; }
     .history-list::-webkit-scrollbar-thumb { background: #2d3f52; border-radius: 4px; }
-
     .history-item { display: grid; grid-template-columns: 50px 32px 50px 1fr 60px 45px; gap: 4px 8px; padding: 7px 10px; background: #0d151e; border-radius: 10px; font-size: 12px; align-items: center; border: 1px solid #1a2633; }
     .history-item .h-sym { font-weight: 700; color: #f0f4fa; font-size: 13px; }
     .history-item .h-dir { font-weight: 600; font-size: 11px; }
@@ -80,66 +70,42 @@
     .history-item .h-result { font-weight: 700; font-size: 12px; text-align: right; }
     .history-item .h-result.win { color: #33d9a8; }
     .history-item .h-result.loss { color: #f25b6a; }
-
     .empty-state { color: #5f7d9a; text-align: center; padding: 24px 10px; font-size: 14px; }
-
-    @media (max-width: 600px) {
-      .card-meta { grid-template-columns: 1fr 1fr; gap: 4px 12px; }
-      .history-item { grid-template-columns: 42px 26px 42px 1fr 48px 38px; font-size: 11px; padding: 5px 6px; gap: 3px 4px; }
-      .header h1 { font-size: 18px; }
-      .card-symbol { font-size: 17px; }
-      .card-tags .tag { font-size: 10px; }
-    }
-    @media (max-width: 420px) {
-      .history-item { grid-template-columns: 36px 22px 38px 1fr 40px 32px; font-size: 10px; }
-      .history-item .h-sym { font-size: 11px; }
-    }
+    @media (max-width: 600px) { .card-meta { grid-template-columns: 1fr 1fr; gap: 4px 12px; } .history-item { grid-template-columns: 42px 26px 42px 1fr 48px 38px; font-size: 11px; padding: 5px 6px; gap: 3px 4px; } .header h1 { font-size: 18px; } .card-symbol { font-size: 17px; } .card-tags .tag { font-size: 10px; } }
+    @media (max-width: 420px) { .history-item { grid-template-columns: 36px 22px 38px 1fr 40px 32px; font-size: 10px; } .history-item .h-sym { font-size: 11px; } }
   </style>
 </head>
 <body>
 <div class="app">
-
   <div class="header">
     <h1>📡 ScalpScanner <span>PRO</span></h1>
     <span class="badge"><span class="dot"></span> <span id="liveCount">0</span> active</span>
   </div>
-
   <div class="top-bar">
     <span class="status" id="statusText">🟢 <span class="live">Live</span> · scanning...</span>
     <button class="refresh-btn" id="refreshBtn">⟳ Refresh</button>
   </div>
-
-  <div class="signals-grid" id="signalsGrid">
-    <div class="empty-state">Loading signals...</div>
-  </div>
-
+  <div class="signals-grid" id="signalsGrid"><div class="empty-state">Loading signals...</div></div>
   <div class="history-section">
-    <div class="history-header">
-      <h3>📜 Trade History</h3>
-      <span class="count" id="historyCount">0 entries</span>
-    </div>
-    <div class="history-list" id="historyList">
-      <div class="empty-state">No history yet.</div>
-    </div>
+    <div class="history-header"><h3>📜 Trade History</h3><span class="count" id="historyCount">0 entries</span></div>
+    <div class="history-list" id="historyList"><div class="empty-state">No history yet.</div></div>
   </div>
-
 </div>
 
 <script>
   // ================================================================
   //  CONFIG
   // ================================================================
+  // ✅ Your Google Script URL (already inserted)
   const GOOGLE_SCRIPT_URL =
     'https://script.google.com/macros/s/AKfycbwx0DbnzzDfAKKgktyQICoruc1cKQ3MDhStMfdto3yqBHJLiPTkTg0AstOgMRL7IMOB/exec';
 
-  // Precisely defined tick sizes for each coin (Binance standards)
   const TICK_SIZE = {
     'BTCUSDT': 0.01, 'ETHUSDT': 0.01, 'BNBUSDT': 0.01,
     'SOLUSDT': 0.001, 'AVAXUSDT': 0.001, 'DOTUSDT': 0.001, 'LINKUSDT': 0.001,
     'XRPUSDT': 0.0001, 'ADAUSDT': 0.0001,
     'DOGEUSDT': 0.00001
   };
-
   const COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','LINKUSDT'];
   const SCAN_INTERVAL = 15000;
   const HISTORY_INTERVAL = 30000;
@@ -159,141 +125,38 @@
   //  HELPERS
   // ================================================================
   function getTick(symbol) { return TICK_SIZE[symbol] || 0.01; }
-
-  function roundToTick(value, tick) {
-    if (tick === 0) return value;
-    return Math.round(value / tick) * tick;
-  }
-
-  function formatPrice(value, tick) {
-    if (!tick) return '$' + value.toFixed(2);
-    const decimals = Math.max(0, Math.ceil(-Math.log10(tick)));
-    return '$' + value.toFixed(decimals);
-  }
-
-  function fmtTime(iso) {
-    if (!iso) return '—';
-    try { const d = new Date(iso); return d.toLocaleTimeString('en-US', { hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit' }); } catch { return iso; }
-  }
-
-  function fmtDuration(ms) {
-    if (!ms || ms < 0) return '—';
-    const totalSec = Math.floor(ms / 1000);
-    if (totalSec < 60) return totalSec + 's';
-    const min = Math.floor(totalSec / 60);
-    const sec = totalSec % 60;
-    return min + 'm ' + sec + 's';
-  }
-
+  function roundToTick(value, tick) { if (tick === 0) return value; return Math.round(value / tick) * tick; }
+  function formatPrice(value, tick) { if (!tick) return '$' + value.toFixed(2); const decimals = Math.max(0, Math.ceil(-Math.log10(tick))); return '$' + value.toFixed(decimals); }
+  function fmtTime(iso) { if (!iso) return '—'; try { const d = new Date(iso); return d.toLocaleTimeString('en-US', { hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit' }); } catch { return iso; } }
+  function fmtDuration(ms) { if (!ms || ms < 0) return '—'; const totalSec = Math.floor(ms / 1000); if (totalSec < 60) return totalSec + 's'; const min = Math.floor(totalSec / 60); const sec = totalSec % 60; return min + 'm ' + sec + 's'; }
   function getSymbol(s) { return s.replace('USDT',''); }
 
   // ================================================================
-  //  TECHNICAL ANALYSIS (returns conditions map)
+  //  TECHNICAL ANALYSIS
   // ================================================================
-  function calcEMA(data, p) {
-    const ema = [], k = 2/(p+1); let sum = 0;
-    for (let i=0; i<data.length; i++) {
-      if (i < p-1) { sum += data[i]; ema.push(null); }
-      else if (i === p-1) { sum += data[i]; ema.push(sum/p); }
-      else { ema.push(data[i]*k + ema[i-1]*(1-k)); }
-    }
-    return ema;
-  }
-  function calcRSI(closes, p=14) {
-    const rsi = []; let gain=0, loss=0;
-    for (let i=1; i<closes.length; i++) {
-      const diff = closes[i] - closes[i-1];
-      if (i <= p) {
-        if (diff>=0) gain += diff; else loss += Math.abs(diff);
-        if (i === p) { let ag = gain/p, al = loss/p; const rs = al===0 ? 0 : ag/al; rsi.push(al===0 ? 100 : 100 - (100/(1+rs))); }
-        else rsi.push(null);
-      } else {
-        const ag = ((gain*(p-1)) + (diff>=0 ? diff : 0))/p;
-        const al = ((loss*(p-1)) + (diff<0 ? Math.abs(diff) : 0))/p;
-        gain = ag*p; loss = al*p;
-        const rs = al===0 ? 0 : ag/al;
-        rsi.push(al===0 ? 100 : 100 - (100/(1+rs)));
-      }
-    }
-    return rsi;
-  }
-  function calcBB(closes, p=20, sd=2) {
-    const upper=[], lower=[];
-    for (let i=0; i<closes.length; i++) {
-      if (i < p-1) { upper.push(null); lower.push(null); continue; }
-      let sum=0; for (let j=i-p+1; j<=i; j++) sum += closes[j];
-      const mean = sum/p; let sq=0; for (let j=i-p+1; j<=i; j++) sq += (closes[j]-mean)**2;
-      const stdev = Math.sqrt(sq/p);
-      upper.push(mean + sd*stdev); lower.push(mean - sd*stdev);
-    }
-    return { upper, lower };
-  }
-  function calcVWAP(highs, lows, closes, vols) {
-    const vwap = []; let cumPV=0, cumVol=0;
-    for (let i=0; i<closes.length; i++) {
-      const typical = (highs[i]+lows[i]+closes[i])/3;
-      cumPV += typical * vols[i]; cumVol += vols[i];
-      vwap.push(cumVol===0 ? null : cumPV/cumVol);
-    }
-    return vwap;
-  }
+  function calcEMA(data, p) { const ema = [], k = 2/(p+1); let sum = 0; for (let i=0; i<data.length; i++) { if (i < p-1) { sum += data[i]; ema.push(null); } else if (i === p-1) { sum += data[i]; ema.push(sum/p); } else { ema.push(data[i]*k + ema[i-1]*(1-k)); } } return ema; }
+  function calcRSI(closes, p=14) { const rsi = []; let gain=0, loss=0; for (let i=1; i<closes.length; i++) { const diff = closes[i] - closes[i-1]; if (i <= p) { if (diff>=0) gain += diff; else loss += Math.abs(diff); if (i === p) { let ag = gain/p, al = loss/p; const rs = al===0 ? 0 : ag/al; rsi.push(al===0 ? 100 : 100 - (100/(1+rs))); } else rsi.push(null); } else { const ag = ((gain*(p-1)) + (diff>=0 ? diff : 0))/p; const al = ((loss*(p-1)) + (diff<0 ? Math.abs(diff) : 0))/p; gain = ag*p; loss = al*p; const rs = al===0 ? 0 : ag/al; rsi.push(al===0 ? 100 : 100 - (100/(1+rs))); } } return rsi; }
+  function calcBB(closes, p=20, sd=2) { const upper=[], lower=[]; for (let i=0; i<closes.length; i++) { if (i < p-1) { upper.push(null); lower.push(null); continue; } let sum=0; for (let j=i-p+1; j<=i; j++) sum += closes[j]; const mean = sum/p; let sq=0; for (let j=i-p+1; j<=i; j++) sq += (closes[j]-mean)**2; const stdev = Math.sqrt(sq/p); upper.push(mean + sd*stdev); lower.push(mean - sd*stdev); } return { upper, lower }; }
+  function calcVWAP(highs, lows, closes, vols) { const vwap = []; let cumPV=0, cumVol=0; for (let i=0; i<closes.length; i++) { const typical = (highs[i]+lows[i]+closes[i])/3; cumPV += typical * vols[i]; cumVol += vols[i]; vwap.push(cumVol===0 ? null : cumPV/cumVol); } return vwap; }
 
   function analyzeCoin(data, symbol) {
-    const closes = data.map(d=>d.close);
-    const highs = data.map(d=>d.high);
-    const lows = data.map(d=>d.low);
-    const vols = data.map(d=>d.volume);
-    const len = closes.length;
-    if (len < 60) return null;
-
-    const ema5 = calcEMA(closes,5);
-    const ema20 = calcEMA(closes,20);
-    const rsi = calcRSI(closes,14);
-    const bb = calcBB(closes,20,2);
-    const vwap = calcVWAP(highs,lows,closes,vols);
-
-    const idx = len-1;
-    const price = closes[idx];
-    const e5 = ema5[idx], e20 = ema20[idx];
-    const r = rsi[idx];
-    const upper = bb.upper[idx], lower = bb.lower[idx];
-    const vwapVal = vwap[idx];
-    const vol = vols[idx];
-    const avgVol = vols.slice(-20).reduce((a,b)=>a+b,0)/20;
-    const volSpike = vol > avgVol * 1.8;
-
-    // Determine conditions
-    let longC=0, shortC=0;
-    let conditions = { EMA: false, RSI: false, BB: false, VWAP: false, VOL: false };
-
-    if (e5!==null && e20!==null) {
-      if (e5>e20) { longC++; conditions.EMA = true; }
-      else if (e5<e20) { shortC++; conditions.EMA = true; }
-    }
-    if (r!==null && r<30) { longC++; conditions.RSI = true; }
-    else if (r!==null && r>70) { shortC++; conditions.RSI = true; }
+    const closes = data.map(d=>d.close); const highs = data.map(d=>d.high); const lows = data.map(d=>d.low); const vols = data.map(d=>d.volume);
+    const len = closes.length; if (len < 60) return null;
+    const ema5 = calcEMA(closes,5); const ema20 = calcEMA(closes,20); const rsi = calcRSI(closes,14); const bb = calcBB(closes,20,2); const vwap = calcVWAP(highs,lows,closes,vols);
+    const idx = len-1; const price = closes[idx]; const e5 = ema5[idx], e20 = ema20[idx]; const r = rsi[idx]; const upper = bb.upper[idx], lower = bb.lower[idx]; const vwapVal = vwap[idx]; const vol = vols[idx]; const avgVol = vols.slice(-20).reduce((a,b)=>a+b,0)/20; const volSpike = vol > avgVol * 1.8;
+    let longC=0, shortC=0; let conditions = { EMA: false, RSI: false, BB: false, VWAP: false, VOL: false };
+    if (e5!==null && e20!==null) { if (e5>e20) { longC++; conditions.EMA = true; } else if (e5<e20) { shortC++; conditions.EMA = true; } }
+    if (r!==null && r<30) { longC++; conditions.RSI = true; } else if (r!==null && r>70) { shortC++; conditions.RSI = true; }
     if (lower!==null && price < lower*1.005) { longC++; conditions.BB = true; }
     if (upper!==null && price > upper*0.995) { shortC++; conditions.BB = true; }
     if (volSpike) { longC++; shortC++; conditions.VOL = true; }
     if (vwapVal!==null && price > vwapVal) { longC++; conditions.VWAP = true; }
     if (vwapVal!==null && price < vwapVal) { shortC++; conditions.VWAP = true; }
-
-    let direction = 'NEUTRAL';
-    let strength = 0;
-    let usedConds = [];
+    let direction = 'NEUTRAL'; let strength = 0;
     if (longC >= shortC && longC >= 3) { direction = 'LONG'; strength = longC; }
     else if (shortC > longC && shortC >= 3) { direction = 'SHORT'; strength = shortC; }
     else { return null; }
-
-    // For display, show which conditions contributed
-    const condDisplay = {
-      EMA: conditions.EMA ? '✓' : '✗',
-      RSI: conditions.RSI ? '✓' : '✗',
-      BB: conditions.BB ? '✓' : '✗',
-      VWAP: conditions.VWAP ? '✓' : '✗',
-      VOL: conditions.VOL ? '✓' : '✗'
-    };
-
+    const condDisplay = { EMA: conditions.EMA ? '✓' : '✗', RSI: conditions.RSI ? '✓' : '✗', BB: conditions.BB ? '✓' : '✗', VWAP: conditions.VWAP ? '✓' : '✗', VOL: conditions.VOL ? '✓' : '✗' };
     return { direction, strength, price, condDisplay };
   }
 
@@ -313,36 +176,81 @@
         const ticker = await tResp.json();
         const analysis = analyzeCoin(data, symbol);
         if (!analysis) return null;
-        return {
-          symbol,
-          livePrice: parseFloat(ticker.lastPrice),
-          changePercent: parseFloat(ticker.priceChangePercent),
-          ...analysis
-        };
+        return { symbol, livePrice: parseFloat(ticker.lastPrice), changePercent: parseFloat(ticker.priceChangePercent), ...analysis };
       } catch { return null; }
     });
     const results = await Promise.allSettled(promises);
-    return results.map(r => r.status === 'fulfilled' ? r.value : null).filter(r => r !== null)
-      .sort((a,b) => b.strength - a.strength);
+    return results.map(r => r.status === 'fulfilled' ? r.value : null).filter(r => r !== null).sort((a,b) => b.strength - a.strength);
   }
 
   // ================================================================
-  //  GOOGLE SHEETS API
+  //  GOOGLE SHEETS API (FIXED: CORS + Error Handling)
   // ================================================================
   async function addSignalToSheet(signal) {
     try {
-      const payload = { action: 'add', symbol: signal.symbol, direction: signal.direction, entryMin: signal.entryLow, entryMax: signal.entryHigh, tp: signal.tp, sl: signal.sl };
-      await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-    } catch (e) {}
+      const payload = {
+        action: 'add',
+        symbol: signal.symbol,
+        direction: signal.direction,
+        entryMin: signal.entryLow,
+        entryMax: signal.entryHigh,
+        tp: signal.tp,
+        sl: signal.sl
+      };
+      // ✅ REMOVED 'no-cors'. Using default 'cors' to read the response.
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error('HTTP ' + response.status + ': ' + errorText);
+      }
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || 'Unknown error');
+      }
+      console.log('✅ Sheet add success:', result);
+    } catch (e) {
+      console.error('❌ Sheet add failed:', e.message);
+      // We don't throw here so the app keeps running locally
+    }
   }
+
   async function updateSignalStatus(id, status, closedPrice) {
     try {
       const payload = { action: 'update', id, status, closedPrice };
-      await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-    } catch (e) {}
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error('HTTP ' + response.status + ': ' + errorText);
+      }
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || 'Unknown error');
+      }
+      console.log('✅ Sheet update success:', result);
+    } catch (e) {
+      console.error('❌ Sheet update failed:', e.message);
+    }
   }
+
   async function fetchHistoryFromSheet() {
-    try { const resp = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now()); if (!resp.ok) return []; const json = await resp.json(); if (json.success && json.data) return json.data; return []; } catch { return []; }
+    try {
+      const response = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now());
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const json = await response.json();
+      if (json.success && json.data) return json.data;
+      return [];
+    } catch (e) {
+      console.warn('⚠️ Fetch history failed:', e.message);
+      return [];
+    }
   }
 
   // ================================================================
@@ -352,53 +260,31 @@
   function saveLocalHistory(h) { try { localStorage.setItem('scalpHistory', JSON.stringify(h)); } catch {} }
 
   // ================================================================
-  //  CORE LOGIC (Tick-Aligned, Calculative)
+  //  CORE LOGIC
   // ================================================================
   let isProcessing = false;
   const activeSignals = new Map();
-
   function generateId() { return 'sig_' + Date.now() + '_' + Math.random().toString(36).substr(2,4); }
 
   function generateSignalParams(symbol, price, direction) {
     const tick = getTick(symbol);
-    // Minimum absolute move must be at least 3 ticks to be meaningful
     const minMove = Math.max(tick * 3, 0.001);
-
-    // Desired moves: 0.8% for TP, 0.6% for SL, 0.2% spread for entry
     const tpMoveRaw = Math.max(price * 0.008, minMove);
     const slMoveRaw = Math.max(price * 0.006, minMove);
     const spreadRaw = Math.max(price * 0.002, tick * 2);
-
-    // Round to exact tick
     let tpMove = roundToTick(tpMoveRaw, tick);
     let slMove = roundToTick(slMoveRaw, tick);
     let spread = roundToTick(spreadRaw, tick);
-
-    // Ensure TP/SL are strictly greater than spread to avoid overlap
     if (tpMove <= spread/2) tpMove = roundToTick(spread/2 + tick, tick);
     if (slMove <= spread/2) slMove = roundToTick(spread/2 + tick, tick);
-
     let entryLow, entryHigh, tp, sl;
-    if (direction === 'LONG') {
-      entryLow = roundToTick(price - spread/2, tick);
-      entryHigh = roundToTick(price + spread/2, tick);
-      tp = roundToTick(entryHigh + tpMove, tick);
-      sl = roundToTick(entryLow - slMove, tick);
-    } else { // SHORT
-      entryLow = roundToTick(price - spread/2, tick);
-      entryHigh = roundToTick(price + spread/2, tick);
-      tp = roundToTick(entryLow - tpMove, tick);
-      sl = roundToTick(entryHigh + slMove, tick);
-    }
-
-    // Final safety: ensure TP and SL are different from entry
+    if (direction === 'LONG') { entryLow = roundToTick(price - spread/2, tick); entryHigh = roundToTick(price + spread/2, tick); tp = roundToTick(entryHigh + tpMove, tick); sl = roundToTick(entryLow - slMove, tick); }
+    else { entryLow = roundToTick(price - spread/2, tick); entryHigh = roundToTick(price + spread/2, tick); tp = roundToTick(entryLow - tpMove, tick); sl = roundToTick(entryHigh + slMove, tick); }
     if (tp === entryLow || tp === entryHigh) tp = roundToTick(tp + (direction === 'LONG' ? tick : -tick), tick);
     if (sl === entryLow || sl === entryHigh) sl = roundToTick(sl + (direction === 'SHORT' ? tick : -tick), tick);
-
     const actualTpMove = Math.abs(tp - (direction === 'LONG' ? entryHigh : entryLow));
     const actualSlMove = Math.abs(sl - (direction === 'LONG' ? entryLow : entryHigh));
     const rr = actualSlMove > 0 ? actualTpMove / actualSlMove : 0;
-
     return { entryLow, entryHigh, tp, sl, rr, tick };
   }
 
@@ -411,34 +297,24 @@
     try {
       const all = await fetchAllCoins();
       if (!all || all.length === 0) throw new Error('No data');
-      const priceMap = {};
-      all.forEach(c => priceMap[c.symbol] = c.livePrice);
+      const priceMap = {}; all.forEach(c => priceMap[c.symbol] = c.livePrice);
 
-      // 1. Add new signals
       for (const s of all) {
         if (!activeSignals.has(s.symbol)) {
           const params = generateSignalParams(s.symbol, s.livePrice, s.direction);
           const now = Date.now();
           const newSig = {
-            id: generateId(),
-            symbol: s.symbol,
-            direction: s.direction,
-            entryLow: params.entryLow,
-            entryHigh: params.entryHigh,
-            tp: params.tp,
-            sl: params.sl,
-            rr: params.rr,
-            tick: params.tick,
-            condDisplay: s.condDisplay,
-            strength: s.strength,
-            timestamp: new Date().toISOString(),
-            openTime: now,
-            livePrice: s.livePrice,
-            changePercent: s.changePercent,
+            id: generateId(), symbol: s.symbol, direction: s.direction,
+            entryLow: params.entryLow, entryHigh: params.entryHigh,
+            tp: params.tp, sl: params.sl, rr: params.rr, tick: params.tick,
+            condDisplay: s.condDisplay, strength: s.strength,
+            timestamp: new Date().toISOString(), openTime: now,
+            livePrice: s.livePrice, changePercent: s.changePercent,
             status: 'OPEN'
           };
           activeSignals.set(s.symbol, newSig);
-          addSignalToSheet(newSig);
+          // 🔥 SEND TO SHEET (will log success/error in console)
+          await addSignalToSheet(newSig);
           let hist = getLocalHistory();
           hist.push({ ...newSig, result: '—', closedPrice: null, closeTime: null });
           saveLocalHistory(hist);
@@ -448,22 +324,15 @@
         }
       }
 
-      // 2. Check TP/SL hits
       const history = getLocalHistory();
       let historyUpdated = false;
       const toRemove = [];
-
       for (const [symbol, signal] of activeSignals) {
         const currentPrice = priceMap[symbol];
         if (!currentPrice) continue;
         let hitStatus = null;
-        if (signal.direction === 'LONG') {
-          if (currentPrice >= signal.tp) hitStatus = 'PROFIT';
-          else if (currentPrice <= signal.sl) hitStatus = 'LOSS';
-        } else {
-          if (currentPrice <= signal.tp) hitStatus = 'PROFIT';
-          else if (currentPrice >= signal.sl) hitStatus = 'LOSS';
-        }
+        if (signal.direction === 'LONG') { if (currentPrice >= signal.tp) hitStatus = 'PROFIT'; else if (currentPrice <= signal.sl) hitStatus = 'LOSS'; }
+        else { if (currentPrice <= signal.tp) hitStatus = 'PROFIT'; else if (currentPrice >= signal.sl) hitStatus = 'LOSS'; }
         if (hitStatus) {
           signal.status = hitStatus;
           signal.result = hitStatus === 'PROFIT' ? 'TP Hit ✅' : 'SL Hit ❌';
@@ -480,20 +349,18 @@
               break;
             }
           }
-          updateSignalStatus(signal.id, hitStatus, currentPrice);
+          // 🔥 SEND UPDATE TO SHEET
+          await updateSignalStatus(signal.id, hitStatus, currentPrice);
         }
       }
-
       for (const sym of toRemove) activeSignals.delete(sym);
       if (historyUpdated) saveLocalHistory(history);
 
-      // 3. Render
       const active = Array.from(activeSignals.values()).filter(s => s.status === 'OPEN');
       liveCount.textContent = active.length;
       renderSignals(active);
       renderHistory(history);
       statusText.innerHTML = `🟢 <span class="live">Live</span> · ${active.length} active · ${new Date().toLocaleTimeString()}`;
-
     } catch (err) {
       console.error(err);
       statusText.innerHTML = '🔴 Error: ' + err.message;
@@ -508,24 +375,16 @@
   //  RENDER
   // ================================================================
   function renderSignals(signals) {
-    if (!signals || signals.length === 0) {
-      signalsGrid.innerHTML = `<div class="empty-state">No active signals. Waiting for setup...</div>`;
-      return;
-    }
+    if (!signals || signals.length === 0) { signalsGrid.innerHTML = `<div class="empty-state">No active signals. Waiting...</div>`; return; }
     let html = '';
     signals.slice(0, 10).forEach(s => {
       const dirClass = s.direction.toLowerCase();
       const dirDisplay = s.direction === 'LONG' ? '▲ BUY' : '▼ SELL';
       const tick = s.tick || 0.01;
-
-      // Build condition string
       const conds = s.condDisplay || { EMA: '✗', RSI: '✗', BB: '✗', VWAP: '✗', VOL: '✗' };
       const condStr = `EMA ${conds.EMA}  RSI ${conds.RSI}  BB ${conds.BB}  VWAP ${conds.VWAP}  VOL ${conds.VOL}`;
-
-      // Calculate percentage moves for display
       const tpPct = ((s.tp - s.entryHigh) / s.entryHigh * 100);
       const slPct = ((s.sl - s.entryLow) / s.entryLow * 100);
-
       html += `
         <div class="signal-card ${dirClass}">
           <div class="card-row">
@@ -543,14 +402,12 @@
               </div>
             </div>
           </div>
-
           <div class="card-meta">
             <div class="m-item"><div class="m-label">Price</div><div class="m-value live">${formatPrice(s.livePrice, tick)}</div></div>
-            <div class="m-item"><div class="m-label">Entry (fixed)</div><div class="m-value">${formatPrice(s.entryLow, tick)} – ${formatPrice(s.entryHigh, tick)}</div></div>
-            <div class="m-item"><div class="m-label">TP (fixed)</div><div class="m-value">${formatPrice(s.tp, tick)} <span class="chg">(${tpPct > 0 ? '+' : ''}${tpPct.toFixed(2)}%)</span></div></div>
-            <div class="m-item"><div class="m-label">SL (fixed)</div><div class="m-value">${formatPrice(s.sl, tick)} <span class="chg">(${slPct > 0 ? '+' : ''}${slPct.toFixed(2)}%)</span></div></div>
+            <div class="m-item"><div class="m-label">Entry</div><div class="m-value">${formatPrice(s.entryLow, tick)} – ${formatPrice(s.entryHigh, tick)}</div></div>
+            <div class="m-item"><div class="m-label">TP</div><div class="m-value">${formatPrice(s.tp, tick)} <span class="chg">(${tpPct > 0 ? '+' : ''}${tpPct.toFixed(2)}%)</span></div></div>
+            <div class="m-item"><div class="m-label">SL</div><div class="m-value">${formatPrice(s.sl, tick)} <span class="chg">(${slPct > 0 ? '+' : ''}${slPct.toFixed(2)}%)</span></div></div>
           </div>
-
           <div class="card-time">⏱ Added: <span class="hl">${fmtTime(s.timestamp)}</span> · ${s.direction}</div>
         </div>
       `;
@@ -559,11 +416,7 @@
   }
 
   function renderHistory(history) {
-    if (!history || history.length === 0) {
-      historyList.innerHTML = `<div class="empty-state">No history yet.</div>`;
-      historyCount.textContent = '0 entries';
-      return;
-    }
+    if (!history || history.length === 0) { historyList.innerHTML = `<div class="empty-state">No history yet.</div>`; historyCount.textContent = '0 entries'; return; }
     const sorted = [...history].reverse().slice(0, 50);
     historyCount.textContent = sorted.length + ' entries';
     let html = '';
@@ -607,7 +460,7 @@
           timestamp: r.Timestamp || r.timestamp, status: r.Status || r.status,
           result: r.Result || r.result, closedPrice: parseFloat(r.ClosedPrice || r.closedPrice) || null,
           openTime: r.openTime ? parseInt(r.openTime) : null, closeTime: r.closeTime ? parseInt(r.closeTime) : null,
-          tick: 0.001 // fallback
+          tick: 0.001
         }));
         const local = getLocalHistory();
         const merged = [...local];
@@ -622,9 +475,7 @@
   //  AUTO REFRESH
   // ================================================================
   let scanInterval = null, historyInterval = null;
-
   async function fullUpdate() { await processScan(); await syncRemoteHistory(); }
-
   function startAutoRefresh() {
     if (scanInterval) clearInterval(scanInterval);
     if (historyInterval) clearInterval(historyInterval);
@@ -632,14 +483,11 @@
     scanInterval = setInterval(processScan, SCAN_INTERVAL);
     historyInterval = setInterval(() => { const hist = getLocalHistory(); renderHistory(hist); }, HISTORY_INTERVAL);
   }
-
   refreshBtn.addEventListener('click', () => {
     if (scanInterval) clearInterval(scanInterval);
     if (historyInterval) clearInterval(historyInterval);
     fullUpdate().finally(() => startAutoRefresh());
   });
-
-  // ── BOOT ──
   startAutoRefresh();
 </script>
 </body>
