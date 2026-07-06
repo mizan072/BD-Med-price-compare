@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5" />
+  <title>💊 Medicine Price Compare</title>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f4f7fc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      --radius: 16px;
+      --transition: 0.2s ease;
+      --cheapest-bg: #dbeafe;
+      --cheapest-text: #1d4ed8;
+      --discount-bg: #dcfce7;
+      --discount-text: #166534;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* ----- Header ----- */
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header h1 i {
+      -webkit-text-fill-color: initial;
+      color: var(--primary);
+    }
+    .header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-top: 4px;
+    }
+
+    /* ----- Search Box ----- */
+    .search-box {
+      display: flex;
+      gap: 12px;
+      background: var(--card-bg);
+      padding: 8px 8px 8px 20px;
+      border-radius: 60px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+      margin-bottom: 2rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .search-box:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    .search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      padding: 12px 0;
+      background: transparent;
+      color: var(--text);
+      min-width: 0;
+    }
+    .search-box input::placeholder {
+      color: #94a3b8;
+    }
+    .search-box button {
+      background: var(--primary);
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .search-box button:hover {
+      background: var(--primary-dark);
+      transform: scale(1.02);
+    }
+    .search-box button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ----- Results Info ----- */
+    .results-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 1rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .results-info .count {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ----- Loading Spinner ----- */
+    .loading-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem 0;
+      gap: 12px;
+      color: var(--text-muted);
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ----- Error / No results ----- */
+    .message-box {
+      padding: 2rem;
+      text-align: center;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .message-box i {
+      font-size: 2.5rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .message-box.error {
+      border-color: #fca5a5;
+      background: #fef2f2;
+    }
+    .message-box.error i {
+      color: #dc2626;
+    }
+
+    /* ----- Table ----- */
+    .table-wrap {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      min-width: 700px;
+    }
+    th {
+      background: #f8fafc;
+      text-align: left;
+      padding: 14px 16px;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr.cheapest {
+      background: var(--cheapest-bg);
+      position: relative;
+    }
+    tr.cheapest td:first-child::before {
+      content: '⭐ ';
+      font-size: 0.9rem;
+    }
+    .brand-name {
+      font-weight: 600;
+    }
+    .brand-manufacturer {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: block;
+    }
+    .generic-name {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .unit-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .price-base {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .price-unit {
+      color: var(--text-muted);
+    }
+    .discount-badge {
+      background: var(--discount-bg);
+      color: var(--discount-text);
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    /* ----- Footer ----- */
+    .footer-note {
+      margin-top: 2rem;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+
+    /* ----- Mobile Responsive ----- */
+    @media (max-width: 640px) {
+      body {
+        padding: 16px 12px;
+      }
+      .header h1 {
+        font-size: 1.6rem;
+      }
+      .search-box {
+        padding: 6px 6px 6px 16px;
+        border-radius: 40px;
+      }
+      .search-box input {
+        font-size: 0.95rem;
+        padding: 10px 0;
+      }
+      .search-box button {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+      .search-box button span {
+        display: none;
+      }
+      .search-box button i {
+        font-size: 1.2rem;
+      }
+      table {
+        font-size: 0.85rem;
+        min-width: 600px;
+      }
+      th,
+      td {
+        padding: 10px 12px;
+      }
+      .brand-manufacturer {
+        font-size: 0.7rem;
+      }
+      .price-base {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 1.4rem;
+      }
+      .results-info {
+        font-size: 0.85rem;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1><i class="fas fa-pills"></i> Price Compare</h1>
+      <p>Find the best value for your medicine – compare brands &amp; prices</p>
+    </div>
+
+    <!-- Search -->
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="e.g. atorvastatin, cetirizine, amlodipine..." autofocus />
+      <button id="searchBtn">
+        <i class="fas fa-search"></i><span>Search</span>
+      </button>
+    </div>
+
+    <!-- Results Area -->
+    <div id="resultsArea">
+      <div class="results-info" id="infoText">
+        <span>Enter a medicine name to start comparing</span>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading" class="loading-wrap" style="display:none;">
+        <div class="spinner"></div>
+        <span>Searching...</span>
+      </div>
+
+      <!-- Error -->
+      <div id="errorMsg" class="message-box error" style="display:none;">
+        <i class="fas fa-exclamation-circle"></i>
+        <p id="errorText">Something went wrong.</p>
+      </div>
+
+      <!-- No results -->
+      <div id="noResults" class="message-box" style="display:none;">
+        <i class="fas fa-box-open"></i>
+        <p>No products found. Try a different search term.</p>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap" id="tableWrap" style="display:none;">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Brand</th>
+                <th>Generic</th>
+                <th>Strength</th>
+                <th>Form</th>
+                <th>Unit</th>
+                <th>Price (unit)</th>
+                <th>Price / base</th>
+                <th>Discount</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      <i class="fas fa-database"></i> Prices from Arogga &bull; B2C prices shown &bull; Cheapest option highlighted
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // CONFIGURATION – Change this to your Worker URL
+    // ============================================================
+    const WORKER_URL = 'https://autumn-sun-8446.contacttomizanur.workers.dev/api/search';
+
+    // ============================================================
+    // DOM refs
+    // ============================================================
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const resultsBody = document.getElementById('resultsBody');
+    const tableWrap = document.getElementById('tableWrap');
+    const loading = document.getElementById('loading');
+    const errorMsg = document.getElementById('errorMsg');
+    const errorText = document.getElementById('errorText');
+    const noResults = document.getElementById('noResults');
+    const infoText = document.getElementById('infoText');
+
+    // ============================================================
+    // Helpers
+    // ============================================================
+    function setLoading(show) {
+      loading.style.display = show ? 'flex' : 'none';
+      tableWrap.style.display = 'none';
+      noResults.style.display = 'none';
+      errorMsg.style.display = 'none';
+      searchBtn.disabled = show;
+    }
+
+    function showError(message) {
+      errorText.textContent = message || 'Failed to fetch data. Please try again later.';
+      errorMsg.style.display = 'block';
+      tableWrap.style.display = 'none';
+      noResults.style.display = 'none';
+      infoText.innerHTML = '❌ Error occurred';
+    }
+
+    function showNoResults() {
+      noResults.style.display = 'block';
+      tableWrap.style.display = 'none';
+      infoText.innerHTML = 'No matching products.';
+    }
+
+    function showResults(products, total) {
+      tableWrap.style.display = 'block';
+      noResults.style.display = 'none';
+      infoText.innerHTML = `<span class="count">${total}</span> products found. Showing ${products.length}.`;
+      renderTable(products);
+    }
+
+    // ============================================================
+    // Price calculation
+    // ============================================================
+    function computeUnitPrices(pv, puArray) {
+      const baseUnit = puArray.find(u => u.pu_is_base === 1);
+      const salesUnit = puArray.find(u => u.pu_is_b2c_sales_unit === 1) || baseUnit;
+      if (!baseUnit || !salesUnit) return null;
+
+      const salesMultiplier = salesUnit.pu_multiplier;
+      const unitPrice = pv.pv_b2c_price; // price per sales unit
+      const basePricePerUnit = unitPrice / salesMultiplier; // price per base unit (e.g., per tablet)
+
+      return {
+        salesUnitLabel: salesUnit.pu_label,
+        salesMultiplier,
+        unitPrice,
+        basePricePerUnit,
+        baseLabel: baseUnit.pu_label,
+      };
+    }
+
+    // ============================================================
+    // Render table
+    // ============================================================
+    function renderTable(products) {
+      resultsBody.innerHTML = '';
+
+      const rows = [];
+      let minBasePrice = Infinity;
+
+      products.forEach(p => {
+        const pv = p.pv[0];
+        if (!pv) return;
+        const puArray = p.pu || [];
+        const unitInfo = computeUnitPrices(pv, puArray);
+        if (!unitInfo) return;
+
+        const basePrice = unitInfo.basePricePerUnit;
+        if (basePrice < minBasePrice) minBasePrice = basePrice;
+
+        rows.push({
+          name: p.p_name,
+          brand: p.p_brand || 'N/A',
+          generic: p.p_generic_name || 'N/A',
+          strength: p.p_strength || '',
+          form: p.p_form || '',
+          salesUnitLabel: unitInfo.salesUnitLabel,
+          salesMultiplier: unitInfo.salesMultiplier,
+          unitPrice: unitInfo.unitPrice,
+          basePrice: basePrice,
+          baseLabel: unitInfo.baseLabel,
+          discount: pv.pv_b2c_discount_percent || 0,
+        });
+      });
+
+      if (rows.length === 0) {
+        showNoResults();
+        return;
+      }
+
+      // Sort by base price ascending
+      rows.sort((a, b) => a.basePrice - b.basePrice);
+
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+        const isCheapest = (row.basePrice === minBasePrice && minBasePrice < Infinity);
+        if (isCheapest) tr.classList.add('cheapest');
+
+        const basePriceFormatted = row.basePrice.toFixed(2);
+        const unitPriceFormatted = row.unitPrice.toFixed(2);
+
+        tr.innerHTML = `
+          <td>
+            <span class="brand-name">${row.name}</span>
+            <span class="brand-manufacturer">${row.brand}</span>
+          </td>
+          <td><span class="generic-name">${row.generic}</span></td>
+          <td>${row.strength}</td>
+          <td>${row.form}</td>
+          <td>
+            ${row.salesUnitLabel}
+            <span class="unit-label">(${row.salesMultiplier} ${row.baseLabel}s)</span>
+          </td>
+          <td class="price-unit">৳${unitPriceFormatted}</td>
+          <td class="price-base">৳${basePriceFormatted} / ${row.baseLabel}</td>
+          <td>${row.discount > 0 ? `<span class="discount-badge">${row.discount}% off</span>` : '—'}</td>
+        `;
+        resultsBody.appendChild(tr);
+      });
+    }
+
+    // ============================================================
+    // API call via Worker
+    // ============================================================
+    async function searchMedicine(query) {
+      const term = query.trim();
+      if (!term) {
+        infoText.innerHTML = 'Please enter a medicine name.';
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const url = `${WORKER_URL}?q=${encodeURIComponent(term)}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        if (data.status !== 'success') throw new Error(data.message || 'API error');
+
+        const products = data.data || [];
+        const total = data.total || 0;
+
+        if (products.length === 0) {
+          showNoResults();
+        } else {
+          showResults(products, total);
+        }
+      } catch (err) {
+        console.error(err);
+        showError(err.message || 'Failed to fetch data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // ============================================================
+    // Event listeners
+    // ============================================================
+    searchBtn.addEventListener('click', () => searchMedicine(searchInput.value));
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') searchMedicine(searchInput.value);
+    });
+
+    // Focus input on load
+    window.addEventListener('load', () => searchInput.focus());
+
+    // Optional: initial search with a popular term to show demo
+    // searchMedicine('atorvastatin');
+  </script>
+</body>
+</html>
