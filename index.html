@@ -39,8 +39,6 @@
     .tag.rr { color: #f4c95d; border-color: #4a3a1a; }
     .tag.strong { color: #33d9a8; border-color: #1a4a3a; }
     .tag.cond { color: #7a94af; border-color: #1a2633; }
-    .tag.cond .pass { color: #33d9a8; }
-    .tag.cond .fail { color: #f25b6a; }
     .card-meta { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 12px; background: #0d151e; padding: 10px 12px; border-radius: 12px; border: 1px solid #1a2633; }
     .card-meta .m-item { text-align: center; }
     .card-meta .m-label { color: #5f7d9a; font-size: 9px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.3px; }
@@ -49,30 +47,58 @@
     .card-meta .m-value .chg { font-weight: 400; font-size: 11px; color: #7a94af; margin-left: 2px; }
     .card-time { color: #5f7d9a; font-size: 11px; margin-top: 10px; text-align: right; border-top: 1px solid #1a2633; padding-top: 8px; }
     .card-time .hl { color: #9ab0c9; font-weight: 500; }
+
+    /* ── HISTORY (PROFESSIONAL) ── */
     .history-section { background: #111a24; border-radius: 18px; padding: 16px; border: 1px solid #1e2c3b; }
     .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .history-header h3 { color: #9ab0c9; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .history-header .count { background: #1a2430; padding: 2px 12px; border-radius: 30px; font-size: 12px; color: #7a94af; }
-    .history-list { display: flex; flex-direction: column; gap: 5px; max-height: 350px; overflow-y: auto; padding-right: 4px; }
+    .history-list { display: flex; flex-direction: column; gap: 4px; max-height: 380px; overflow-y: auto; padding-right: 4px; }
     .history-list::-webkit-scrollbar { width: 4px; }
     .history-list::-webkit-scrollbar-track { background: #0d151e; border-radius: 4px; }
     .history-list::-webkit-scrollbar-thumb { background: #2d3f52; border-radius: 4px; }
-    .history-item { display: grid; grid-template-columns: 50px 32px 50px 1fr 60px 45px; gap: 4px 8px; padding: 7px 10px; background: #0d151e; border-radius: 10px; font-size: 12px; align-items: center; border: 1px solid #1a2633; }
+
+    /* Grid: Coin | Dir | Added | Duration | Result | Price */
+    .history-item {
+      display: grid;
+      grid-template-columns: 50px 30px 60px 60px 70px 55px;
+      gap: 4px 6px;
+      padding: 6px 10px;
+      background: #0d151e;
+      border-radius: 8px;
+      font-size: 12px;
+      align-items: center;
+      border: 1px solid #1a2633;
+      transition: 0.1s;
+    }
     .history-item .h-sym { font-weight: 700; color: #f0f4fa; font-size: 13px; }
-    .history-item .h-dir { font-weight: 600; font-size: 11px; }
+    .history-item .h-dir { font-weight: 600; font-size: 11px; text-align: center; }
     .history-item .h-dir.long { color: #33d9a8; }
     .history-item .h-dir.short { color: #f25b6a; }
     .history-item .h-time { color: #5f7d9a; font-size: 10px; white-space: nowrap; }
-    .history-item .h-duration { font-size: 10px; font-weight: 600; text-align: center; background: #1a2430; padding: 1px 8px; border-radius: 20px; white-space: nowrap; }
+    .history-item .h-duration { font-size: 10px; font-weight: 600; text-align: center; background: #1a2430; padding: 1px 6px; border-radius: 20px; white-space: nowrap; }
     .history-item .h-duration.fast { color: #33d9a8; }
     .history-item .h-duration.medium { color: #f4c95d; }
     .history-item .h-duration.slow { color: #f25b6a; }
-    .history-item .h-result { font-weight: 700; font-size: 12px; text-align: right; }
+    .history-item .h-result { font-weight: 700; font-size: 12px; text-align: center; }
     .history-item .h-result.win { color: #33d9a8; }
     .history-item .h-result.loss { color: #f25b6a; }
+    .history-item .h-result.open { color: #f4c95d; }
+    .history-item .h-price { font-size: 10px; color: #7a94af; text-align: right; white-space: nowrap; }
+
     .empty-state { color: #5f7d9a; text-align: center; padding: 24px 10px; font-size: 14px; }
-    @media (max-width: 600px) { .card-meta { grid-template-columns: 1fr 1fr; gap: 4px 12px; } .history-item { grid-template-columns: 42px 26px 42px 1fr 48px 38px; font-size: 11px; padding: 5px 6px; gap: 3px 4px; } .header h1 { font-size: 18px; } .card-symbol { font-size: 17px; } .card-tags .tag { font-size: 10px; } }
-    @media (max-width: 420px) { .history-item { grid-template-columns: 36px 22px 38px 1fr 40px 32px; font-size: 10px; } .history-item .h-sym { font-size: 11px; } }
+
+    @media (max-width: 600px) {
+      .card-meta { grid-template-columns: 1fr 1fr; gap: 4px 12px; }
+      .history-item { grid-template-columns: 40px 24px 50px 50px 60px 45px; font-size: 11px; padding: 5px 6px; gap: 2px 4px; }
+      .header h1 { font-size: 18px; }
+      .card-symbol { font-size: 17px; }
+      .card-tags .tag { font-size: 10px; }
+    }
+    @media (max-width: 420px) {
+      .history-item { grid-template-columns: 34px 20px 44px 44px 50px 38px; font-size: 10px; }
+      .history-item .h-sym { font-size: 11px; }
+    }
   </style>
 </head>
 <body>
@@ -96,7 +122,7 @@
   // ================================================================
   //  CONFIG
   // ================================================================
-  // ✅ Your Google Script URL (already inserted)
+  // ✅ Your Google Script URL
   const GOOGLE_SCRIPT_URL =
     'https://script.google.com/macros/s/AKfycbwx0DbnzzDfAKKgktyQICoruc1cKQ3MDhStMfdto3yqBHJLiPTkTg0AstOgMRL7IMOB/exec';
 
@@ -184,12 +210,15 @@
   }
 
   // ================================================================
-  //  GOOGLE SHEETS API (FIXED: CORS + Error Handling)
+  //  GOOGLE SHEETS API (with OpenTime / CloseTime)
   // ================================================================
   async function addSignalToSheet(signal) {
     try {
       const payload = {
         action: 'add',
+        id: signal.id,
+        timestamp: signal.timestamp,
+        openTime: signal.openTime,
         symbol: signal.symbol,
         direction: signal.direction,
         entryMin: signal.entryLow,
@@ -197,7 +226,6 @@
         tp: signal.tp,
         sl: signal.sl
       };
-      // ✅ REMOVED 'no-cors'. Using default 'cors' to read the response.
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -214,13 +242,12 @@
       console.log('✅ Sheet add success:', result);
     } catch (e) {
       console.error('❌ Sheet add failed:', e.message);
-      // We don't throw here so the app keeps running locally
     }
   }
 
-  async function updateSignalStatus(id, status, closedPrice) {
+  async function updateSignalStatus(id, status, closedPrice, closeTime) {
     try {
-      const payload = { action: 'update', id, status, closedPrice };
+      const payload = { action: 'update', id, status, closedPrice, closeTime };
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -304,16 +331,24 @@
           const params = generateSignalParams(s.symbol, s.livePrice, s.direction);
           const now = Date.now();
           const newSig = {
-            id: generateId(), symbol: s.symbol, direction: s.direction,
-            entryLow: params.entryLow, entryHigh: params.entryHigh,
-            tp: params.tp, sl: params.sl, rr: params.rr, tick: params.tick,
-            condDisplay: s.condDisplay, strength: s.strength,
-            timestamp: new Date().toISOString(), openTime: now,
-            livePrice: s.livePrice, changePercent: s.changePercent,
+            id: generateId(),
+            symbol: s.symbol,
+            direction: s.direction,
+            entryLow: params.entryLow,
+            entryHigh: params.entryHigh,
+            tp: params.tp,
+            sl: params.sl,
+            rr: params.rr,
+            tick: params.tick,
+            condDisplay: s.condDisplay,
+            strength: s.strength,
+            timestamp: new Date().toISOString(),
+            openTime: now,
+            livePrice: s.livePrice,
+            changePercent: s.changePercent,
             status: 'OPEN'
           };
           activeSignals.set(s.symbol, newSig);
-          // 🔥 SEND TO SHEET (will log success/error in console)
           await addSignalToSheet(newSig);
           let hist = getLocalHistory();
           hist.push({ ...newSig, result: '—', closedPrice: null, closeTime: null });
@@ -334,23 +369,23 @@
         if (signal.direction === 'LONG') { if (currentPrice >= signal.tp) hitStatus = 'PROFIT'; else if (currentPrice <= signal.sl) hitStatus = 'LOSS'; }
         else { if (currentPrice <= signal.tp) hitStatus = 'PROFIT'; else if (currentPrice >= signal.sl) hitStatus = 'LOSS'; }
         if (hitStatus) {
+          const closeTime = Date.now();
           signal.status = hitStatus;
           signal.result = hitStatus === 'PROFIT' ? 'TP Hit ✅' : 'SL Hit ❌';
           signal.closedPrice = currentPrice;
-          signal.closeTime = Date.now();
+          signal.closeTime = closeTime;
           toRemove.push(symbol);
           for (let i=0; i<history.length; i++) {
             if (history[i].id === signal.id) {
               history[i].status = hitStatus;
               history[i].result = signal.result;
               history[i].closedPrice = currentPrice;
-              history[i].closeTime = signal.closeTime;
+              history[i].closeTime = closeTime;
               historyUpdated = true;
               break;
             }
           }
-          // 🔥 SEND UPDATE TO SHEET
-          await updateSignalStatus(signal.id, hitStatus, currentPrice);
+          await updateSignalStatus(signal.id, hitStatus, currentPrice, closeTime);
         }
       }
       for (const sym of toRemove) activeSignals.delete(sym);
@@ -372,7 +407,7 @@
   }
 
   // ================================================================
-  //  RENDER
+  //  RENDER FUNCTIONS
   // ================================================================
   function renderSignals(signals) {
     if (!signals || signals.length === 0) { signalsGrid.innerHTML = `<div class="empty-state">No active signals. Waiting...</div>`; return; }
@@ -416,30 +451,50 @@
   }
 
   function renderHistory(history) {
-    if (!history || history.length === 0) { historyList.innerHTML = `<div class="empty-state">No history yet.</div>`; historyCount.textContent = '0 entries'; return; }
+    if (!history || history.length === 0) {
+      historyList.innerHTML = `<div class="empty-state">No history yet.</div>`;
+      historyCount.textContent = '0 entries';
+      return;
+    }
     const sorted = [...history].reverse().slice(0, 50);
     historyCount.textContent = sorted.length + ' entries';
+
     let html = '';
     for (const h of sorted) {
       const dirClass = h.direction ? h.direction.toLowerCase() : 'neutral';
-      const resultClass = h.status === 'PROFIT' ? 'win' : h.status === 'LOSS' ? 'loss' : 'open';
-      let durationStr = '—', durClass = '';
+      const tick = h.tick || 0.01;
+
+      // Determine Result display
+      let resultText = '—';
+      let resultClass = 'open';
+      if (h.status === 'PROFIT') { resultText = '✅ TP Hit'; resultClass = 'win'; }
+      else if (h.status === 'LOSS') { resultText = '❌ SL Hit'; resultClass = 'loss'; }
+      else if (h.status === 'OPEN') { resultText = '⏳ OPEN'; resultClass = 'open'; }
+      else { resultText = h.result || '—'; }
+
+      // Calculate Duration
+      let durationStr = '—';
+      let durClass = '';
       if (h.status !== 'OPEN' && h.openTime && h.closeTime) {
         const durMs = h.closeTime - h.openTime;
         durationStr = fmtDuration(durMs);
         if (durMs < 120000) durClass = 'fast';
         else if (durMs < 600000) durClass = 'medium';
         else durClass = 'slow';
+      } else if (h.status === 'OPEN') {
+        durationStr = '⏳';
       }
-      const resultDisplay = h.result || h.status || '—';
+
+      const priceDisplay = h.closedPrice ? formatPrice(h.closedPrice, tick) : '—';
+
       html += `
         <div class="history-item">
           <span class="h-sym">${getSymbol(h.symbol)}</span>
           <span class="h-dir ${dirClass}">${h.direction === 'LONG' ? 'L' : 'S'}</span>
           <span class="h-time">${fmtTime(h.timestamp)}</span>
           <span class="h-duration ${durClass}">${durationStr}</span>
-          <span class="h-result ${resultClass}">${resultDisplay}</span>
-          <span style="font-size:10px; color:#5f7d9a;">${h.closedPrice ? formatPrice(h.closedPrice, h.tick || 0.01) : ''}</span>
+          <span class="h-result ${resultClass}">${resultText}</span>
+          <span class="h-price">${priceDisplay}</span>
         </div>
       `;
     }
@@ -454,17 +509,35 @@
       const remote = await fetchHistoryFromSheet();
       if (remote && remote.length > 0) {
         const transformed = remote.map(r => ({
-          id: r.ID || r.id, symbol: r.Symbol || r.symbol, direction: r.Direction || r.direction,
-          entryLow: parseFloat(r.EntryMin || r.entryMin), entryHigh: parseFloat(r.EntryMax || r.entryMax),
-          tp: parseFloat(r.TP || r.tp), sl: parseFloat(r.SL || r.sl),
-          timestamp: r.Timestamp || r.timestamp, status: r.Status || r.status,
-          result: r.Result || r.result, closedPrice: parseFloat(r.ClosedPrice || r.closedPrice) || null,
-          openTime: r.openTime ? parseInt(r.openTime) : null, closeTime: r.closeTime ? parseInt(r.closeTime) : null,
+          id: r.ID || r.id,
+          symbol: r.Symbol || r.symbol,
+          direction: r.Direction || r.direction,
+          entryLow: parseFloat(r.EntryMin || r.entryMin),
+          entryHigh: parseFloat(r.EntryMax || r.entryMax),
+          tp: parseFloat(r.TP || r.tp),
+          sl: parseFloat(r.SL || r.sl),
+          timestamp: r.Timestamp || r.timestamp,
+          status: r.Status || r.status,
+          result: r.Result || r.result,
+          closedPrice: parseFloat(r.ClosedPrice || r.closedPrice) || null,
+          openTime: r.OpenTime ? parseInt(r.OpenTime) : null,
+          closeTime: r.CloseTime ? parseInt(r.CloseTime) : null,
           tick: 0.001
         }));
         const local = getLocalHistory();
+        // Merge: prefer remote if it has valid openTime/closeTime, otherwise keep local
         const merged = [...local];
-        for (const r of transformed) { if (!merged.some(l => l.id === r.id)) merged.push(r); }
+        for (const r of transformed) {
+          const existingIdx = merged.findIndex(l => l.id === r.id);
+          if (existingIdx >= 0) {
+            // If remote has better data (closeTime), overwrite
+            if (r.closeTime && !merged[existingIdx].closeTime) {
+              merged[existingIdx] = { ...merged[existingIdx], ...r };
+            }
+          } else {
+            merged.push(r);
+          }
+        }
         saveLocalHistory(merged);
         renderHistory(merged);
       }
