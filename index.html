@@ -44,10 +44,10 @@
     .signal-row .col-entry { color: #9ab0c9; font-size: 12px; white-space: nowrap; }
     .signal-row .col-tp { color: #33d9a8; font-weight: 500; font-size: 12px; }
     .signal-row .col-sl { color: #f25b6a; font-weight: 500; font-size: 12px; }
-    .signal-row .col-winrate { font-weight: 700; font-size: 14px; text-align: center; }
-    .signal-row .col-winrate.high { color: #33d9a8; }
-    .signal-row .col-winrate.medium { color: #f4c95d; }
-    .signal-row .col-winrate.low { color: #f25b6a; }
+    .signal-row .col-conf { font-weight: 700; font-size: 14px; text-align: center; }
+    .signal-row .col-conf.high { color: #33d9a8; }
+    .signal-row .col-conf.medium { color: #f4c95d; }
+    .signal-row .col-conf.low { color: #f25b6a; }
     .signal-row .col-time { color: #5f7d9a; font-size: 11px; text-align: right; white-space: nowrap; }
     .signal-row.long { border-left: 3px solid #33d9a8; }
     .signal-row.short { border-left: 3px solid #f25b6a; }
@@ -92,7 +92,7 @@
       .signal-row .col-entry { grid-column: 1 / 3; grid-row: 2 / 3; font-size: 11px; color: #7a94af; }
       .signal-row .col-tp { grid-column: 1 / 2; grid-row: 3 / 4; font-size: 11px; }
       .signal-row .col-sl { grid-column: 2 / 3; grid-row: 3 / 4; font-size: 11px; }
-      .signal-row .col-winrate { grid-column: 3 / 4; grid-row: 3 / 4; font-size: 14px; text-align: right; }
+      .signal-row .col-conf { grid-column: 3 / 4; grid-row: 3 / 4; font-size: 14px; text-align: right; }
       .signal-row .col-time { display: none; }
       .history-item { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 2px 6px; padding: 6px 10px; }
       .history-item .h-sym { grid-column: 1 / 2; grid-row: 1 / 2; font-size: 14px; }
@@ -126,7 +126,7 @@
   <div class="signals-container">
     <div class="signals-header">
       <span>Coin</span> <span>Dir</span> <span>Price</span> <span>Entry Range</span>
-      <span>TP</span> <span>SL</span> <span>Win %</span> <span>Time</span>
+      <span>TP</span> <span>SL</span> <span>Confidence</span> <span>Time</span>
     </div>
     <div class="signals-grid" id="signalsGrid">
       <div class="empty-state">No active signals. Waiting for setup...</div>
@@ -232,7 +232,7 @@
   }
 
   // ================================================================
-  //  GOOGLE SHEETS API
+  //  GOOGLE SHEETS API (no-cors to avoid CORS preflight)
   // ================================================================
   let lastSheetError = null;
 
@@ -250,21 +250,14 @@
         tp: signal.tp,
         sl: signal.sl
       };
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
+      await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error('HTTP ' + response.status + ': ' + errorText);
-      }
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.error || 'Unknown error from script');
-      }
-      console.log('✅ Sheet add success:', result);
       lastSheetError = null;
+      console.log('✅ Sheet add sent (no-cors)');
       return true;
     } catch (e) {
       const msg = '❌ Sheet Add Error: ' + e.message;
@@ -277,21 +270,14 @@
   async function updateSignalStatus(id, status, closedPrice, closeTime) {
     try {
       const payload = { action: 'update', id, status, closedPrice, closeTime };
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
+      await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error('HTTP ' + response.status + ': ' + errorText);
-      }
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.error || 'Unknown error');
-      }
-      console.log('✅ Sheet update success:', result);
       lastSheetError = null;
+      console.log('✅ Sheet update sent (no-cors)');
       return true;
     } catch (e) {
       const msg = '❌ Sheet Update Error: ' + e.message;
@@ -350,15 +336,8 @@
   }
 
   // ================================================================
-  //  CALCULATE WIN RATE PER SYMBOL FROM HISTORY
+  //  PROCESS SCAN
   // ================================================================
-  function calculateWinRate(symbol, history) {
-    const trades = history.filter(h => h.symbol === symbol && (h.status === 'PROFIT' || h.status === 'LOSS'));
-    if (trades.length === 0) return null;
-    const wins = trades.filter(h => h.status === 'PROFIT').length;
-    return Math.round((wins / trades.length) * 100);
-  }
-
   async function processScan() {
     if (isProcessing) return;
     isProcessing = true;
@@ -370,7 +349,6 @@
       if (!all || all.length === 0) throw new Error('No data');
       const priceMap = {}; all.forEach(c => priceMap[c.symbol] = c.livePrice);
 
-      // Get history for win rate calculation
       const history = getLocalHistory();
 
       for (const s of all) {
@@ -430,7 +408,7 @@
 
       const active = Array.from(activeSignals.values()).filter(s => s.status === 'OPEN');
       liveCount.textContent = active.length;
-      renderSignals(active, history);
+      renderSignals(active);
       renderHistory(history);
 
       if (lastSheetError) {
@@ -450,9 +428,9 @@
   }
 
   // ================================================================
-  //  RENDER
+  //  RENDER SIGNALS (Confidence % based on Strength)
   // ================================================================
-  function renderSignals(signals, history) {
+  function renderSignals(signals) {
     if (!signals || signals.length === 0) {
       signalsGrid.innerHTML = `<div class="empty-state">No active signals. Waiting...</div>`;
       return;
@@ -463,16 +441,12 @@
       const dirDisplay = s.direction === 'LONG' ? '▲' : '▼';
       const tick = s.tick || 0.01;
 
-      // Calculate win rate for this symbol
-      const winRate = calculateWinRate(s.symbol, history);
-      let winRateDisplay = '—';
-      let winRateClass = '';
-      if (winRate !== null) {
-        winRateDisplay = winRate + '%';
-        if (winRate >= 60) winRateClass = 'high';
-        else if (winRate >= 40) winRateClass = 'medium';
-        else winRateClass = 'low';
-      }
+      // 📊 CONFIDENCE % = (strength / 5) * 100
+      const confidence = Math.round((s.strength / 5) * 100);
+      let confDisplay = confidence + '%';
+      let confClass = 'low';
+      if (confidence >= 80) confClass = 'high';
+      else if (confidence >= 60) confClass = 'medium';
 
       html += `
         <div class="signal-row ${dirClass}">
@@ -482,7 +456,7 @@
           <span class="col-entry">${formatPriceShort(s.entryLow, tick)} – ${formatPriceShort(s.entryHigh, tick)}</span>
           <span class="col-tp">${formatPriceShort(s.tp, tick)}</span>
           <span class="col-sl">${formatPriceShort(s.sl, tick)}</span>
-          <span class="col-winrate ${winRateClass}">${winRateDisplay}</span>
+          <span class="col-conf ${confClass}">${confDisplay}</span>
           <span class="col-time">${fmtTime(s.timestamp)}</span>
         </div>
       `;
@@ -490,6 +464,9 @@
     signalsGrid.innerHTML = html;
   }
 
+  // ================================================================
+  //  RENDER HISTORY (Unchanged, shows closed trades)
+  // ================================================================
   function renderHistory(history) {
     const closedTrades = history.filter(h => h.status === 'PROFIT' || h.status === 'LOSS');
     if (!closedTrades || closedTrades.length === 0) {
