@@ -2,597 +2,937 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5" />
-  <title>💊 Medicine Price Compare</title>
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>ScalpScanner Pro</title>
   <style>
-    /* ===== RESET & ROOT ===== */
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
+    /* ── Reset & Base ── */
+    * {
       margin: 0;
       padding: 0;
-    }
-    :root {
-      --bg: #f4f7fc;
-      --card-bg: #ffffff;
-      --text: #1e293b;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --primary: #3b82f6;
-      --primary-dark: #2563eb;
-      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
-      --radius: 16px;
-      --transition: 0.2s ease;
-      --cheapest-bg: #dbeafe;
-      --cheapest-text: #1d4ed8;
-      --discount-bg: #dcfce7;
-      --discount-text: #166534;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 24px 16px;
+      background: #0a0d14;
       min-height: 100vh;
+      padding: 14px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      justify-content: center;
     }
-    .container {
-      max-width: 1280px;
+    .app {
+      max-width: 780px;
       width: 100%;
-      margin: 0 auto;
     }
-    /* ===== HEADER ===== */
+
+    /* ── Header ── */
     .header {
-      text-align: center;
-      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .header h1 {
-      font-size: 2.2rem;
+      color: #f0f4fa;
+      font-size: 22px;
       font-weight: 700;
-      background: linear-gradient(135deg, var(--primary), #8b5cf6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .header h1 i {
-      -webkit-text-fill-color: initial;
-      color: var(--primary);
-    }
-    .header p {
-      color: var(--text-muted);
-      font-size: 1.05rem;
-      margin-top: 4px;
-    }
-    /* ===== SEARCH BOX ===== */
-    .search-box {
+      letter-spacing: -0.3px;
       display: flex;
-      gap: 12px;
-      background: var(--card-bg);
-      padding: 8px 8px 8px 20px;
-      border-radius: 60px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      transition: var(--transition);
-      margin-bottom: 2rem;
-      max-width: 700px;
-      margin-left: auto;
-      margin-right: auto;
+      align-items: center;
+      gap: 10px;
     }
-    .search-box:focus-within {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
-    .search-box input {
-      flex: 1;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      padding: 12px 0;
-      background: transparent;
-      color: var(--text);
-      min-width: 0;
-    }
-    .search-box input::placeholder {
-      color: #94a3b8;
-    }
-    .search-box button {
-      background: var(--primary);
-      border: none;
-      color: white;
+    .header h1 span {
+      background: linear-gradient(135deg, #33d9a8, #20c997);
+      font-size: 13px;
       font-weight: 600;
-      padding: 10px 24px;
+      padding: 2px 12px;
+      border-radius: 30px;
+      color: #0a0d14;
+    }
+    .badge {
+      background: #1a2430;
+      padding: 6px 14px;
       border-radius: 40px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: var(--transition);
+      color: #9ab0c9;
+      font-size: 12px;
+      font-weight: 500;
       display: flex;
       align-items: center;
       gap: 8px;
-      white-space: nowrap;
+      border: 1px solid #253240;
     }
-    .search-box button:hover {
-      background: var(--primary-dark);
-      transform: scale(1.02);
+    .badge .dot {
+      width: 8px;
+      height: 8px;
+      background: #33d9a8;
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse-dot 1.6s infinite;
     }
-    .search-box button:disabled {
-      opacity: 0.6;
+    @keyframes pulse-dot {
+      0% { opacity: 0.3; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.3; transform: scale(0.9); }
+    }
+
+    /* ── Top Bar ── */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #111a24;
+      padding: 10px 18px;
+      border-radius: 18px;
+      border: 1px solid #1e2c3b;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .top-bar .status {
+      color: #7a94af;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .top-bar .status .live {
+      color: #33d9a8;
+      font-weight: 600;
+    }
+    .refresh-btn {
+      background: #1e2c3b;
+      border: none;
+      color: #d6e4f0;
+      padding: 6px 20px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #2d3f52;
+    }
+    .refresh-btn:hover:not(:disabled) {
+      background: #2d3f52;
+    }
+    .refresh-btn:disabled {
+      opacity: 0.5;
       cursor: not-allowed;
-      transform: none;
     }
-    /* ===== RESULTS INFO ===== */
-    .results-info {
+    .refresh-btn .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #5f7d9a;
+      border-top-color: #d6e4f0;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Signal Cards ── */
+    .signals-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .signal-card {
+      background: #111a24;
+      border-radius: 20px;
+      padding: 16px 18px;
+      border-left: 5px solid #3a4d62;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      transition: 0.2s;
+      animation: fadeUp 0.35s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .signal-card.long { border-left-color: #33d9a8; }
+    .signal-card.short { border-left-color: #f25b6a; }
+
+    .card-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 1rem;
-      color: var(--text-muted);
-      font-size: 0.95rem;
+      gap: 6px 12px;
     }
-    .results-info .count {
-      font-weight: 600;
-      color: var(--text);
-    }
-    /* ===== LOADING ===== */
-    .loading-wrap {
+    .card-symbol {
+      font-size: 20px;
+      font-weight: 700;
+      color: #f0f4fa;
+      letter-spacing: -0.2px;
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding: 3rem 0;
-      gap: 12px;
-      color: var(--text-muted);
+      gap: 10px;
     }
-    .spinner {
-      width: 36px;
-      height: 36px;
-      border: 4px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+    .card-symbol .lock-badge {
+      font-size: 10px;
+      background: #253240;
+      color: #9ab0c9;
+      padding: 1px 10px;
+      border-radius: 30px;
+      font-weight: 500;
     }
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-    /* ===== MESSAGE BOX (error / no results) ===== */
-    .message-box {
-      padding: 2rem;
-      text-align: center;
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
-    .message-box i {
-      font-size: 2.5rem;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-      display: block;
-    }
-    .message-box.error {
-      border-color: #fca5a5;
-      background: #fef2f2;
-    }
-    .message-box.error i {
-      color: #dc2626;
-    }
-    /* ===== TABLE ===== */
-    .table-wrap {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      margin-bottom: 1.5rem;
-    }
-    .table-scroll {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95rem;
-      min-width: 700px;
-    }
-    th {
-      background: #f8fafc;
-      text-align: left;
-      padding: 14px 16px;
+    .card-direction {
+      font-size: 15px;
       font-weight: 600;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
+      padding: 2px 14px;
+      border-radius: 30px;
+      background: #1a2430;
     }
-    td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
-    tr:last-child td {
-      border-bottom: none;
-    }
-    tr.cheapest {
-      background: var(--cheapest-bg);
-      position: relative;
-    }
-    tr.cheapest td:first-child::before {
-      content: '⭐ ';
-      font-size: 0.9rem;
-    }
-    .brand-name {
-      font-weight: 600;
-    }
-    .brand-manufacturer {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      display: block;
-    }
-    .generic-name {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-    .unit-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-    .price-base {
-      font-weight: 600;
-      color: var(--text);
-    }
-    .price-unit {
-      color: var(--text-muted);
-    }
-    .discount-badge {
-      background: var(--discount-bg);
-      color: var(--discount-text);
-      padding: 2px 10px;
+    .card-direction.long { color: #33d9a8; }
+    .card-direction.short { color: #f25b6a; }
+    .card-score {
+      background: #1a2430;
+      padding: 2px 12px;
       border-radius: 20px;
-      font-size: 0.75rem;
+      font-size: 13px;
       font-weight: 600;
-      display: inline-block;
+      color: #f4c95d;
+      border: 1px solid #2d3f52;
+    }
+
+    .card-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+      background: #0d151e;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid #1a2633;
+    }
+    .card-meta .m-item {
+      text-align: center;
+    }
+    .card-meta .m-label {
+      color: #5f7d9a;
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+    }
+    .card-meta .m-value {
+      color: #f0f4fa;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    .card-meta .m-value.live-price {
+      color: #33d9a8;
+    }
+    .card-time {
+      color: #5f7d9a;
+      font-size: 11px;
+      margin-top: 8px;
+      text-align: right;
+      border-top: 1px solid #1a2633;
+      padding-top: 8px;
+    }
+    .card-time .highlight {
+      color: #9ab0c9;
+      font-weight: 500;
+    }
+
+    /* ── History ── */
+    .history-section {
+      background: #111a24;
+      border-radius: 20px;
+      padding: 16px 16px 12px;
+      border: 1px solid #1e2c3b;
+      margin-top: 4px;
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .history-header h3 {
+      color: #9ab0c9;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .history-header .count {
+      background: #1a2430;
+      padding: 2px 12px;
+      border-radius: 30px;
+      font-size: 12px;
+      color: #7a94af;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 340px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .history-list::-webkit-scrollbar { width: 4px; }
+    .history-list::-webkit-scrollbar-track { background: #0d151e; border-radius: 4px; }
+    .history-list::-webkit-scrollbar-thumb { background: #2d3f52; border-radius: 4px; }
+
+    .history-item {
+      display: grid;
+      grid-template-columns: 58px 38px 50px 1fr 55px 52px;
+      gap: 4px 8px;
+      padding: 8px 10px;
+      background: #0d151e;
+      border-radius: 12px;
+      font-size: 12px;
+      align-items: center;
+      border: 1px solid #1a2633;
+      transition: 0.15s;
+    }
+    .history-item .h-sym {
+      font-weight: 700;
+      color: #f0f4fa;
+      font-size: 13px;
+    }
+    .history-item .h-dir {
+      font-weight: 600;
+      font-size: 11px;
+    }
+    .history-item .h-dir.long { color: #33d9a8; }
+    .history-item .h-dir.short { color: #f25b6a; }
+    .history-item .h-time {
+      color: #5f7d9a;
+      font-size: 10px;
       white-space: nowrap;
     }
-    /* ===== FOOTER ===== */
-    .footer-note {
-      margin-top: 2rem;
-      color: #94a3b8;
-      font-size: 0.85rem;
+    .history-item .h-duration {
+      color: #7a94af;
+      font-size: 10px;
+      font-weight: 500;
+      background: #1a2430;
+      padding: 1px 8px;
+      border-radius: 20px;
       text-align: center;
-      border-top: 1px solid var(--border);
-      padding-top: 1.5rem;
+      white-space: nowrap;
     }
-    /* ===== MOBILE RESPONSIVE ===== */
-    @media (max-width: 640px) {
-      body {
-        padding: 16px 12px;
-      }
-      .header h1 {
-        font-size: 1.6rem;
-      }
-      .search-box {
-        padding: 6px 6px 6px 16px;
-        border-radius: 40px;
-      }
-      .search-box input {
-        font-size: 0.95rem;
-        padding: 10px 0;
-      }
-      .search-box button {
-        padding: 8px 16px;
-        font-size: 0.9rem;
-      }
-      .search-box button span {
-        display: none;
-      }
-      .search-box button i {
-        font-size: 1.2rem;
-      }
-      table {
-        font-size: 0.85rem;
-        min-width: 600px;
-      }
-      th,
-      td {
-        padding: 10px 12px;
-      }
-      .brand-manufacturer {
-        font-size: 0.7rem;
-      }
-      .price-base {
-        font-size: 0.9rem;
-      }
+    .history-item .h-duration.fast { color: #33d9a8; }
+    .history-item .h-duration.medium { color: #f4c95d; }
+    .history-item .h-duration.slow { color: #f25b6a; }
+    .history-item .h-result {
+      font-weight: 700;
+      font-size: 13px;
+      text-align: right;
     }
-    @media (max-width: 480px) {
-      .header h1 {
-        font-size: 1.4rem;
+    .history-item .h-result.win { color: #33d9a8; }
+    .history-item .h-result.loss { color: #f25b6a; }
+    .history-item .h-result.open { color: #f4c95d; }
+
+    .empty-state {
+      color: #5f7d9a;
+      text-align: center;
+      padding: 28px 10px;
+      font-size: 14px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .card-meta {
+        grid-template-columns: 1fr 1fr;
+        gap: 4px 14px;
       }
-      .results-info {
-        font-size: 0.85rem;
-        flex-direction: column;
-        align-items: flex-start;
+      .history-item {
+        grid-template-columns: 48px 30px 44px 1fr 48px 44px;
+        font-size: 11px;
+        padding: 6px 8px;
+        gap: 3px 6px;
       }
+      .header h1 { font-size: 19px; }
+      .top-bar .status { font-size: 12px; }
+      .refresh-btn { font-size: 12px; padding: 4px 14px; min-width: 80px; }
+      .card-symbol { font-size: 17px; }
+    }
+    @media (max-width: 420px) {
+      .history-item {
+        grid-template-columns: 40px 26px 38px 1fr 40px 38px;
+        font-size: 10px;
+        gap: 2px 4px;
+        padding: 5px 6px;
+      }
+      .history-item .h-sym { font-size: 11px; }
+      .card-meta .m-value { font-size: 12px; }
     }
   </style>
 </head>
 <body>
+<div class="app">
 
-  <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <h1><i class="fas fa-pills"></i> Price Compare</h1>
-      <p>Find the best value for your medicine – compare brands &amp; prices</p>
+  <!-- Header -->
+  <div class="header">
+    <h1>📡 ScalpScanner <span>PRO</span></h1>
+    <span class="badge"><span class="dot"></span> <span id="liveCount">0</span> signals</span>
+  </div>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <span class="status" id="statusText">🟢 <span class="live">Live</span> · scanning...</span>
+    <button class="refresh-btn" id="refreshBtn">⟳ Refresh</button>
+  </div>
+
+  <!-- Signals -->
+  <div class="signals-grid" id="signalsGrid">
+    <div style="color:#5f7d9a; text-align:center; padding:24px; font-size:14px;">Loading signals...</div>
+  </div>
+
+  <!-- History -->
+  <div class="history-section">
+    <div class="history-header">
+      <h3>📜 Trade History</h3>
+      <span class="count" id="historyCount">0 entries</span>
     </div>
-
-    <!-- Search -->
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="e.g. atorvastatin, cetirizine, amlodipine..." autofocus />
-      <button id="searchBtn">
-        <i class="fas fa-search"></i><span>Search</span>
-      </button>
-    </div>
-
-    <!-- Results Area -->
-    <div id="resultsArea">
-      <div class="results-info" id="infoText">
-        <span>Enter a medicine name to start comparing</span>
-      </div>
-
-      <!-- Loading -->
-      <div id="loading" class="loading-wrap" style="display:none;">
-        <div class="spinner"></div>
-        <span>Searching...</span>
-      </div>
-
-      <!-- Error -->
-      <div id="errorMsg" class="message-box error" style="display:none;">
-        <i class="fas fa-exclamation-circle"></i>
-        <p id="errorText">Something went wrong.</p>
-      </div>
-
-      <!-- No results -->
-      <div id="noResults" class="message-box" style="display:none;">
-        <i class="fas fa-box-open"></i>
-        <p>No products found. Try a different search term.</p>
-      </div>
-
-      <!-- Table -->
-      <div class="table-wrap" id="tableWrap" style="display:none;">
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Brand</th>
-                <th>Generic</th>
-                <th>Strength</th>
-                <th>Form</th>
-                <th>Unit</th>
-                <th>Price (unit)</th>
-                <th>Price / base</th>
-                <th>Discount</th>
-              </tr>
-            </thead>
-            <tbody id="resultsBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-note">
-      <i class="fas fa-database"></i> Prices from Arogga &bull; B2C prices shown &bull; Cheapest option highlighted
+    <div class="history-list" id="historyList">
+      <div class="empty-state">No history yet. Signals will appear here.</div>
     </div>
   </div>
 
-  <script>
-    // ================================================================
-    // CONFIGURATION – point to your Cloudflare Worker
-    // ================================================================
-    const WORKER_URL = 'https://autumn-sun-8446.contacttomizanur.workers.dev/';  // root path
+</div>
 
-    // ================================================================
-    // DOM refs
-    // ================================================================
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const resultsBody = document.getElementById('resultsBody');
-    const tableWrap = document.getElementById('tableWrap');
-    const loading = document.getElementById('loading');
-    const errorMsg = document.getElementById('errorMsg');
-    const errorText = document.getElementById('errorText');
-    const noResults = document.getElementById('noResults');
-    const infoText = document.getElementById('infoText');
+<script>
+  // ================================================================
+  //  CONFIG
+  // ================================================================
+  const GOOGLE_SCRIPT_URL =
+    'https://script.google.com/macros/s/AKfycbwx0DbnzzDfAKKgktyQICoruc1cKQ3MDhStMfdto3yqBHJLiPTkTg0AstOgMRL7IMOB/exec';
 
-    // ================================================================
-    // UI Helpers
-    // ================================================================
-    function setLoading(show) {
-      loading.style.display = show ? 'flex' : 'none';
-      tableWrap.style.display = 'none';
-      noResults.style.display = 'none';
-      errorMsg.style.display = 'none';
-      searchBtn.disabled = show;
+  const COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','LINKUSDT'];
+  const SCAN_INTERVAL = 15000;   // 15s
+  const HISTORY_INTERVAL = 30000; // 30s
+
+  // ================================================================
+  //  DOM REFS
+  // ================================================================
+  const $ = id => document.getElementById(id);
+  const signalsGrid = $('signalsGrid');
+  const historyList = $('historyList');
+  const statusText = $('statusText');
+  const refreshBtn = $('refreshBtn');
+  const liveCount = $('liveCount');
+  const historyCount = $('historyCount');
+
+  // ================================================================
+  //  HELPERS
+  // ================================================================
+  function fmtPrice(v) { return '$' + Number(v).toFixed(2); }
+  function fmtTime(iso) {
+    if (!iso) return '—';
+    try {
+      const d = new Date(iso);
+      return d.toLocaleTimeString('en-US', { hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    } catch { return iso; }
+  }
+  function fmtDuration(ms) {
+    if (!ms || ms < 0) return '—';
+    const totalSec = Math.floor(ms / 1000);
+    if (totalSec < 60) return totalSec + 's';
+    const min = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
+    return min + 'm ' + sec + 's';
+  }
+  function getSymbol(s) { return s.replace('USDT',''); }
+
+  // ================================================================
+  //  TECHNICAL ANALYSIS (signal detection only)
+  // ================================================================
+  function calcEMA(data, p) {
+    const ema = [], k = 2/(p+1);
+    let sum = 0;
+    for (let i=0; i<data.length; i++) {
+      if (i < p-1) { sum += data[i]; ema.push(null); }
+      else if (i === p-1) { sum += data[i]; ema.push(sum/p); }
+      else { ema.push(data[i]*k + ema[i-1]*(1-k)); }
     }
-
-    function showError(message) {
-      errorText.textContent = message || 'Failed to fetch data. Please try again later.';
-      errorMsg.style.display = 'block';
-      tableWrap.style.display = 'none';
-      noResults.style.display = 'none';
-      infoText.innerHTML = '❌ Error occurred';
-    }
-
-    function showNoResults() {
-      noResults.style.display = 'block';
-      tableWrap.style.display = 'none';
-      infoText.innerHTML = 'No matching products.';
-    }
-
-    function showResults(products, total) {
-      tableWrap.style.display = 'block';
-      noResults.style.display = 'none';
-      infoText.innerHTML = `<span class="count">${total}</span> products found. Showing ${products.length}.`;
-      renderTable(products);
-    }
-
-    // ================================================================
-    // Price calculation
-    // ================================================================
-    function computeUnitPrices(pv, puArray) {
-      const baseUnit = puArray.find(u => u.pu_is_base === 1);
-      const salesUnit = puArray.find(u => u.pu_is_b2c_sales_unit === 1) || baseUnit;
-      if (!baseUnit || !salesUnit) return null;
-
-      const salesMultiplier = salesUnit.pu_multiplier;
-      const unitPrice = pv.pv_b2c_price; // price per sales unit
-      const basePricePerUnit = unitPrice / salesMultiplier; // price per base unit
-
-      return {
-        salesUnitLabel: salesUnit.pu_label,
-        salesMultiplier,
-        unitPrice,
-        basePricePerUnit,
-        baseLabel: baseUnit.pu_label,
-      };
-    }
-
-    // ================================================================
-    // Render table
-    // ================================================================
-    function renderTable(products) {
-      resultsBody.innerHTML = '';
-
-      const rows = [];
-      let minBasePrice = Infinity;
-
-      products.forEach(p => {
-        const pv = p.pv[0];
-        if (!pv) return;
-        const puArray = p.pu || [];
-        const unitInfo = computeUnitPrices(pv, puArray);
-        if (!unitInfo) return;
-
-        const basePrice = unitInfo.basePricePerUnit;
-        if (basePrice < minBasePrice) minBasePrice = basePrice;
-
-        rows.push({
-          name: p.p_name,
-          brand: p.p_brand || 'N/A',
-          generic: p.p_generic_name || 'N/A',
-          strength: p.p_strength || '',
-          form: p.p_form || '',
-          salesUnitLabel: unitInfo.salesUnitLabel,
-          salesMultiplier: unitInfo.salesMultiplier,
-          unitPrice: unitInfo.unitPrice,
-          basePrice: basePrice,
-          baseLabel: unitInfo.baseLabel,
-          discount: pv.pv_b2c_discount_percent || 0,
-        });
-      });
-
-      if (rows.length === 0) {
-        showNoResults();
-        return;
+    return ema;
+  }
+  function calcRSI(closes, p=14) {
+    const rsi = [];
+    let gain=0, loss=0;
+    for (let i=1; i<closes.length; i++) {
+      const diff = closes[i] - closes[i-1];
+      if (i <= p) {
+        if (diff>=0) gain += diff; else loss += Math.abs(diff);
+        if (i === p) {
+          let ag = gain/p, al = loss/p;
+          const rs = al===0 ? 0 : ag/al;
+          rsi.push(al===0 ? 100 : 100 - (100/(1+rs)));
+        } else rsi.push(null);
+      } else {
+        const ag = ((gain*(p-1)) + (diff>=0 ? diff : 0))/p;
+        const al = ((loss*(p-1)) + (diff<0 ? Math.abs(diff) : 0))/p;
+        gain = ag*p; loss = al*p;
+        const rs = al===0 ? 0 : ag/al;
+        rsi.push(al===0 ? 100 : 100 - (100/(1+rs)));
       }
-
-      // Sort by base price ascending
-      rows.sort((a, b) => a.basePrice - b.basePrice);
-
-      rows.forEach(row => {
-        const tr = document.createElement('tr');
-        const isCheapest = (row.basePrice === minBasePrice && minBasePrice < Infinity);
-        if (isCheapest) tr.classList.add('cheapest');
-
-        const basePriceFormatted = row.basePrice.toFixed(2);
-        const unitPriceFormatted = row.unitPrice.toFixed(2);
-
-        tr.innerHTML = `
-          <td>
-            <span class="brand-name">${row.name}</span>
-            <span class="brand-manufacturer">${row.brand}</span>
-          </td>
-          <td><span class="generic-name">${row.generic}</span></td>
-          <td>${row.strength}</td>
-          <td>${row.form}</td>
-          <td>
-            ${row.salesUnitLabel}
-            <span class="unit-label">(${row.salesMultiplier} ${row.baseLabel}s)</span>
-          </td>
-          <td class="price-unit">৳${unitPriceFormatted}</td>
-          <td class="price-base">৳${basePriceFormatted} / ${row.baseLabel}</td>
-          <td>${row.discount > 0 ? `<span class="discount-badge">${row.discount}% off</span>` : '—'}</td>
-        `;
-        resultsBody.appendChild(tr);
-      });
     }
+    return rsi;
+  }
+  function calcBB(closes, p=20, sd=2) {
+    const upper=[], lower=[];
+    for (let i=0; i<closes.length; i++) {
+      if (i < p-1) { upper.push(null); lower.push(null); continue; }
+      let sum=0; for (let j=i-p+1; j<=i; j++) sum += closes[j];
+      const mean = sum/p;
+      let sq=0; for (let j=i-p+1; j<=i; j++) sq += (closes[j]-mean)**2;
+      const stdev = Math.sqrt(sq/p);
+      upper.push(mean + sd*stdev);
+      lower.push(mean - sd*stdev);
+    }
+    return { upper, lower };
+  }
+  function calcVWAP(highs, lows, closes, vols) {
+    const vwap = [];
+    let cumPV=0, cumVol=0;
+    for (let i=0; i<closes.length; i++) {
+      const typical = (highs[i]+lows[i]+closes[i])/3;
+      cumPV += typical * vols[i];
+      cumVol += vols[i];
+      vwap.push(cumVol===0 ? null : cumPV/cumVol);
+    }
+    return vwap;
+  }
 
-    // ================================================================
-    // API call via Worker – handles the new error‑safe format
-    // ================================================================
-    async function searchMedicine(query) {
-      const term = query.trim();
-      if (!term) {
-        infoText.innerHTML = 'Please enter a medicine name.';
-        return;
-      }
+  // Returns { signal, confidence, winRate } ONLY – no entry/tp/sl
+  function detectSignal(data) {
+    const closes = data.map(d=>d.close);
+    const highs = data.map(d=>d.high);
+    const lows = data.map(d=>d.low);
+    const vols = data.map(d=>d.volume);
+    const len = closes.length;
+    if (len < 60) return null;
 
-      setLoading(true);
+    const ema5 = calcEMA(closes,5);
+    const ema20 = calcEMA(closes,20);
+    const rsi = calcRSI(closes,14);
+    const bb = calcBB(closes,20,2);
+    const vwap = calcVWAP(highs,lows,closes,vols);
+
+    const idx = len-1;
+    const price = closes[idx];
+    const e5 = ema5[idx], e20 = ema20[idx];
+    const r = rsi[idx];
+    const upper = bb.upper[idx], lower = bb.lower[idx];
+    const vwapVal = vwap[idx];
+    const vol = vols[idx];
+    const avgVol = vols.slice(-20).reduce((a,b)=>a+b,0)/20;
+    const volSpike = vol > avgVol * 1.8;
+
+    let longC=0, shortC=0, total=5;
+    if (e5!==null && e20!==null) { if (e5>e20) longC++; else if (e5<e20) shortC++; }
+    if (r!==null && r<30) longC++; else if (r!==null && r>70) shortC++;
+    if (lower!==null && price < lower*1.005) longC++;
+    if (upper!==null && price > upper*0.995) shortC++;
+    if (volSpike) { longC++; shortC++; }
+    if (vwapVal!==null && price > vwapVal) longC++;
+    if (vwapVal!==null && price < vwapVal) shortC++;
+
+    const longScore = longC/total;
+    const shortScore = shortC/total;
+    let signal='NEUTRAL', confidence=0, winRate=0;
+    const threshold=0.55;
+
+    if (longScore>=threshold && longScore>shortScore) {
+      signal='LONG';
+      confidence = Math.min(95, Math.round(longScore*100));
+      winRate = Math.min(82, 55 + confidence*0.3);
+    } else if (shortScore>=threshold && shortScore>longScore) {
+      signal='SHORT';
+      confidence = Math.min(95, Math.round(shortScore*100));
+      winRate = Math.min(82, 55 + confidence*0.3);
+    } else {
+      return null; // neutral or too weak
+    }
+    return { signal, confidence, winRate: Math.round(winRate) };
+  }
+
+  // ================================================================
+  //  FETCH COINS (returns raw data + ticker)
+  // ================================================================
+  async function fetchAllCoins() {
+    const promises = COINS.map(async (symbol) => {
       try {
-        const url = `${WORKER_URL}?q=${encodeURIComponent(term)}`;
-        const response = await fetch(url);
-        // Worker now always returns HTTP 200, so we can parse JSON
-        const data = await response.json();
-
-        // Check for error inside the JSON
-        if (data.status === 'error') {
-          throw new Error(data.message || 'Worker returned an error.');
-        }
-
-        if (data.status !== 'success') {
-          throw new Error(data.message || 'Unexpected API response.');
-        }
-
-        const products = data.data || [];
-        const total = data.total || 0;
-
-        if (products.length === 0) {
-          showNoResults();
-        } else {
-          showResults(products, total);
-        }
-      } catch (err) {
-        console.error('Search error:', err);
-        showError(err.message || 'Failed to fetch data. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    // ================================================================
-    // Event listeners
-    // ================================================================
-    searchBtn.addEventListener('click', () => searchMedicine(searchInput.value));
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') searchMedicine(searchInput.value);
+        const kResp = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=120`);
+        if (!kResp.ok) throw new Error('Klines fail');
+        const raw = await kResp.json();
+        const data = raw.map(c => ({
+          open: parseFloat(c[1]), high: parseFloat(c[2]), low: parseFloat(c[3]),
+          close: parseFloat(c[4]), volume: parseFloat(c[5])
+        }));
+        if (data.length < 60) return null;
+        const tResp = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+        if (!tResp.ok) throw new Error('Ticker fail');
+        const ticker = await tResp.json();
+        const signal = detectSignal(data);
+        if (!signal) return null;
+        return {
+          symbol,
+          livePrice: parseFloat(ticker.lastPrice),
+          changePercent: parseFloat(ticker.priceChangePercent),
+          ...signal
+        };
+      } catch { return null; }
     });
+    const results = await Promise.allSettled(promises);
+    return results.map(r => r.status === 'fulfilled' ? r.value : null).filter(r => r !== null)
+      .sort((a,b) => b.confidence - a.confidence);
+  }
 
-    // Focus on load
-    window.addEventListener('load', () => searchInput.focus());
+  // ================================================================
+  //  GOOGLE SHEETS API
+  // ================================================================
+  async function addSignalToSheet(signal) {
+    try {
+      const payload = {
+        action: 'add',
+        symbol: signal.symbol,
+        direction: signal.direction,
+        entryMin: signal.entryLow,
+        entryMax: signal.entryHigh,
+        tp: signal.tp,
+        sl: signal.sl
+      };
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) { console.warn('Sheet add failed:', e); }
+  }
 
-    // Optional: uncomment below for a demo search on page load
-    // searchMedicine('atorvastatin');
-  </script>
+  async function updateSignalStatus(id, status, closedPrice) {
+    try {
+      const payload = { action: 'update', id, status, closedPrice };
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) { console.warn('Sheet update failed:', e); }
+  }
+
+  async function fetchHistoryFromSheet() {
+    try {
+      const resp = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now());
+      if (!resp.ok) return [];
+      const json = await resp.json();
+      if (json.success && json.data) return json.data;
+      return [];
+    } catch { return []; }
+  }
+
+  // ================================================================
+  //  LOCAL STORAGE FALLBACK
+  // ================================================================
+  function getLocalHistory() {
+    try { const raw = localStorage.getItem('scalpHistory'); return raw ? JSON.parse(raw) : []; } catch { return []; }
+  }
+  function saveLocalHistory(h) {
+    try { localStorage.setItem('scalpHistory', JSON.stringify(h)); } catch {}
+  }
+
+  // ================================================================
+  //  CORE LOGIC (with frozen signals)
+  // ================================================================
+  let isProcessing = false;
+  // Active signals store: key = symbol, value = { id, symbol, direction, entryLow, entryHigh, tp, sl, timestamp, openTime, livePrice, changePercent, confidence, winRate }
+  const activeSignals = new Map();
+
+  function generateId() {
+    return 'sig_' + Date.now() + '_' + Math.random().toString(36).substr(2,4);
+  }
+
+  async function processScan() {
+    if (isProcessing) return;
+    isProcessing = true;
+    refreshBtn.disabled = true;
+    refreshBtn.innerHTML = '<span class="spinner"></span>';
+
+    try {
+      // 1. Fetch fresh market data
+      const all = await fetchAllCoins();
+      if (!all || all.length === 0) throw new Error('No data');
+
+      // 2. Create price map for quick lookup
+      const priceMap = {};
+      all.forEach(c => priceMap[c.symbol] = c.livePrice);
+
+      // 3. Check for new signals (only if not already active)
+      for (const s of all) {
+        if (!activeSignals.has(s.symbol)) {
+          // Generate FIXED Entry/TP/SL based on current price
+          const price = s.livePrice;
+          let entryLow, entryHigh, tp, sl;
+          if (s.signal === 'LONG') {
+            entryLow = price * 0.997;   // -0.3%
+            entryHigh = price * 1.003;  // +0.3%
+            tp = price * 1.008;         // +0.8% (GUARANTEED > entryHigh)
+            sl = price * 0.994;         // -0.6% (GUARANTEED < entryLow)
+          } else { // SHORT
+            entryLow = price * 0.997;
+            entryHigh = price * 1.003;
+            tp = price * 0.992;         // -0.8% (GUARANTEED < entryLow)
+            sl = price * 1.006;         // +0.6% (GUARANTEED > entryHigh)
+          }
+
+          const now = Date.now();
+          const newSignal = {
+            id: generateId(),
+            symbol: s.symbol,
+            direction: s.signal,
+            entryLow,
+            entryHigh,
+            tp,
+            sl,
+            timestamp: new Date().toISOString(),
+            openTime: now,
+            livePrice: price,
+            changePercent: s.changePercent,
+            confidence: s.confidence,
+            winRate: s.winRate,
+            status: 'OPEN'
+          };
+          activeSignals.set(s.symbol, newSignal);
+          // Send to backend
+          addSignalToSheet(newSignal);
+          // Save to local history (as OPEN)
+          let hist = getLocalHistory();
+          hist.push({ ...newSignal, result: '—', closedPrice: null, closeTime: null });
+          saveLocalHistory(hist);
+        } else {
+          // Update live price for existing active signal
+          const existing = activeSignals.get(s.symbol);
+          if (existing) {
+            existing.livePrice = s.livePrice;
+            existing.changePercent = s.changePercent;
+          }
+        }
+      }
+
+      // 4. Check TP/SL hits for all active signals
+      const history = getLocalHistory();
+      let historyUpdated = false;
+      const toRemove = [];
+
+      for (const [symbol, signal] of activeSignals) {
+        const currentPrice = priceMap[symbol];
+        if (!currentPrice) continue;
+
+        let hitStatus = null;
+        if (signal.direction === 'LONG') {
+          if (currentPrice >= signal.tp) hitStatus = 'PROFIT';
+          else if (currentPrice <= signal.sl) hitStatus = 'LOSS';
+        } else if (signal.direction === 'SHORT') {
+          if (currentPrice <= signal.tp) hitStatus = 'PROFIT';
+          else if (currentPrice >= signal.sl) hitStatus = 'LOSS';
+        }
+
+        if (hitStatus) {
+          // Close this signal
+          signal.status = hitStatus;
+          signal.result = hitStatus === 'PROFIT' ? '✅ WIN' : '❌ LOSS';
+          signal.closedPrice = currentPrice;
+          signal.closeTime = Date.now();
+          toRemove.push(symbol);
+
+          // Update in local history
+          for (let i=0; i<history.length; i++) {
+            if (history[i].id === signal.id) {
+              history[i].status = hitStatus;
+              history[i].result = signal.result;
+              history[i].closedPrice = currentPrice;
+              history[i].closeTime = signal.closeTime;
+              historyUpdated = true;
+              break;
+            }
+          }
+          // Update backend
+          updateSignalStatus(signal.id, hitStatus, currentPrice);
+        }
+      }
+
+      // Remove closed signals from active map
+      for (const sym of toRemove) {
+        activeSignals.delete(sym);
+      }
+
+      if (historyUpdated) {
+        saveLocalHistory(history);
+      }
+
+      // 5. Render everything
+      const activeArray = Array.from(activeSignals.values()).filter(s => s.status === 'OPEN');
+      liveCount.textContent = activeArray.length;
+      renderSignals(activeArray);
+      renderHistory(history);
+
+      statusText.innerHTML = `🟢 <span class="live">Live</span> · ${activeArray.length} active · ${new Date().toLocaleTimeString()}`;
+
+    } catch (err) {
+      console.error(err);
+      statusText.innerHTML = '🔴 Error: ' + err.message;
+    } finally {
+      refreshBtn.disabled = false;
+      refreshBtn.innerHTML = '⟳ Refresh';
+      isProcessing = false;
+    }
+  }
+
+  // ================================================================
+  //  RENDER FUNCTIONS
+  // ================================================================
+  function renderSignals(signals) {
+    if (!signals || signals.length === 0) {
+      signalsGrid.innerHTML = `<div style="color:#5f7d9a; text-align:center; padding:24px; font-size:14px;">No active signals. Waiting for setup...</div>`;
+      return;
+    }
+    let html = '';
+    signals.slice(0, 10).forEach(s => {
+      const dirClass = s.direction.toLowerCase();
+      const dirDisplay = s.direction === 'LONG' ? '▲ BUY' : '▼ SELL';
+      html += `
+        <div class="signal-card ${dirClass}">
+          <div class="card-row">
+            <span class="card-symbol">
+              ${getSymbol(s.symbol)}
+              <span class="lock-badge">🔒 Locked</span>
+            </span>
+            <span class="card-direction ${dirClass}">${dirDisplay}</span>
+            <span class="card-score">⭐ ${s.confidence}%</span>
+          </div>
+          <div class="card-meta">
+            <div class="m-item"><div class="m-label">Price</div><div class="m-value live-price">${fmtPrice(s.livePrice)}</div></div>
+            <div class="m-item"><div class="m-label">Entry (fixed)</div><div class="m-value">${fmtPrice(s.entryLow)} – ${fmtPrice(s.entryHigh)}</div></div>
+            <div class="m-item"><div class="m-label">TP (fixed)</div><div class="m-value">${fmtPrice(s.tp)}</div></div>
+            <div class="m-item"><div class="m-label">SL (fixed)</div><div class="m-value">${fmtPrice(s.sl)}</div></div>
+          </div>
+          <div class="card-time">⏱ Signal added: <span class="highlight">${fmtTime(s.timestamp)}</span> · Est. win ${s.winRate}%</div>
+        </div>
+      `;
+    });
+    signalsGrid.innerHTML = html;
+  }
+
+  function renderHistory(history) {
+    if (!history || history.length === 0) {
+      historyList.innerHTML = `<div class="empty-state">No history yet.</div>`;
+      historyCount.textContent = '0 entries';
+      return;
+    }
+    const sorted = [...history].reverse().slice(0, 50);
+    historyCount.textContent = sorted.length + ' entries';
+
+    let html = '';
+    for (const h of sorted) {
+      const dirClass = h.direction ? h.direction.toLowerCase() : 'neutral';
+      const resultClass = h.status === 'PROFIT' ? 'win' : h.status === 'LOSS' ? 'loss' : 'open';
+      const resultText = h.result || h.status || '—';
+
+      let durationStr = '—';
+      let durClass = '';
+      if (h.status !== 'OPEN' && h.openTime && h.closeTime) {
+        const durMs = h.closeTime - h.openTime;
+        durationStr = fmtDuration(durMs);
+        if (durMs < 120000) durClass = 'fast';
+        else if (durMs < 600000) durClass = 'medium';
+        else durClass = 'slow';
+      }
+
+      html += `
+        <div class="history-item">
+          <span class="h-sym">${getSymbol(h.symbol)}</span>
+          <span class="h-dir ${dirClass}">${h.direction === 'LONG' ? 'L' : h.direction === 'SHORT' ? 'S' : '—'}</span>
+          <span class="h-time">${fmtTime(h.timestamp)}</span>
+          <span class="h-duration ${durClass}">${durationStr}</span>
+          <span class="h-result ${resultClass}">${resultText}</span>
+          <span style="font-size:10px; color:#5f7d9a;">${h.closedPrice ? fmtPrice(h.closedPrice) : ''}</span>
+        </div>
+      `;
+    }
+    historyList.innerHTML = html;
+  }
+
+  // ================================================================
+  //  SYNC REMOTE HISTORY
+  // ================================================================
+  async function syncRemoteHistory() {
+    try {
+      const remote = await fetchHistoryFromSheet();
+      if (remote && remote.length > 0) {
+        const transformed = remote.map(r => ({
+          id: r.ID || r.id,
+          symbol: r.Symbol || r.symbol,
+          direction: r.Direction || r.direction,
+          entryLow: parseFloat(r.EntryMin || r.entryMin),
+          entryHigh: parseFloat(r.EntryMax || r.entryMax),
+          tp: parseFloat(r.TP || r.tp),
+          sl: parseFloat(r.SL || r.sl),
+          timestamp: r.Timestamp || r.timestamp,
+          status: r.Status || r.status,
+          result: r.Result || r.result,
+          closedPrice: parseFloat(r.ClosedPrice || r.closedPrice) || null,
+          openTime: r.openTime ? parseInt(r.openTime) : null,
+          closeTime: r.closeTime ? parseInt(r.closeTime) : null
+        }));
+        // Merge with local: only overwrite if remote has more data
+        const local = getLocalHistory();
+        const merged = [...local];
+        for (const r of transformed) {
+          const exists = merged.some(l => l.id === r.id);
+          if (!exists) merged.push(r);
+        }
+        saveLocalHistory(merged);
+        renderHistory(merged);
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  // ================================================================
+  //  AUTO REFRESH
+  // ================================================================
+  let scanInterval = null, historyInterval = null;
+
+  async function fullUpdate() {
+    await processScan();
+    await syncRemoteHistory();
+  }
+
+  function startAutoRefresh() {
+    if (scanInterval) clearInterval(scanInterval);
+    if (historyInterval) clearInterval(historyInterval);
+    fullUpdate();
+    scanInterval = setInterval(processScan, SCAN_INTERVAL);
+    historyInterval = setInterval(() => {
+      const hist = getLocalHistory();
+      renderHistory(hist);
+    }, HISTORY_INTERVAL);
+  }
+
+  refreshBtn.addEventListener('click', () => {
+    if (scanInterval) clearInterval(scanInterval);
+    if (historyInterval) clearInterval(historyInterval);
+    fullUpdate().finally(() => startAutoRefresh());
+  });
+
+  // ── BOOT ──
+  startAutoRefresh();
+</script>
 </body>
 </html>
