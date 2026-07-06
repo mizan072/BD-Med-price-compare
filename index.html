@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5" />
   <title>💊 Medicine Price Compare</title>
-  <!-- Font Awesome for icons -->
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
+    /* ===== RESET & ROOT ===== */
     *,
     *::before,
     *::after {
@@ -14,7 +15,6 @@
       margin: 0;
       padding: 0;
     }
-
     :root {
       --bg: #f4f7fc;
       --card-bg: #ffffff;
@@ -31,7 +31,6 @@
       --discount-bg: #dcfce7;
       --discount-text: #166534;
     }
-
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: var(--bg);
@@ -42,14 +41,12 @@
       flex-direction: column;
       align-items: center;
     }
-
     .container {
       max-width: 1280px;
       width: 100%;
       margin: 0 auto;
     }
-
-    /* ----- Header ----- */
+    /* ===== HEADER ===== */
     .header {
       text-align: center;
       margin-bottom: 2rem;
@@ -74,8 +71,7 @@
       font-size: 1.05rem;
       margin-top: 4px;
     }
-
-    /* ----- Search Box ----- */
+    /* ===== SEARCH BOX ===== */
     .search-box {
       display: flex;
       gap: 12px;
@@ -131,8 +127,7 @@
       cursor: not-allowed;
       transform: none;
     }
-
-    /* ----- Results Info ----- */
+    /* ===== RESULTS INFO ===== */
     .results-info {
       display: flex;
       justify-content: space-between;
@@ -147,8 +142,7 @@
       font-weight: 600;
       color: var(--text);
     }
-
-    /* ----- Loading Spinner ----- */
+    /* ===== LOADING ===== */
     .loading-wrap {
       display: flex;
       justify-content: center;
@@ -170,8 +164,7 @@
         transform: rotate(360deg);
       }
     }
-
-    /* ----- Error / No results ----- */
+    /* ===== MESSAGE BOX (error / no results) ===== */
     .message-box {
       padding: 2rem;
       text-align: center;
@@ -193,8 +186,7 @@
     .message-box.error i {
       color: #dc2626;
     }
-
-    /* ----- Table ----- */
+    /* ===== TABLE ===== */
     .table-wrap {
       background: var(--card-bg);
       border-radius: var(--radius);
@@ -274,8 +266,7 @@
       display: inline-block;
       white-space: nowrap;
     }
-
-    /* ----- Footer ----- */
+    /* ===== FOOTER ===== */
     .footer-note {
       margin-top: 2rem;
       color: #94a3b8;
@@ -284,8 +275,7 @@
       border-top: 1px solid var(--border);
       padding-top: 1.5rem;
     }
-
-    /* ----- Mobile Responsive ----- */
+    /* ===== MOBILE RESPONSIVE ===== */
     @media (max-width: 640px) {
       body {
         padding: 16px 12px;
@@ -326,7 +316,6 @@
         font-size: 0.9rem;
       }
     }
-
     @media (max-width: 480px) {
       .header h1 {
         font-size: 1.4rem;
@@ -408,14 +397,14 @@
   </div>
 
   <script>
-    // ============================================================
-    // CONFIGURATION – Change this to your Worker URL
-    // ============================================================
-    const WORKER_URL = 'https://autumn-sun-8446.contacttomizanur.workers.dev/api/search';
+    // ================================================================
+    // CONFIGURATION – point to your Cloudflare Worker
+    // ================================================================
+    const WORKER_URL = 'https://autumn-sun-8446.contacttomizanur.workers.dev/';  // root path
 
-    // ============================================================
+    // ================================================================
     // DOM refs
-    // ============================================================
+    // ================================================================
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
     const resultsBody = document.getElementById('resultsBody');
@@ -426,9 +415,9 @@
     const noResults = document.getElementById('noResults');
     const infoText = document.getElementById('infoText');
 
-    // ============================================================
-    // Helpers
-    // ============================================================
+    // ================================================================
+    // UI Helpers
+    // ================================================================
     function setLoading(show) {
       loading.style.display = show ? 'flex' : 'none';
       tableWrap.style.display = 'none';
@@ -458,9 +447,9 @@
       renderTable(products);
     }
 
-    // ============================================================
+    // ================================================================
     // Price calculation
-    // ============================================================
+    // ================================================================
     function computeUnitPrices(pv, puArray) {
       const baseUnit = puArray.find(u => u.pu_is_base === 1);
       const salesUnit = puArray.find(u => u.pu_is_b2c_sales_unit === 1) || baseUnit;
@@ -468,7 +457,7 @@
 
       const salesMultiplier = salesUnit.pu_multiplier;
       const unitPrice = pv.pv_b2c_price; // price per sales unit
-      const basePricePerUnit = unitPrice / salesMultiplier; // price per base unit (e.g., per tablet)
+      const basePricePerUnit = unitPrice / salesMultiplier; // price per base unit
 
       return {
         salesUnitLabel: salesUnit.pu_label,
@@ -479,9 +468,9 @@
       };
     }
 
-    // ============================================================
+    // ================================================================
     // Render table
-    // ============================================================
+    // ================================================================
     function renderTable(products) {
       resultsBody.innerHTML = '';
 
@@ -549,9 +538,9 @@
       });
     }
 
-    // ============================================================
-    // API call via Worker
-    // ============================================================
+    // ================================================================
+    // API call via Worker – handles the new error‑safe format
+    // ================================================================
     async function searchMedicine(query) {
       const term = query.trim();
       if (!term) {
@@ -563,10 +552,17 @@
       try {
         const url = `${WORKER_URL}?q=${encodeURIComponent(term)}`;
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
+        // Worker now always returns HTTP 200, so we can parse JSON
         const data = await response.json();
-        if (data.status !== 'success') throw new Error(data.message || 'API error');
+
+        // Check for error inside the JSON
+        if (data.status === 'error') {
+          throw new Error(data.message || 'Worker returned an error.');
+        }
+
+        if (data.status !== 'success') {
+          throw new Error(data.message || 'Unexpected API response.');
+        }
 
         const products = data.data || [];
         const total = data.total || 0;
@@ -577,25 +573,25 @@
           showResults(products, total);
         }
       } catch (err) {
-        console.error(err);
+        console.error('Search error:', err);
         showError(err.message || 'Failed to fetch data. Please try again later.');
       } finally {
         setLoading(false);
       }
     }
 
-    // ============================================================
+    // ================================================================
     // Event listeners
-    // ============================================================
+    // ================================================================
     searchBtn.addEventListener('click', () => searchMedicine(searchInput.value));
     searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') searchMedicine(searchInput.value);
     });
 
-    // Focus input on load
+    // Focus on load
     window.addEventListener('load', () => searchInput.focus());
 
-    // Optional: initial search with a popular term to show demo
+    // Optional: uncomment below for a demo search on page load
     // searchMedicine('atorvastatin');
   </script>
 </body>
