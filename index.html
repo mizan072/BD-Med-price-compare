@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
   <title>ScalpScanner Pro Dashboard</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
@@ -28,7 +28,7 @@
     .refresh-btn .spinner { width: 14px; height: 14px; border: 2px solid #5f7d9a; border-top-color: #d6e4f0; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Active Signals Container */
+    /* Active Signals Dashboard */
     .signals-container { background: #111a24; border-radius: 16px; border: 1px solid #1e2c3b; overflow: hidden; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
     .signals-header { display: grid; grid-template-columns: 70px 50px 90px 1fr 90px 90px 110px 80px; gap: 6px; padding: 12px 16px; background: #0a111a; border-bottom: 1px solid #1e2c3b; color: #5f7d9a; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .signals-grid { display: flex; flex-direction: column; max-height: 450px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
@@ -47,7 +47,9 @@
     .signal-row .col-entry { color: #9ab0c9; font-size: 13px; white-space: nowrap; }
     .signal-row .col-tp { color: #33d9a8; font-weight: 600; }
     .signal-row .col-sl { color: #f25b6a; font-weight: 600; }
-    .signal-row .col-conf { font-weight: 700; display: flex; align-items: center; gap: 6px; justify-content: center; }
+    
+    /* FIX: High Visibility Text Contrast Alignment */
+    .signal-row .col-conf { font-weight: 700; display: flex; align-items: center; gap: 6px; justify-content: center; color: #f0f4fa !important; }
     
     .conf-bar-container { width: 45px; height: 5px; background: #1e2c3b; border-radius: 30px; overflow: hidden; flex-shrink: 0; }
     .conf-bar { height: 100%; border-radius: 30px; }
@@ -84,16 +86,9 @@
     .history-item .h-result { font-weight: 700; font-size: 12px; text-align: center; border-radius: 4px; padding: 2px 6px; width: fit-content; margin: 0 auto; }
     .history-item .h-result.win { color: #33d9a8; background: rgba(51, 217, 168, 0.12); }
     .history-item .h-result.loss { color: #f25b6a; background: rgba(242, 91, 106, 0.12); }
-    .history-item .h-result.expired { color: #9ab0c9; background: rgba(154, 176, 201, 0.12); }
     .history-item .h-price { font-size: 13px; font-weight: 600; color: #d6e4f0; text-align: right; }
 
-    /* ========== RESPONSIVE DESIGN BREAKPOINTS ========== */
-    @media (max-width: 768px) {
-      .signals-header { font-size: 10px; grid-template-columns: 60px 40px 80px 1fr 75px 75px 95px 70px; padding: 10px 12px; }
-      .signal-row { grid-template-columns: 60px 40px 80px 1fr 75px 75px 95px 70px; font-size: 13px; padding: 10px 12px; }
-      .history-item { grid-template-columns: 60px 40px 80px 90px 95px 1fr; }
-    }
-
+    /* Responsive Breakdown Styles */
     @media (max-width: 650px) {
       .signals-header { display: none; }
       .signal-row { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: repeat(3, auto); gap: 4px 8px; padding: 12px; }
@@ -113,13 +108,6 @@
       .history-item .h-duration { grid-column: 1 / 2; grid-row: 2 / 3; text-align: left; background: none; border: none; padding: 0; }
       .history-item .h-result { grid-column: 2 / 3; grid-row: 2 / 3; text-align: left; margin: 0; }
       .history-item .h-price { grid-column: 3 / 4; grid-row: 2 / 3; text-align: right; }
-    }
-
-    @media (max-width: 480px) {
-      body { padding: 8px; }
-      .header h1 { font-size: 20px; }
-      .top-bar { padding: 8px 12px; }
-      .refresh-btn { padding: 6px 14px; font-size: 12px; }
     }
   </style>
 </head>
@@ -141,7 +129,7 @@
       <span>TP</span> <span>SL</span> <span>Confidence</span> <span style="text-align:right">Time</span>
     </div>
     <div class="signals-grid" id="signalsGrid">
-      <div class="empty-state">No active signals. Waiting for setup...</div>
+      <div class="empty-state">Syncing secure connection profile matrix...</div>
     </div>
   </div>
 
@@ -157,20 +145,11 @@
 </div>
 
 <script>
-  // ================================================================
-  //  CONFIG & ENDPOINTS (Change to your newly deployed web app URL)
-  // ================================================================
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_Dm7ShMbtispqIZAGen1g9ZKHbaMYGLuJuipsliNv6bD_4vx0fsEOo2V2CdE5HzdH/exec';
+  // CHANGE THIS TO YOUR NEW DEPLOYMENT EMBED WEB APP URL
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRD5iCPV5RJnmgY8ZN2RuYNJIklqAYolT_oan442Dd_lK9ZBiIkSyV7PcBnQOgyYg4/exec';
 
-  const TICK_SIZE = {
-    'BTCUSDT': 0.01, 'ETHUSDT': 0.01, 'BNBUSDT': 0.01,
-    'SOLUSDT': 0.001, 'AVAXUSDT': 0.001, 'DOTUSDT': 0.001, 'LINKUSDT': 0.001,
-    'XRPUSDT': 0.0001, 'ADAUSDT': 0.0001, 'DOGEUSDT': 0.00001
-  };
-  const COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','LINKUSDT'];
-  const SCAN_INTERVAL = 15000;
-  const HISTORY_INTERVAL = 30000;
-  const SIGNAL_EXPIRY_MINUTES = 30;
+  const TICK_SIZE = { 'BTCUSDT': 0.01, 'ETHUSDT': 0.01, 'BNBUSDT': 0.01, 'SOLUSDT': 0.001, 'LINKUSDT': 0.001, 'XRPUSDT': 0.0001 };
+  const REFRESH_RATE_MS = 15000;
 
   const $ = id => document.getElementById(id);
   const signalsGrid = $('signalsGrid');
@@ -180,9 +159,7 @@
   const liveCount = $('liveCount');
   const historyCount = $('historyCount');
 
-  let lastSheetError = null;
-  let isProcessing = false;
-  const activeSignals = new Map();
+  let syncLock = false;
 
   function getTick(symbol) { return TICK_SIZE[symbol] || 0.01; }
   function formatPrice(value, tick) { if (!tick || isNaN(value)) return '$' + value; const decimals = Math.max(0, Math.ceil(-Math.log10(tick))); return '$' + Number(value).toFixed(decimals); }
@@ -191,302 +168,131 @@
   function fmtDuration(ms) { if (!ms || ms < 0) return '—'; const totalSec = Math.floor(ms / 1000); if (totalSec < 60) return totalSec + 's'; const min = Math.floor(totalSec / 60); const sec = totalSec % 60; return min + 'm ' + sec + 's'; }
   function getSymbol(s) { return s ? s.replace('USDT','') : ''; }
 
-  // Simulated indicators or analysis hook
-  function analyzeCoin(symbol) {
-    const mockConfidence = Math.floor(Math.random() * 60) + 40; 
-    const direction = Math.random() > 0.5 ? 'LONG' : 'SHORT';
-    return { shouldTrade: Math.random() > 0.85, strength: mockConfidence, direction };
-  }
-
   // ================================================================
-  //  SERVER / SHEET INTERACTION
+  //  CENTRALIZED DATA SYNCHRONIZATION SYNC ENGINE
   // ================================================================
-  async function addSignalToSheet(signal) {
-    try {
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'text/plain' }, 
-        body: JSON.stringify({
-          action: 'add',
-          id: signal.id,
-          timestamp: signal.timestamp,
-          symbol: signal.symbol,
-          direction: signal.direction,
-          entryMin: signal.entryLow,
-          entryMax: signal.entryHigh,
-          tp: signal.tp,
-          sl: signal.sl,
-          openTime: signal.openTime
-        })
-      });
-      const res = await response.json();
-      lastSheetError = res.success ? null : res.error;
-      return res;
-    } catch (err) {
-      lastSheetError = err.message;
-      console.error("Add signal network error:", err);
-    }
-  }
+  async function syncDatabase() {
+    if (syncLock) return;
+    syncLock = true;
+    
+    refreshBtn.disabled = true;
+    refreshBtn.innerHTML = `<span class="spinner"></span> Syncing...`;
+    statusText.innerHTML = `⏳ <span style="color:#f4c95d; font-weight:600;">Syncing</span> · Pulling master database states...`;
 
-  async function updateSignalStatus(id, status, closedPrice, closeTime) {
-    try {
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({
-          action: 'update',
-          id: id,
-          status: status,
-          closedPrice: closedPrice,
-          closeTime: closeTime || Date.now()
-        })
-      });
-      const res = await response.json();
-      lastSheetError = res.success ? null : res.error;
-      return res;
-    } catch (err) {
-      lastSheetError = err.message;
-      console.error("Update status network error:", err);
-    }
-  }
-
-  async function fetchHistoryFromSheet() {
     try {
       const response = await fetch(GOOGLE_SCRIPT_URL);
       const json = await response.json();
-      if (json.success) {
-        lastSheetError = null;
-        saveLocalHistory(json.data || []);
-        return json.data || [];
-      }
-      lastSheetError = json.error;
-      return getLocalHistory();
-    } catch (err) {
-      lastSheetError = err.message;
-      console.error("Fetch history network error:", err);
-      return getLocalHistory();
-    }
-  }
-
-  function getLocalHistory() { try { return JSON.parse(localStorage.getItem('scalp_hist')) || []; } catch { return []; } }
-  function saveLocalHistory(h) { localStorage.setItem('scalp_hist', JSON.stringify(h)); }
-
-  // ================================================================
-  //  CORE AUTOMATED ENGINE WITH SIMULATED PRICE COLLISION DETECTION
-  // ================================================================
-  async function processScan() {
-    if (isProcessing) return;
-    isProcessing = true;
-    updateStatusDisplay(true);
-
-    try {
-      for (const coin of COINS) {
-        // If a signal for this coin is currently running, monitor its price path
-        if (activeSignals.has(coin)) {
-          const sig = activeSignals.get(coin);
-          
-          // 1. Simulate real market movement volatility (-0.4% to +0.4% swing)
-          const volatility = 1 + (Math.random() * 0.008 - 0.004);
-          sig.livePrice = sig.livePrice * volatility;
-
-          // 2. Real-time Collision Check: Did price cross Target Levels?
-          let hitStatus = null;
-          if (sig.direction === 'LONG') {
-            if (sig.livePrice >= sig.tp) hitStatus = 'PROFIT';
-            else if (sig.livePrice <= sig.sl) hitStatus = 'LOSS';
-          } else {
-            if (sig.livePrice <= sig.tp) hitStatus = 'PROFIT';
-            else if (sig.livePrice >= sig.sl) hitStatus = 'LOSS';
-          }
-
-          // 3. If target reached, remove from frontend list and push immediately to sheet
-          if (hitStatus) {
-            activeSignals.delete(coin);
-            await updateSignalStatus(sig.id, hitStatus, sig.livePrice, Date.now());
-            // Immediately pull fresh database state to move items smoothly
-            const freshHist = await fetchHistoryFromSheet();
-            renderHistory(freshHist);
-            continue;
-          }
-
-          // 4. Time Expiry Guard
-          const minutesElapsed = (Date.now() - sig.openTime) / 60000;
-          if (minutesElapsed >= SIGNAL_EXPIRY_MINUTES) {
-            activeSignals.delete(coin);
-            await updateSignalStatus(sig.id, 'EXPIRED', sig.livePrice, Date.now());
-            const freshHist = await fetchHistoryFromSheet();
-            renderHistory(freshHist);
-          }
-          continue;
-        }
-
-        // --- Generate New Signal Setup ---
-        const analysis = analyzeCoin(coin);
-        if (analysis.shouldTrade) {
-          const tick = getTick(coin);
-          // Standard placeholder pricing matrix
-          const currentPrice = coin.startsWith('BTC') ? 65000 + (Math.random() * 2000) : (coin.startsWith('ETH') ? 3400 + (Math.random() * 150) : 50 + (Math.random() * 80)); 
-          
-          const signalData = {
-            id: 'sig_' + Date.now() + '_' + Math.random().toString(36).substr(2,4),
-            timestamp: new Date().toISOString(),
-            symbol: coin,
-            direction: analysis.direction,
-            livePrice: currentPrice,
-            entryLow: currentPrice * 0.997,
-            entryHigh: currentPrice * 1.002,
-            tp: analysis.direction === 'LONG' ? currentPrice * 1.015 : currentPrice * 0.985,
-            sl: analysis.direction === 'LONG' ? currentPrice * 0.991 : currentPrice * 1.009,
-            strength: analysis.strength,
-            openTime: Date.now(),
-            tick: tick
-          };
-
-          activeSignals.set(coin, signalData);
-          await addSignalToSheet(signalData);
-        }
-      }
       
-      renderSignals(Array.from(activeSignals.values()));
-      liveCount.textContent = activeSignals.size;
-    } catch (e) {
-      console.error("Scan pipeline encounter error:", e);
+      if (json.success && json.data) {
+        statusText.innerHTML = `🟢 <span class="live">Live</span> · Systems synced across all users`;
+        processMasterArrays(json.data);
+      } else {
+        statusText.innerHTML = `<span class="error">❌ Synchronization Error</span> · ${json.error || 'Fault response'}`;
+      }
+    } catch (err) {
+      statusText.innerHTML = `<span class="error">❌ Connection Interrupted</span> · Retrying...`;
+      console.error(err);
     } finally {
-      isProcessing = false;
-      updateStatusDisplay(false);
+      syncLock = false;
+      refreshBtn.disabled = false;
+      refreshBtn.innerHTML = `⟳ Refresh`;
     }
   }
 
-  function updateStatusDisplay(loading) {
-    if (lastSheetError) {
-      statusText.innerHTML = `<span class="error">❌ Backend Error</span> · ${lastSheetError}`;
-      return;
-    }
-    statusText.innerHTML = loading ? `⏳ <span style="color:#f4c95d; font-weight:600;">Scanning</span> · Syncing remote data arrays...` : `🟢 <span class="live">Live</span> · scanning network targets...`;
+  function processMasterArrays(dataset) {
+    // 1. Isolate and Render Active Signals
+    const active = dataset.filter(row => row["Status"] === "OPEN");
+    liveCount.textContent = active.length;
+    renderActiveGrid(active);
+
+    // 2. Isolate and Render Closed Performance Profiles
+    const closed = dataset.filter(row => row["Status"] === "PROFIT" || row["Status"] === "LOSS");
+    renderHistoryGrid(closed);
   }
 
-  // ================================================================
-  //  UI INTERACTION & RENDERING ENGINE
-  // ================================================================
-  function renderSignals(signals) {
-    if (!signals || signals.length === 0) {
-      signalsGrid.innerHTML = `<div class="empty-state">No active signals. Scanning assets...</div>`;
+  function renderActiveGrid(signals) {
+    if (signals.length === 0) {
+      signalsGrid.innerHTML = `<div class="empty-state">No active signals on market. Scanning centralized matrix...</div>`;
       return;
     }
     let html = '';
     signals.forEach(s => {
-      const dirClass = s.direction.toLowerCase();
-      const tick = s.tick || 0.01;
-      const confidence = s.strength || 70;
-      let confClass = confidence >= 80 ? 'high' : (confidence >= 60 ? 'medium' : 'low');
+      const dirClass = s["Direction"].toLowerCase();
+      const tick = getTick(s["Symbol"]);
+      const confidence = parseInt(s["Confidence"]) || 60;
+      let confTier = confidence >= 80 ? 'high' : 'medium';
+      const livePrice = parseFloat(s["Live Price"]) || 0;
 
       html += `
         <div class="signal-row ${dirClass}">
-          <span class="col-sym">${getSymbol(s.symbol)}</span>
-          <span class="col-dir ${dirClass}">${s.direction === 'LONG' ? 'BUY' : 'SELL'}</span>
-          <span class="col-price">${formatPrice(s.livePrice, tick)}</span>
-          <span class="col-entry">${formatPriceShort(s.entryLow, tick)} – ${formatPriceShort(s.entryHigh, tick)}</span>
-          <span class="col-tp">${formatPriceShort(s.tp, tick)}</span>
-          <span class="col-sl">${formatPriceShort(s.sl, tick)}</span>
-          <span class="col-conf ${confClass}">
+          <span class="col-sym">${getSymbol(s["Symbol"])}</span>
+          <span class="col-dir ${dirClass}">${s["Direction"] === 'LONG' ? 'BUY' : 'SELL'}</span>
+          <span class="col-price">${formatPrice(livePrice, tick)}</span>
+          <span class="col-entry">${s["Entry Range"]}</span>
+          <span class="col-tp">${formatPriceShort(s["TP"], tick)}</span>
+          <span class="col-sl">${formatPriceShort(s["SL"], tick)}</span>
+          <span class="col-conf">
             <div class="conf-bar-container">
-              <div class="conf-bar ${confClass}" style="width:${confidence}%"></div>
+              <div class="conf-bar ${confTier}" style="width:${confidence}%"></div>
             </div>
             ${confidence}%
           </span>
-          <span class="col-time">${fmtTime(s.timestamp)}</span>
+          <span class="col-time">${fmtTime(s["Timestamp"])}</span>
         </div>
       `;
     });
     signalsGrid.innerHTML = html;
   }
 
-  function renderHistory(historyData) {
-    // Isolate actual processed trades
-    const closedTrades = historyData.filter(h => h["Status"] === 'PROFIT' || h["Status"] === 'LOSS' || h["Status"] === 'EXPIRED');
-    
-    if (!closedTrades || closedTrades.length === 0) {
-      historyList.innerHTML = `<div class="empty-state">No completed trades recorded in backend sheets.</div>`;
-      historyCount.innerHTML = `<span style="color:#33d9a8; font-weight:700;">W: 0</span> &nbsp;|&nbsp; <span style="color:#f25b6a; font-weight:700;">L: 0</span> &nbsp;|&nbsp; Total: 0`;
+  function renderHistoryGrid(history) {
+    if (history.length === 0) {
+      historyList.innerHTML = `<div class="empty-state">No completed target outcomes recorded inside database.</div>`;
+      historyCount.innerHTML = `<span style="color:#33d9a8; font-weight:700;">W: 0</span> &nbsp;&nbsp;|&nbsp;&nbsp; <span style="color:#f25b6a; font-weight:700;">L: 0</span> &nbsp;&nbsp;|&nbsp;&nbsp; Total: 0`;
       return;
     }
+
+    const sorted = history.sort((a, b) => (b["Close Time"] || 0) - (a["Close Time"] || 0)).slice(0, 40);
     
-    const sorted = closedTrades.sort((a, b) => (b["Close Time"] || 0) - (a["Close Time"] || 0)).slice(0, 50);
-    
-    // --- SCOREBOARD CALCULATOR ENGINE ---
-    const totalWins = sorted.filter(h => h["Status"] === 'PROFIT').length;
-    const totalLosses = sorted.filter(h => h["Status"] === 'LOSS').length;
-    historyCount.innerHTML = `<span style="color:#33d9a8; font-weight:700;">W: ${totalWins}</span> &nbsp;&nbsp;|&nbsp;&nbsp; <span style="color:#f25b6a; font-weight:700;">L: ${totalLosses}</span> &nbsp;&nbsp;|&nbsp;&nbsp; Total: ${sorted.length}`;
-    
+    const totalWins = history.filter(h => h["Status"] === 'PROFIT').length;
+    const totalLosses = history.filter(h => h["Status"] === 'LOSS').length;
+    historyCount.innerHTML = `<span style="color:#33d9a8; font-weight:700;">W: ${totalWins}</span> &nbsp;&nbsp;|&nbsp;&nbsp; <span style="color:#f25b6a; font-weight:700;">L: ${totalLosses}</span> &nbsp;&nbsp;|&nbsp;&nbsp; Total: ${history.length}`;
+
     let html = '';
-    for (const h of sorted) {
+    sorted.forEach(h => {
       const dir = h["Direction"] || 'LONG';
       const symbol = h["Symbol"] || '';
       const tick = getTick(symbol);
       
-      let resultText = "EXPIRED";
-      let resultClass = "expired";
-      if (h["Status"] === 'PROFIT') { resultText = "WIN ✅"; resultClass = "win"; }
-      else if (h["Status"] === 'LOSS') { resultText = "LOSS ❌"; resultClass = "loss"; }
+      let resText = h["Status"] === 'PROFIT' ? "WIN ✅" : "LOSS ❌";
+      let resClass = h["Status"] === 'PROFIT' ? "win" : "loss";
       
-      // Calculate active timeframe execution speed
       let durationStr = '—', durClass = 'slow';
       if (h["Open Time"] && h["Close Time"]) {
-        const durMs = Number(h["Close Time"]) - Number(h["Open Time"]);
-        durationStr = fmtDuration(durMs);
-        durClass = durMs < 60000 ? 'fast' : (durMs < 300000 ? 'medium' : 'slow');
+        const ms = Number(h["Close Time"]) - Number(h["Open Time"]);
+        durationStr = fmtDuration(ms);
+        durClass = ms < 60000 ? 'fast' : (ms < 300000 ? 'medium' : 'slow');
       }
 
-      const closedPriceNum = parseFloat(h["Closed Price"]);
-      const priceDisplay = (closedPriceNum && closedPriceNum > 0) ? formatPrice(closedPriceNum, tick) : '—';
-      
       html += `
         <div class="history-item">
           <span class="h-sym">${getSymbol(symbol)}</span>
           <span class="h-dir ${dir.toLowerCase()}">${dir === 'LONG' ? 'L' : 'S'}</span>
           <span class="h-time">${fmtTime(h["Timestamp"])}</span>
           <span class="h-duration ${durClass}">${durationStr}</span>
-          <span class="h-result ${resultClass}">${resultText}</span>
-          <span class="h-price">${priceDisplay}</span>
+          <span class="h-result ${resClass}">${resText}</span>
+          <span class="h-price">${formatPrice(parseFloat(h["Closed Price"]) || 0, tick)}</span>
         </div>
       `;
-    }
+    });
     historyList.innerHTML = html;
   }
 
-  // ================================================================
-  //  INITIALIZATION
-  // ================================================================
-  async function fullUpdate() { 
-    refreshBtn.disabled = true;
-    refreshBtn.innerHTML = `<span class="spinner"></span> Syncing...`;
-    
-    await processScan(); 
-    const hist = await fetchHistoryFromSheet(); 
-    renderHistory(hist);
-    
-    refreshBtn.disabled = false;
-    refreshBtn.innerHTML = `⟳ Refresh`;
-  }
-
-  let scanInterval = null, historyInterval = null;
-  function startAutoRefresh() {
-    if (scanInterval) clearInterval(scanInterval);
-    if (historyInterval) clearInterval(historyInterval);
-    
-    fullUpdate();
-    
-    scanInterval = setInterval(processScan, SCAN_INTERVAL);
-    historyInterval = setInterval(async () => { 
-      const hist = await fetchHistoryFromSheet(); 
-      renderHistory(hist); 
-    }, HISTORY_INTERVAL);
-  }
-
-  refreshBtn.addEventListener('click', startAutoRefresh);
-  window.addEventListener('DOMContentLoaded', startAutoRefresh);
+  // Initial Startup
+  refreshBtn.addEventListener('click', syncDatabase);
+  window.addEventListener('DOMContentLoaded', () => {
+    syncDatabase();
+    setInterval(syncDatabase, REFRESH_RATE_MS);
+  });
 </script>
 </body>
 </html>
