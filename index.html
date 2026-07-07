@@ -2,112 +2,162 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
-  <title>ScalpScanner Pro Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover" />
+  <title>ScalpScanner Pro</title>
   <style>
+    /* (CSS unchanged – same as previous working version) */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
-    body { background: #090d14; min-height: 100vh; padding: 16px; display: flex; justify-content: center; }
-    .app { max-width: 950px; width: 100%; }
-
-    /* Header styling */
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
-    .header h1 { color: #f0f4fa; font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
-    .header h1 span { background: linear-gradient(135deg, #33d9a8, #1db883); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 30px; color: #090d14; letter-spacing: 0.5px; }
-    .badge { background: #161f2b; padding: 6px 14px; border-radius: 40px; color: #9ab0c9; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid #253240; white-space: nowrap; }
-    .badge .dot { width: 8px; height: 8px; background: #33d9a8; border-radius: 50%; display: inline-block; animation: pulse-dot 1.6s infinite; }
+    body { background: #090d14; min-height: 100vh; padding: 12px; display: flex; justify-content: center; }
+    .app { max-width: 900px; width: 100%; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+    .header h1 { color: #f0f4fa; font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+    .header h1 span { background: linear-gradient(135deg, #33d9a8, #1db883); font-size: 12px; font-weight: 600; padding: 2px 12px; border-radius: 30px; color: #090d14; }
+    .badge { background: #161f2b; padding: 5px 14px; border-radius: 40px; color: #9ab0c9; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid #253240; white-space: nowrap; }
+    .badge .dot { width: 7px; height: 7px; background: #33d9a8; border-radius: 50%; display: inline-block; animation: pulse-dot 1.6s infinite; }
     @keyframes pulse-dot { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.3; transform: scale(0.9); } }
-
-    /* Top Action Bar */
-    .top-bar { display: flex; justify-content: space-between; align-items: center; background: #111a24; padding: 10px 16px; border-radius: 14px; border: 1px solid #1e2c3b; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-    .top-bar .status { color: #7a94af; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; background: #111a24; padding: 8px 16px; border-radius: 14px; border: 1px solid #1e2c3b; margin-bottom: 16px; flex-wrap: wrap; gap: 6px; }
+    .top-bar .status { color: #7a94af; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .top-bar .status .live { color: #33d9a8; font-weight: 600; }
     .top-bar .status .error { color: #f25b6a; font-weight: 600; }
-    .refresh-btn { background: #1e2c3b; border: none; color: #d6e4f0; padding: 8px 18px; border-radius: 30px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; border: 1px solid #2d3f52; transition: all 0.2s; min-height: 40px; }
-    .refresh-btn:hover:not(:disabled) { background: #2d3f52; border-color: #3e566e; }
+    .refresh-btn { background: #1e2c3b; border: none; color: #d6e4f0; padding: 6px 18px; border-radius: 30px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; border: 1px solid #2d3f52; transition: 0.2s; min-height: 40px; min-width: 40px; justify-content: center; }
+    .refresh-btn:hover:not(:disabled) { background: #2d3f52; }
     .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .refresh-btn .spinner { width: 14px; height: 14px; border: 2px solid #5f7d9a; border-top-color: #d6e4f0; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Active Signals Dashboard */
-    .signals-container { background: #111a24; border-radius: 16px; border: 1px solid #1e2c3b; overflow: hidden; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-    .signals-header { display: grid; grid-template-columns: 70px 50px 90px 1fr 90px 90px 110px 80px; gap: 6px; padding: 12px 16px; background: #0a111a; border-bottom: 1px solid #1e2c3b; color: #5f7d9a; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    .signals-grid { display: flex; flex-direction: column; max-height: 450px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-    .signals-grid::-webkit-scrollbar { width: 6px; }
+    .signals-container { background: #111a24; border-radius: 16px; border: 1px solid #1e2c3b; overflow: hidden; margin-bottom: 24px; }
+    .signals-header { display: grid; grid-template-columns: 50px 40px 80px 1fr 80px 80px 100px 70px; gap: 4px; padding: 8px 12px; background: #0a111a; border-bottom: 1px solid #1e2c3b; color: #5f7d9a; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .signals-grid { display: flex; flex-direction: column; max-height: 420px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .signals-grid::-webkit-scrollbar { width: 4px; }
     .signals-grid::-webkit-scrollbar-track { background: #0a111a; }
     .signals-grid::-webkit-scrollbar-thumb { background: #2d3f52; border-radius: 4px; }
-
-    .signal-row { display: grid; grid-template-columns: 70px 50px 90px 1fr 90px 90px 110px 80px; gap: 6px; padding: 12px 16px; align-items: center; border-bottom: 1px solid #1a2533; font-size: 14px; transition: background 0.15s; background: #111a24; min-height: 52px; }
+    .signal-row {
+      display: grid; grid-template-columns: 50px 40px 80px 1fr 80px 80px 100px 70px; gap: 4px;
+      padding: 8px 12px; align-items: center; border-bottom: 1px solid #1a2533;
+      font-size: 13px; transition: background 0.15s; background: #111a24; min-height: 48px;
+    }
     .signal-row:last-child { border-bottom: none; }
     .signal-row:hover { background: #1a2633; }
-    .signal-row .col-sym { font-weight: 700; color: #f0f4fa; }
-    .signal-row .col-dir { font-weight: 700; text-align: center; }
+    .signal-row .col-sym { font-weight: 700; color: #f0f4fa; font-size: 14px; }
+    .signal-row .col-dir { font-weight: 700; font-size: 13px; text-align: center; }
     .signal-row .col-dir.long { color: #33d9a8; }
     .signal-row .col-dir.short { color: #f25b6a; }
-    .signal-row .col-price { color: #d6e4f0; font-weight: 600; white-space: nowrap; }
-    .signal-row .col-entry { color: #9ab0c9; font-size: 13px; white-space: nowrap; }
-    .signal-row .col-tp { color: #33d9a8; font-weight: 600; }
-    .signal-row .col-sl { color: #f25b6a; font-weight: 600; }
-    
-    /* FIX: High Visibility Text Contrast Alignment */
-    .signal-row .col-conf { font-weight: 700; display: flex; align-items: center; gap: 6px; justify-content: center; color: #f0f4fa !important; }
-    
-    .conf-bar-container { width: 45px; height: 5px; background: #1e2c3b; border-radius: 30px; overflow: hidden; flex-shrink: 0; }
-    .conf-bar { height: 100%; border-radius: 30px; }
+    .signal-row .col-price { color: #d6e4f0; font-weight: 500; white-space: nowrap; }
+    .signal-row .col-entry { color: #9ab0c9; font-size: 12px; white-space: nowrap; }
+    .signal-row .col-tp { color: #33d9a8; font-weight: 500; font-size: 12px; }
+    .signal-row .col-sl { color: #f25b6a; font-weight: 500; font-size: 12px; }
+    .signal-row .col-conf {
+      font-weight: 700;
+      font-size: 13px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: center;
+      flex-wrap: wrap;
+      color: #d6e4f0;
+    }
+    .signal-row .col-conf.high { color: #33d9a8; }
+    .signal-row .col-conf.medium { color: #f4c95d; }
+    .signal-row .col-conf.low { color: #f25b6a; }
+    .conf-bar-container { width: 40px; height: 4px; background: #1e2c3b; border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+    .conf-bar { height: 100%; border-radius: 2px; }
     .conf-bar.high { background: #33d9a8; }
     .conf-bar.medium { background: #f4c95d; }
     .conf-bar.low { background: #f25b6a; }
-    .signal-row .col-time { color: #5f7d9a; font-size: 12px; text-align: right; white-space: nowrap; }
-    .signal-row.long { border-left: 4px solid #33d9a8; }
-    .signal-row.short { border-left: 4px solid #f25b6a; }
-    .empty-state { color: #5f7d9a; text-align: center; padding: 36px 16px; font-size: 14px; font-style: italic; }
-
-    /* Closed Trade History Section */
-    .history-section { background: #111a24; border-radius: 16px; padding: 14px 0 0 0; border: 1px solid #1e2c3b; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-    .history-header { display: flex; justify-content: space-between; align-items: center; padding: 0 16px 12px 16px; border-bottom: 1px solid #1a2533; flex-wrap: wrap; gap: 8px; }
+    .signal-row .col-time { color: #5f7d9a; font-size: 11px; text-align: right; white-space: nowrap; }
+    .signal-row.long { border-left: 3px solid #33d9a8; }
+    .signal-row.short { border-left: 3px solid #f25b6a; }
+    .empty-state { color: #5f7d9a; text-align: center; padding: 28px 10px; font-size: 13px; }
+    .history-section { background: #111a24; border-radius: 16px; padding: 12px 0 0 0; border: 1px solid #1e2c3b; overflow: hidden; }
+    .history-header { display: flex; justify-content: space-between; align-items: center; padding: 0 14px 10px 14px; flex-wrap: wrap; gap: 6px; }
     .history-header h3 { color: #9ab0c9; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    .history-header .count { background: #1a2430; padding: 4px 14px; border-radius: 30px; font-size: 12px; color: #7a94af; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-    .history-list { display: flex; flex-direction: column; max-height: 360px; overflow-y: auto; padding: 2px; -webkit-overflow-scrolling: touch; }
-    .history-list::-webkit-scrollbar { width: 6px; }
-    .history-list::-webkit-scrollbar-track { background: #0a111a; }
+    .history-header .count { background: #1a2430; padding: 1px 12px; border-radius: 30px; font-size: 11px; color: #7a94af; white-space: nowrap; }
+    .history-list { display: flex; flex-direction: column; max-height: 340px; overflow-y: auto; padding: 0 4px 4px 4px; -webkit-overflow-scrolling: touch; }
+    .history-list::-webkit-scrollbar { width: 4px; }
+    .history-list::-webkit-scrollbar-track { background: #0a111a; border-radius: 4px; }
     .history-list::-webkit-scrollbar-thumb { background: #2d3f52; border-radius: 4px; }
-
-    .history-item { display: grid; grid-template-columns: 70px 50px 90px 100px 110px 1fr; gap: 6px; padding: 10px 14px; font-size: 13px; align-items: center; border-bottom: 1px solid #1a2533; background: #111a24; min-height: 46px; }
+    .history-item {
+      display: grid; grid-template-columns: 45px 30px 55px 60px 75px 55px;
+      gap: 4px 6px; padding: 7px 10px; font-size: 12px; align-items: center;
+      border-bottom: 1px solid #1a2533; background: #111a24; min-height: 44px;
+    }
     .history-item:last-child { border-bottom: none; }
     .history-item:hover { background: #1a2633; }
-    .history-item .h-sym { font-weight: 700; color: #f0f4fa; }
-    .history-item .h-dir { font-weight: 600; font-size: 12px; text-align: center; border-radius: 4px; padding: 1px 4px; }
-    .history-item .h-dir.long { color: #33d9a8; background: rgba(51, 217, 168, 0.1); }
-    .history-item .h-dir.short { color: #f25b6a; background: rgba(242, 91, 106, 0.1); }
-    .history-item .h-time { color: #5f7d9a; font-size: 12px; }
-    .history-item .h-duration { font-size: 11px; font-weight: 600; text-align: center; background: #1a2430; padding: 2px 8px; border-radius: 20px; color: #9ab0c9; }
-    .history-item .h-duration.fast { border: 1px solid rgba(51, 217, 168, 0.3); color: #33d9a8; }
-    .history-item .h-duration.medium { border: 1px solid rgba(244, 201, 93, 0.3); color: #f4c95d; }
-    .history-item .h-duration.slow { border: 1px solid rgba(242, 91, 106, 0.3); color: #a1b5cc; }
-    .history-item .h-result { font-weight: 700; font-size: 12px; text-align: center; border-radius: 4px; padding: 2px 6px; width: fit-content; margin: 0 auto; }
-    .history-item .h-result.win { color: #33d9a8; background: rgba(51, 217, 168, 0.12); }
-    .history-item .h-result.loss { color: #f25b6a; background: rgba(242, 91, 106, 0.12); }
-    .history-item .h-price { font-size: 13px; font-weight: 600; color: #d6e4f0; text-align: right; }
-
-    /* Responsive Breakdown Styles */
+    .history-item .h-sym { font-weight: 700; color: #f0f4fa; font-size: 13px; }
+    .history-item .h-dir { font-weight: 600; font-size: 11px; text-align: center; }
+    .history-item .h-dir.long { color: #33d9a8; }
+    .history-item .h-dir.short { color: #f25b6a; }
+    .history-item .h-time { color: #5f7d9a; font-size: 10px; white-space: nowrap; }
+    .history-item .h-duration { font-size: 10px; font-weight: 600; text-align: center; background: #1a2430; padding: 1px 6px; border-radius: 20px; white-space: nowrap; }
+    .history-item .h-duration.fast { color: #33d9a8; }
+    .history-item .h-duration.medium { color: #f4c95d; }
+    .history-item .h-duration.slow { color: #f25b6a; }
+    .history-item .h-result { font-weight: 700; font-size: 12px; text-align: center; }
+    .history-item .h-result.win { color: #33d9a8; }
+    .history-item .h-result.loss { color: #f25b6a; }
+    .history-item .h-price { font-size: 10px; color: #7a94af; text-align: right; white-space: nowrap; }
+    @media (max-width: 768px) {
+      .signals-header { font-size: 9px; grid-template-columns: 45px 35px 70px 1fr 70px 70px 80px 60px; }
+      .signal-row { grid-template-columns: 45px 35px 70px 1fr 70px 70px 80px 60px; font-size: 12px; }
+      .signal-row .col-sym { font-size: 13px; }
+      .signal-row .col-entry { font-size: 11px; }
+      .signal-row .col-tp, .signal-row .col-sl { font-size: 11px; }
+      .signal-row .col-conf { font-size: 12px; }
+      .conf-bar-container { width: 30px; }
+    }
     @media (max-width: 650px) {
       .signals-header { display: none; }
-      .signal-row { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: repeat(3, auto); gap: 4px 8px; padding: 12px; }
+      .signal-row {
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: auto auto auto auto;
+        gap: 2px 8px; padding: 10px 12px; border-left: 3px solid transparent;
+      }
+      .signal-row.long { border-left-color: #33d9a8; }
+      .signal-row.short { border-left-color: #f25b6a; }
       .signal-row .col-sym { grid-column: 1 / 2; grid-row: 1 / 2; font-size: 16px; }
       .signal-row .col-dir { grid-column: 2 / 3; grid-row: 1 / 2; text-align: left; }
-      .signal-row .col-price { grid-column: 3 / 4; grid-row: 1 / 2; text-align: right; font-size: 15px; }
-      .signal-row .col-entry { grid-column: 1 / 3; grid-row: 2 / 3; font-size: 12px; color: #7a94af; }
-      .signal-row .col-tp { grid-column: 1 / 2; grid-row: 3 / 4; font-size: 12px; }
-      .signal-row .col-sl { grid-column: 2 / 3; grid-row: 3 / 4; font-size: 12px; }
-      .signal-row .col-conf { grid-column: 3 / 4; grid-row: 3 / 4; font-size: 13px; justify-content: flex-end; }
+      .signal-row .col-price { grid-column: 3 / 4; grid-row: 1 / 2; text-align: right; font-size: 14px; }
+      .signal-row .col-entry { grid-column: 1 / 3; grid-row: 2 / 3; font-size: 11px; color: #7a94af; }
+      .signal-row .col-tp { grid-column: 1 / 2; grid-row: 3 / 4; font-size: 11px; }
+      .signal-row .col-sl { grid-column: 2 / 3; grid-row: 3 / 4; font-size: 11px; }
+      .signal-row .col-conf { grid-column: 3 / 4; grid-row: 3 / 4; font-size: 14px; text-align: right; justify-content: flex-end; }
       .signal-row .col-time { display: none; }
-
-      .history-item { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 4px 6px; padding: 10px; }
+      .history-item {
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: auto auto;
+        gap: 2px 6px; padding: 8px 10px;
+      }
       .history-item .h-sym { grid-column: 1 / 2; grid-row: 1 / 2; font-size: 14px; }
-      .history-item .h-dir { grid-column: 2 / 3; grid-row: 1 / 2; text-align: left; width: fit-content; }
+      .history-item .h-dir { grid-column: 2 / 3; grid-row: 1 / 2; text-align: left; }
       .history-item .h-time { grid-column: 3 / 4; grid-row: 1 / 2; text-align: right; }
-      .history-item .h-duration { grid-column: 1 / 2; grid-row: 2 / 3; text-align: left; background: none; border: none; padding: 0; }
-      .history-item .h-result { grid-column: 2 / 3; grid-row: 2 / 3; text-align: left; margin: 0; }
+      .history-item .h-duration { grid-column: 1 / 2; grid-row: 2 / 3; text-align: left; background: none; padding: 0; }
+      .history-item .h-result { grid-column: 2 / 3; grid-row: 2 / 3; text-align: left; }
       .history-item .h-price { grid-column: 3 / 4; grid-row: 2 / 3; text-align: right; }
+      .history-item .h-duration.fast, .history-item .h-duration.medium, .history-item .h-duration.slow { background: none; padding: 0; }
+    }
+    @media (max-width: 480px) {
+      body { padding: 8px; }
+      .header h1 { font-size: 20px; gap: 6px; }
+      .header h1 span { font-size: 10px; padding: 2px 10px; }
+      .badge { font-size: 11px; padding: 4px 10px; }
+      .top-bar { padding: 8px 12px; border-radius: 12px; }
+      .top-bar .status { font-size: 11px; }
+      .refresh-btn { padding: 5px 14px; font-size: 12px; min-height: 38px; }
+      .signal-row { padding: 8px 10px; }
+      .signal-row .col-sym { font-size: 15px; }
+      .signal-row .col-price { font-size: 13px; }
+      .signal-row .col-conf { font-size: 13px; }
+      .conf-bar-container { width: 32px; }
+      .history-item { font-size: 11px; }
+    }
+    @media (max-width: 380px) {
+      .header h1 { font-size: 18px; }
+      .header h1 span { display: none; }
+      .badge { font-size: 10px; padding: 3px 8px; }
+      .signal-row .col-sym { font-size: 14px; }
+      .signal-row .col-price { font-size: 12px; }
+      .signal-row .col-conf { font-size: 12px; justify-content: flex-end; }
+      .conf-bar-container { width: 28px; }
     }
   </style>
 </head>
@@ -117,26 +167,23 @@
     <h1>📡 ScalpScanner <span>PRO</span></h1>
     <span class="badge"><span class="dot"></span> <span id="liveCount">0</span> active</span>
   </div>
-
   <div class="top-bar">
     <span class="status" id="statusText">🟢 <span class="live">Live</span> · scanning...</span>
     <button class="refresh-btn" id="refreshBtn">⟳ Refresh</button>
   </div>
-
   <div class="signals-container">
     <div class="signals-header">
       <span>Coin</span> <span>Dir</span> <span>Price</span> <span>Entry Range</span>
-      <span>TP</span> <span>SL</span> <span>Confidence</span> <span style="text-align:right">Time</span>
+      <span>TP</span> <span>SL</span> <span>Confidence</span> <span>Time</span>
     </div>
     <div class="signals-grid" id="signalsGrid">
-      <div class="empty-state">Syncing secure connection profile matrix...</div>
+      <div class="empty-state">No active signals. Waiting for setup...</div>
     </div>
   </div>
-
   <div class="history-section">
     <div class="history-header">
       <h3>📜 Trade History (Closed)</h3>
-      <span class="count" id="historyCount">W: 0 | L: 0 | Total: 0</span>
+      <span class="count" id="historyCount">0 entries</span>
     </div>
     <div class="history-list" id="historyList">
       <div class="empty-state">No completed trades yet.</div>
@@ -145,11 +192,21 @@
 </div>
 
 <script>
-  // CHANGE THIS TO YOUR NEW DEPLOYMENT EMBED WEB APP URL
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRD5iCPV5RJnmgY8ZN2RuYNJIklqAYolT_oan442Dd_lK9ZBiIkSyV7PcBnQOgyYg4/exec';
+  // ================================================================
+  //  CONFIG
+  // ================================================================
+  const GOOGLE_SCRIPT_URL =
+    'https://script.google.com/macros/s/AKfycbw_Dm7ShMbtispqIZAGen1g9ZKHbaMYGLuJuipsliNv6bD_4vx0fsEOo2V2CdE5HzdH/exec';
 
-  const TICK_SIZE = { 'BTCUSDT': 0.01, 'ETHUSDT': 0.01, 'BNBUSDT': 0.01, 'SOLUSDT': 0.001, 'LINKUSDT': 0.001, 'XRPUSDT': 0.0001 };
-  const REFRESH_RATE_MS = 15000;
+  const TICK_SIZE = {
+    'BTCUSDT': 0.01, 'ETHUSDT': 0.01, 'BNBUSDT': 0.01,
+    'SOLUSDT': 0.001, 'AVAXUSDT': 0.001, 'DOTUSDT': 0.001, 'LINKUSDT': 0.001,
+    'XRPUSDT': 0.0001, 'ADAUSDT': 0.0001, 'DOGEUSDT': 0.00001
+  };
+  const COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','LINKUSDT'];
+  const SCAN_INTERVAL = 15000;
+  const HISTORY_INTERVAL = 30000;
+  const SIGNAL_EXPIRY_MINUTES = 30;
 
   const $ = id => document.getElementById(id);
   const signalsGrid = $('signalsGrid');
@@ -159,140 +216,622 @@
   const liveCount = $('liveCount');
   const historyCount = $('historyCount');
 
-  let syncLock = false;
-
   function getTick(symbol) { return TICK_SIZE[symbol] || 0.01; }
-  function formatPrice(value, tick) { if (!tick || isNaN(value)) return '$' + value; const decimals = Math.max(0, Math.ceil(-Math.log10(tick))); return '$' + Number(value).toFixed(decimals); }
-  function formatPriceShort(value, tick) { if (!tick || isNaN(value)) return value; const decimals = Math.max(0, Math.ceil(-Math.log10(tick))); return Number(value).toFixed(decimals); }
+  function roundToTick(value, tick) { const factor = 1 / tick; return Math.round(value * factor) / factor; }
+  function formatPrice(value, tick) { if (!tick) return '$' + value.toFixed(2); const decimals = Math.max(0, Math.ceil(-Math.log10(tick))); return '$' + value.toFixed(decimals); }
   function fmtTime(iso) { if (!iso) return '—'; try { const d = new Date(iso); return d.toLocaleTimeString('en-US', { hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit' }); } catch { return iso; } }
   function fmtDuration(ms) { if (!ms || ms < 0) return '—'; const totalSec = Math.floor(ms / 1000); if (totalSec < 60) return totalSec + 's'; const min = Math.floor(totalSec / 60); const sec = totalSec % 60; return min + 'm ' + sec + 's'; }
-  function getSymbol(s) { return s ? s.replace('USDT','') : ''; }
+  function getSymbol(s) { return s.replace('USDT',''); }
+  function formatPriceShort(value, tick) { if (!tick) return value.toFixed(2); const decimals = Math.max(0, Math.ceil(-Math.log10(tick))); return value.toFixed(decimals); }
 
   // ================================================================
-  //  CENTRALIZED DATA SYNCHRONIZATION SYNC ENGINE
+  //  TECHNICAL INDICATORS (unchanged)
   // ================================================================
-  async function syncDatabase() {
-    if (syncLock) return;
-    syncLock = true;
-    
-    refreshBtn.disabled = true;
-    refreshBtn.innerHTML = `<span class="spinner"></span> Syncing...`;
-    statusText.innerHTML = `⏳ <span style="color:#f4c95d; font-weight:600;">Syncing</span> · Pulling master database states...`;
+  function calcEMA(data, period) {
+    const ema = [];
+    const k = 2 / (period + 1);
+    let sum = 0;
+    for (let i = 0; i < data.length; i++) {
+      if (i < period - 1) { sum += data[i]; ema.push(null); }
+      else if (i === period - 1) { sum += data[i]; ema.push(sum / period); }
+      else { const val = data[i] * k + ema[i - 1] * (1 - k); ema.push(val); }
+    }
+    return ema;
+  }
 
-    try {
-      const response = await fetch(GOOGLE_SCRIPT_URL);
-      const json = await response.json();
-      
-      if (json.success && json.data) {
-        statusText.innerHTML = `🟢 <span class="live">Live</span> · Systems synced across all users`;
-        processMasterArrays(json.data);
+  function calcRSI(closes, period = 14) {
+    const rsi = [];
+    let gain = 0, loss = 0;
+    for (let i = 1; i < closes.length; i++) {
+      const diff = closes[i] - closes[i - 1];
+      if (i <= period) {
+        if (diff >= 0) gain += diff; else loss += Math.abs(diff);
+        if (i === period) {
+          let avgGain = gain / period, avgLoss = loss / period;
+          const rs = avgLoss === 0 ? 0 : avgGain / avgLoss;
+          const val = avgLoss === 0 ? 100 : 100 - (100 / (1 + rs));
+          rsi.push(val);
+        } else rsi.push(null);
       } else {
-        statusText.innerHTML = `<span class="error">❌ Synchronization Error</span> · ${json.error || 'Fault response'}`;
+        const avgGain = ((gain * (period - 1)) + (diff >= 0 ? diff : 0)) / period;
+        const avgLoss = ((loss * (period - 1)) + (diff < 0 ? Math.abs(diff) : 0)) / period;
+        gain = avgGain * period; loss = avgLoss * period;
+        const rs = avgLoss === 0 ? 0 : avgGain / avgLoss;
+        const val = avgLoss === 0 ? 100 : 100 - (100 / (1 + rs));
+        rsi.push(val);
       }
-    } catch (err) {
-      statusText.innerHTML = `<span class="error">❌ Connection Interrupted</span> · Retrying...`;
-      console.error(err);
-    } finally {
-      syncLock = false;
-      refreshBtn.disabled = false;
-      refreshBtn.innerHTML = `⟳ Refresh`;
+    }
+    return rsi;
+  }
+
+  function calcBB(closes, period = 20, stdDev = 2) {
+    const upper = [], lower = [];
+    for (let i = 0; i < closes.length; i++) {
+      if (i < period - 1) { upper.push(null); lower.push(null); continue; }
+      let sum = 0; for (let j = i - period + 1; j <= i; j++) sum += closes[j];
+      const mean = sum / period;
+      let sq = 0; for (let j = i - period + 1; j <= i; j++) sq += (closes[j] - mean) ** 2;
+      const stdev = Math.sqrt(sq / period);
+      upper.push(mean + stdDev * stdev);
+      lower.push(mean - stdDev * stdev);
+    }
+    return { upper, lower };
+  }
+
+  function calcVWAP(highs, lows, closes, volumes) {
+    const vwap = [];
+    let cumPV = 0, cumVol = 0;
+    for (let i = 0; i < closes.length; i++) {
+      const typical = (highs[i] + lows[i] + closes[i]) / 3;
+      cumPV += typical * volumes[i];
+      cumVol += volumes[i];
+      vwap.push(cumVol === 0 ? null : cumPV / cumVol);
+    }
+    return vwap;
+  }
+
+  function calcATR(highs, lows, closes, period = 14) {
+    if (highs.length < period + 1) return null;
+    const tr = [];
+    for (let i = 1; i < highs.length; i++) {
+      const hl = highs[i] - lows[i];
+      const hc = Math.abs(highs[i] - closes[i - 1]);
+      const lc = Math.abs(lows[i] - closes[i - 1]);
+      tr.push(Math.max(hl, hc, lc));
+    }
+    let atr = 0;
+    for (let i = 0; i < period; i++) atr += tr[i];
+    atr /= period;
+    for (let i = period; i < tr.length; i++) {
+      atr = (atr * (period - 1) + tr[i]) / period;
+    }
+    return atr;
+  }
+
+  function analyzeCoin(data, symbol) {
+    const closes = data.map(d => d.close);
+    const highs = data.map(d => d.high);
+    const lows = data.map(d => d.low);
+    const volumes = data.map(d => d.volume);
+    const len = closes.length;
+    if (len < 60) return null;
+
+    const ema5 = calcEMA(closes, 5);
+    const ema20 = calcEMA(closes, 20);
+    const rsi = calcRSI(closes, 14);
+    const bb = calcBB(closes, 20, 2);
+    const vwap = calcVWAP(highs, lows, closes, volumes);
+    const atr = calcATR(highs, lows, closes, 14);
+
+    const idx = len - 1;
+    const price = closes[idx];
+    const e5 = ema5[idx];
+    const e20 = ema20[idx];
+    const r = rsi[idx];
+    const upper = bb.upper[idx];
+    const lower = bb.lower[idx];
+    const vwapVal = vwap[idx];
+    const vol = volumes[idx];
+    const avgVol = volumes.slice(-20).reduce((a, b) => a + b, 0) / 20;
+    const volSpike = vol > avgVol * 1.8;
+
+    let longScore = 0, shortScore = 0;
+    const conditions = { EMA: false, RSI: false, BB: false, VWAP: false, VOL: false };
+
+    if (e5 !== null && e20 !== null) {
+      if (e5 > e20) { longScore += 1; conditions.EMA = true; }
+      else if (e5 < e20) { shortScore += 1; conditions.EMA = true; }
+    }
+    if (r !== null && r < 30) { longScore += 1; conditions.RSI = true; }
+    else if (r !== null && r > 70) { shortScore += 1; conditions.RSI = true; }
+    if (lower !== null && price < lower * 1.005) { longScore += 1; conditions.BB = true; }
+    if (upper !== null && price > upper * 0.995) { shortScore += 1; conditions.BB = true; }
+    if (vwapVal !== null && price > vwapVal) { longScore += 1; conditions.VWAP = true; }
+    if (vwapVal !== null && price < vwapVal) { shortScore += 1; conditions.VWAP = true; }
+    if (volSpike) { longScore += 0.5; shortScore += 0.5; conditions.VOL = true; }
+
+    let direction = 'NEUTRAL';
+    let strength = 0;
+    if (longScore >= shortScore && longScore >= 2.5) {
+      direction = 'LONG';
+      strength = Math.min(100, Math.round((longScore / 5) * 100));
+    } else if (shortScore > longScore && shortScore >= 2.5) {
+      direction = 'SHORT';
+      strength = Math.min(100, Math.round((shortScore / 5) * 100));
+    } else {
+      return null;
+    }
+    return { direction, strength, price, condDisplay: conditions, atr };
+  }
+
+  function generateSignalParams(symbol, price, direction, atr) {
+    const tick = getTick(symbol);
+    let tpMove, slMove;
+    if (atr && atr > tick * 2) {
+      tpMove = Math.max(atr * 1.5, tick * 5);
+      slMove = Math.max(atr * 1.0, tick * 3);
+    } else {
+      const tpMoveRaw = Math.max(price * 0.008, tick * 3);
+      const slMoveRaw = Math.max(price * 0.006, tick * 2);
+      tpMove = roundToTick(tpMoveRaw, tick);
+      slMove = roundToTick(slMoveRaw, tick);
+    }
+    if (tpMove <= slMove) {
+      tpMove = roundToTick(slMove * 1.3, tick);
+    }
+    const spread = roundToTick(Math.max(price * 0.002, tick * 2), tick);
+    let entryLow, entryHigh, tp, sl;
+    if (direction === 'LONG') {
+      entryLow = roundToTick(price - spread / 2, tick);
+      entryHigh = roundToTick(price + spread / 2, tick);
+      tp = roundToTick(entryHigh + tpMove, tick);
+      sl = roundToTick(entryLow - slMove, tick);
+    } else {
+      entryLow = roundToTick(price - spread / 2, tick);
+      entryHigh = roundToTick(price + spread / 2, tick);
+      tp = roundToTick(entryLow - tpMove, tick);
+      sl = roundToTick(entryHigh + slMove, tick);
+    }
+    if (tp === entryLow || tp === entryHigh) {
+      tp = roundToTick(tp + (direction === 'LONG' ? tick : -tick), tick);
+    }
+    if (sl === entryLow || sl === entryHigh) {
+      sl = roundToTick(sl + (direction === 'SHORT' ? tick : -tick), tick);
+    }
+    const actualTpMove = Math.abs(tp - (direction === 'LONG' ? entryHigh : entryLow));
+    const actualSlMove = Math.abs(sl - (direction === 'LONG' ? entryLow : entryHigh));
+    const rr = actualSlMove > 0 ? actualTpMove / actualSlMove : 0;
+    return { entryLow, entryHigh, tp, sl, rr, tick };
+  }
+
+  // ================================================================
+  //  FETCH COINS (FIXED: SEQUENTIAL WITH DELAY & RETRY)
+  // ================================================================
+  async function fetchSingleCoin(symbol, attempt = 1) {
+    try {
+      const kResp = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=120`);
+      if (!kResp.ok) throw new Error(`Klines HTTP ${kResp.status}`);
+      const raw = await kResp.json();
+      const data = raw.map(c => ({
+        open: parseFloat(c[1]), high: parseFloat(c[2]), low: parseFloat(c[3]),
+        close: parseFloat(c[4]), volume: parseFloat(c[5])
+      }));
+      if (data.length < 60) throw new Error('Not enough candles');
+
+      const tResp = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+      if (!tResp.ok) throw new Error(`Ticker HTTP ${tResp.status}`);
+      const ticker = await tResp.json();
+
+      const analysis = analyzeCoin(data, symbol);
+      if (!analysis) return null;
+
+      return {
+        symbol,
+        livePrice: parseFloat(ticker.lastPrice),
+        changePercent: parseFloat(ticker.priceChangePercent),
+        ...analysis
+      };
+    } catch (e) {
+      console.warn(`Attempt ${attempt} failed for ${symbol}:`, e.message);
+      if (attempt < 3) {
+        // Wait 500ms before retry
+        await new Promise(r => setTimeout(r, 500));
+        return fetchSingleCoin(symbol, attempt + 1);
+      }
+      return null;
     }
   }
 
-  function processMasterArrays(dataset) {
-    // 1. Isolate and Render Active Signals
-    const active = dataset.filter(row => row["Status"] === "OPEN");
-    liveCount.textContent = active.length;
-    renderActiveGrid(active);
-
-    // 2. Isolate and Render Closed Performance Profiles
-    const closed = dataset.filter(row => row["Status"] === "PROFIT" || row["Status"] === "LOSS");
-    renderHistoryGrid(closed);
+  async function fetchAllCoins() {
+    const results = [];
+    for (const symbol of COINS) {
+      const result = await fetchSingleCoin(symbol);
+      if (result) results.push(result);
+      // Wait 200ms between requests to avoid rate limits
+      await new Promise(r => setTimeout(r, 200));
+    }
+    if (results.length === 0) {
+      console.error('No coins fetched at all. Check network or Binance status.');
+    } else {
+      console.log(`Fetched ${results.length} coins successfully.`);
+    }
+    return results.sort((a, b) => b.strength - a.strength);
   }
 
-  function renderActiveGrid(signals) {
-    if (signals.length === 0) {
-      signalsGrid.innerHTML = `<div class="empty-state">No active signals on market. Scanning centralized matrix...</div>`;
+  // ================================================================
+  //  GOOGLE SHEETS (no-cors)
+  // ================================================================
+  let lastSheetError = null;
+
+  async function addSignalToSheet(signal) {
+    try {
+      const payload = {
+        action: 'add',
+        id: signal.id,
+        timestamp: signal.timestamp,
+        openTime: signal.openTime,
+        symbol: signal.symbol,
+        direction: signal.direction,
+        entryMin: signal.entryLow,
+        entryMax: signal.entryHigh,
+        tp: signal.tp,
+        sl: signal.sl
+      };
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      lastSheetError = null;
+      console.log('✅ Sheet add sent (no-cors)');
+      return true;
+    } catch (e) {
+      const msg = '❌ Sheet Add Error: ' + e.message;
+      console.error(msg);
+      lastSheetError = msg;
+      return false;
+    }
+  }
+
+  async function updateSignalStatus(id, status, closedPrice, closeTime) {
+    try {
+      const payload = { action: 'update', id, status, closedPrice, closeTime };
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      lastSheetError = null;
+      console.log('✅ Sheet update sent (no-cors)');
+      return true;
+    } catch (e) {
+      const msg = '❌ Sheet Update Error: ' + e.message;
+      console.error(msg);
+      lastSheetError = msg;
+      return false;
+    }
+  }
+
+  async function fetchHistoryFromSheet() {
+    try {
+      const response = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now());
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const json = await response.json();
+      if (json.success && json.data) return json.data;
+      return [];
+    } catch (e) {
+      console.warn('⚠️ Fetch history failed:', e.message);
+      return [];
+    }
+  }
+
+  // ================================================================
+  //  LOCAL STORAGE
+  // ================================================================
+  function getLocalHistory() {
+    try { const raw = localStorage.getItem('scalpHistory'); return raw ? JSON.parse(raw) : []; } catch { return []; }
+  }
+
+  function saveLocalHistory(h) {
+    try { localStorage.setItem('scalpHistory', JSON.stringify(h)); } catch {}
+  }
+
+  // ================================================================
+  //  CORE LOGIC
+  // ================================================================
+  let isProcessing = false;
+  const activeSignals = new Map();
+
+  function generateId() {
+    return 'sig_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+  }
+
+  async function processScan() {
+    if (isProcessing) return;
+    isProcessing = true;
+    refreshBtn.disabled = true;
+    refreshBtn.innerHTML = '<span class="spinner"></span>';
+
+    try {
+      const all = await fetchAllCoins();
+      if (!all || all.length === 0) {
+        throw new Error('No data from Binance. Check console for details.');
+      }
+
+      const priceMap = {};
+      all.forEach(c => priceMap[c.symbol] = c.livePrice);
+
+      const history = getLocalHistory();
+      const now = Date.now();
+
+      // Check expiry for existing signals
+      for (const [symbol, signal] of activeSignals) {
+        if (signal.status === 'OPEN' && (now - signal.openTime) > SIGNAL_EXPIRY_MINUTES * 60 * 1000) {
+          signal.status = 'EXPIRED';
+          signal.result = '⏰ Expired';
+          signal.closedPrice = signal.livePrice;
+          signal.closeTime = now;
+          for (let i = 0; i < history.length; i++) {
+            if (history[i].id === signal.id) {
+              history[i].status = 'EXPIRED';
+              history[i].result = '⏰ Expired';
+              history[i].closedPrice = signal.livePrice;
+              history[i].closeTime = now;
+              break;
+            }
+          }
+          activeSignals.delete(symbol);
+        }
+      }
+      if (history.length > 0) saveLocalHistory(history);
+
+      // Add new signals
+      for (const s of all) {
+        if (!activeSignals.has(s.symbol) && s.strength >= 60) {
+          const params = generateSignalParams(s.symbol, s.livePrice, s.direction, s.atr);
+          const newSig = {
+            id: generateId(),
+            symbol: s.symbol,
+            direction: s.direction,
+            entryLow: params.entryLow,
+            entryHigh: params.entryHigh,
+            tp: params.tp,
+            sl: params.sl,
+            rr: params.rr,
+            tick: params.tick,
+            strength: s.strength,
+            timestamp: new Date().toISOString(),
+            openTime: now,
+            livePrice: s.livePrice,
+            changePercent: s.changePercent,
+            status: 'OPEN'
+          };
+          activeSignals.set(s.symbol, newSig);
+          await addSignalToSheet(newSig);
+          let hist = getLocalHistory();
+          hist.push({ ...newSig, result: '—', closedPrice: null, closeTime: null });
+          saveLocalHistory(hist);
+        } else {
+          const existing = activeSignals.get(s.symbol);
+          if (existing) {
+            existing.livePrice = s.livePrice;
+            existing.changePercent = s.changePercent;
+          }
+        }
+      }
+
+      // Check TP/SL hits
+      let historyUpdated = false;
+      const toRemove = [];
+      for (const [symbol, signal] of activeSignals) {
+        const currentPrice = priceMap[symbol];
+        if (!currentPrice) continue;
+        let hitStatus = null;
+        if (signal.direction === 'LONG') {
+          if (currentPrice >= signal.tp) hitStatus = 'PROFIT';
+          else if (currentPrice <= signal.sl) hitStatus = 'LOSS';
+        } else {
+          if (currentPrice <= signal.tp) hitStatus = 'PROFIT';
+          else if (currentPrice >= signal.sl) hitStatus = 'LOSS';
+        }
+        if (hitStatus) {
+          const closeTime = Date.now();
+          signal.status = hitStatus;
+          signal.result = hitStatus === 'PROFIT' ? 'TP Hit ✅' : 'SL Hit ❌';
+          signal.closedPrice = currentPrice;
+          signal.closeTime = closeTime;
+          toRemove.push(symbol);
+          for (let i = 0; i < history.length; i++) {
+            if (history[i].id === signal.id) {
+              history[i].status = hitStatus;
+              history[i].result = signal.result;
+              history[i].closedPrice = currentPrice;
+              history[i].closeTime = closeTime;
+              historyUpdated = true;
+              break;
+            }
+          }
+          await updateSignalStatus(signal.id, hitStatus, currentPrice, closeTime);
+        }
+      }
+      for (const sym of toRemove) activeSignals.delete(sym);
+      if (historyUpdated) saveLocalHistory(history);
+
+      // Render
+      const active = Array.from(activeSignals.values()).filter(s => s.status === 'OPEN');
+      liveCount.textContent = active.length;
+      renderSignals(active);
+      renderHistory(history);
+
+      if (lastSheetError) {
+        statusText.innerHTML = `🔴 <span class="error">Sheet Error!</span> Check console. Last: ${lastSheetError.substring(0, 60)}...`;
+      } else {
+        statusText.innerHTML = `🟢 <span class="live">Live</span> · ${active.length} active · ${new Date().toLocaleTimeString()}`;
+      }
+
+    } catch (err) {
+      console.error(err);
+      statusText.innerHTML = '🔴 Error: ' + err.message;
+    } finally {
+      refreshBtn.disabled = false;
+      refreshBtn.innerHTML = '⟳ Refresh';
+      isProcessing = false;
+    }
+  }
+
+  // ================================================================
+  //  RENDER FUNCTIONS
+  // ================================================================
+  function renderSignals(signals) {
+    if (!signals || signals.length === 0) {
+      signalsGrid.innerHTML = `<div class="empty-state">No active signals. Waiting...</div>`;
       return;
     }
     let html = '';
-    signals.forEach(s => {
-      const dirClass = s["Direction"].toLowerCase();
-      const tick = getTick(s["Symbol"]);
-      const confidence = parseInt(s["Confidence"]) || 60;
-      let confTier = confidence >= 80 ? 'high' : 'medium';
-      const livePrice = parseFloat(s["Live Price"]) || 0;
+    const maxDisplay = 10;
+    const displayed = signals.slice(0, maxDisplay);
+    displayed.forEach(s => {
+      const dirClass = s.direction.toLowerCase();
+      const dirDisplay = s.direction === 'LONG' ? '▲' : '▼';
+      const tick = s.tick || 0.01;
+      const confidence = s.strength || 0;
+      let confClass = 'low';
+      if (confidence >= 80) confClass = 'high';
+      else if (confidence >= 60) confClass = 'medium';
 
       html += `
         <div class="signal-row ${dirClass}">
-          <span class="col-sym">${getSymbol(s["Symbol"])}</span>
-          <span class="col-dir ${dirClass}">${s["Direction"] === 'LONG' ? 'BUY' : 'SELL'}</span>
-          <span class="col-price">${formatPrice(livePrice, tick)}</span>
-          <span class="col-entry">${s["Entry Range"]}</span>
-          <span class="col-tp">${formatPriceShort(s["TP"], tick)}</span>
-          <span class="col-sl">${formatPriceShort(s["SL"], tick)}</span>
-          <span class="col-conf">
+          <span class="col-sym">${getSymbol(s.symbol)}</span>
+          <span class="col-dir ${dirClass}">${dirDisplay}</span>
+          <span class="col-price">${formatPrice(s.livePrice, tick)}</span>
+          <span class="col-entry">${formatPriceShort(s.entryLow, tick)} – ${formatPriceShort(s.entryHigh, tick)}</span>
+          <span class="col-tp">${formatPriceShort(s.tp, tick)}</span>
+          <span class="col-sl">${formatPriceShort(s.sl, tick)}</span>
+          <span class="col-conf ${confClass}">
             <div class="conf-bar-container">
-              <div class="conf-bar ${confTier}" style="width:${confidence}%"></div>
+              <div class="conf-bar ${confClass}" style="width:${confidence}%"></div>
             </div>
             ${confidence}%
           </span>
-          <span class="col-time">${fmtTime(s["Timestamp"])}</span>
+          <span class="col-time">${fmtTime(s.timestamp)}</span>
         </div>
       `;
     });
+    if (signals.length > maxDisplay) {
+      html += `<div class="empty-state" style="padding:8px;">+ ${signals.length - maxDisplay} more signals not shown</div>`;
+    }
     signalsGrid.innerHTML = html;
   }
 
-  function renderHistoryGrid(history) {
-    if (history.length === 0) {
-      historyList.innerHTML = `<div class="empty-state">No completed target outcomes recorded inside database.</div>`;
-      historyCount.innerHTML = `<span style="color:#33d9a8; font-weight:700;">W: 0</span> &nbsp;&nbsp;|&nbsp;&nbsp; <span style="color:#f25b6a; font-weight:700;">L: 0</span> &nbsp;&nbsp;|&nbsp;&nbsp; Total: 0`;
+  function renderHistory(history) {
+    const closedTrades = history.filter(h => h.status === 'PROFIT' || h.status === 'LOSS' || h.status === 'EXPIRED');
+    if (!closedTrades || closedTrades.length === 0) {
+      historyList.innerHTML = `<div class="empty-state">No completed trades yet.</div>`;
+      historyCount.textContent = '0 entries';
       return;
     }
-
-    const sorted = history.sort((a, b) => (b["Close Time"] || 0) - (a["Close Time"] || 0)).slice(0, 40);
-    
-    const totalWins = history.filter(h => h["Status"] === 'PROFIT').length;
-    const totalLosses = history.filter(h => h["Status"] === 'LOSS').length;
-    historyCount.innerHTML = `<span style="color:#33d9a8; font-weight:700;">W: ${totalWins}</span> &nbsp;&nbsp;|&nbsp;&nbsp; <span style="color:#f25b6a; font-weight:700;">L: ${totalLosses}</span> &nbsp;&nbsp;|&nbsp;&nbsp; Total: ${history.length}`;
-
+    const sorted = closedTrades.sort((a, b) => (b.closeTime || 0) - (a.closeTime || 0)).slice(0, 50);
+    historyCount.textContent = sorted.length + ' entries';
     let html = '';
-    sorted.forEach(h => {
-      const dir = h["Direction"] || 'LONG';
-      const symbol = h["Symbol"] || '';
-      const tick = getTick(symbol);
-      
-      let resText = h["Status"] === 'PROFIT' ? "WIN ✅" : "LOSS ❌";
-      let resClass = h["Status"] === 'PROFIT' ? "win" : "loss";
-      
-      let durationStr = '—', durClass = 'slow';
-      if (h["Open Time"] && h["Close Time"]) {
-        const ms = Number(h["Close Time"]) - Number(h["Open Time"]);
-        durationStr = fmtDuration(ms);
-        durClass = ms < 60000 ? 'fast' : (ms < 300000 ? 'medium' : 'slow');
+    for (const h of sorted) {
+      const dirClass = h.direction ? h.direction.toLowerCase() : 'neutral';
+      const tick = h.tick || 0.01;
+      let resultText = '—', resultClass = '';
+      if (h.status === 'PROFIT') { resultText = '✅ TP'; resultClass = 'win'; }
+      else if (h.status === 'LOSS') { resultText = '❌ SL'; resultClass = 'loss'; }
+      else if (h.status === 'EXPIRED') { resultText = '⏰ Exp'; resultClass = 'loss'; }
+      let durationStr = '—', durClass = '';
+      if (h.openTime && h.closeTime) {
+        const durMs = h.closeTime - h.openTime;
+        durationStr = fmtDuration(durMs);
+        if (durMs < 120000) durClass = 'fast';
+        else if (durMs < 600000) durClass = 'medium';
+        else durClass = 'slow';
       }
-
+      const priceDisplay = h.closedPrice ? formatPrice(h.closedPrice, tick) : '—';
       html += `
         <div class="history-item">
-          <span class="h-sym">${getSymbol(symbol)}</span>
-          <span class="h-dir ${dir.toLowerCase()}">${dir === 'LONG' ? 'L' : 'S'}</span>
-          <span class="h-time">${fmtTime(h["Timestamp"])}</span>
+          <span class="h-sym">${getSymbol(h.symbol)}</span>
+          <span class="h-dir ${dirClass}">${h.direction === 'LONG' ? 'L' : 'S'}</span>
+          <span class="h-time">${fmtTime(h.timestamp)}</span>
           <span class="h-duration ${durClass}">${durationStr}</span>
-          <span class="h-result ${resClass}">${resText}</span>
-          <span class="h-price">${formatPrice(parseFloat(h["Closed Price"]) || 0, tick)}</span>
+          <span class="h-result ${resultClass}">${resultText}</span>
+          <span class="h-price">${priceDisplay}</span>
         </div>
       `;
-    });
+    }
     historyList.innerHTML = html;
   }
 
-  // Initial Startup
-  refreshBtn.addEventListener('click', syncDatabase);
-  window.addEventListener('DOMContentLoaded', () => {
-    syncDatabase();
-    setInterval(syncDatabase, REFRESH_RATE_MS);
+  // ================================================================
+  //  SYNC REMOTE & AUTO REFRESH
+  // ================================================================
+  async function syncRemoteHistory() {
+    try {
+      const remote = await fetchHistoryFromSheet();
+      if (remote && remote.length > 0) {
+        const transformed = remote.map(r => ({
+          id: r.ID || r.id,
+          symbol: r.Symbol || r.symbol,
+          direction: r.Direction || r.direction,
+          entryLow: parseFloat(r.EntryMin || r.entryMin),
+          entryHigh: parseFloat(r.EntryMax || r.entryMax),
+          tp: parseFloat(r.TP || r.tp),
+          sl: parseFloat(r.SL || r.sl),
+          timestamp: r.Timestamp || r.timestamp,
+          status: r.Status || r.status,
+          result: r.Result || r.result,
+          closedPrice: parseFloat(r.ClosedPrice || r.closedPrice) || null,
+          openTime: r.OpenTime ? parseInt(r.OpenTime) : null,
+          closeTime: r.CloseTime ? parseInt(r.CloseTime) : null,
+          tick: 0.001
+        }));
+        const local = getLocalHistory();
+        const merged = [...local];
+        for (const r of transformed) {
+          const existingIdx = merged.findIndex(l => l.id === r.id);
+          if (existingIdx >= 0) {
+            if (r.closeTime && !merged[existingIdx].closeTime) {
+              merged[existingIdx] = { ...merged[existingIdx], ...r };
+            }
+          } else {
+            merged.push(r);
+          }
+        }
+        saveLocalHistory(merged);
+        renderHistory(merged);
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  let scanInterval = null, historyInterval = null;
+
+  async function fullUpdate() {
+    await processScan();
+    await syncRemoteHistory();
+  }
+
+  function startAutoRefresh() {
+    if (scanInterval) clearInterval(scanInterval);
+    if (historyInterval) clearInterval(historyInterval);
+    fullUpdate();
+    scanInterval = setInterval(processScan, SCAN_INTERVAL);
+    historyInterval = setInterval(() => {
+      const hist = getLocalHistory();
+      renderHistory(hist);
+    }, HISTORY_INTERVAL);
+  }
+
+  refreshBtn.addEventListener('click', () => {
+    if (scanInterval) clearInterval(scanInterval);
+    if (historyInterval) clearInterval(historyInterval);
+    fullUpdate().finally(() => startAutoRefresh());
   });
+
+  // ── BOOT ──
+  startAutoRefresh();
 </script>
 </body>
 </html>
