@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover" />
   <title>ScalpScanner Pro</title>
   <style>
-    /* (CSS unchanged – same as previous working version) */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
     body { background: #090d14; min-height: 100vh; padding: 12px; display: flex; justify-content: center; }
     .app { max-width: 900px; width: 100%; }
@@ -30,11 +29,7 @@
     .signals-grid::-webkit-scrollbar { width: 4px; }
     .signals-grid::-webkit-scrollbar-track { background: #0a111a; }
     .signals-grid::-webkit-scrollbar-thumb { background: #2d3f52; border-radius: 4px; }
-    .signal-row {
-      display: grid; grid-template-columns: 50px 40px 80px 1fr 80px 80px 100px 70px; gap: 4px;
-      padding: 8px 12px; align-items: center; border-bottom: 1px solid #1a2533;
-      font-size: 13px; transition: background 0.15s; background: #111a24; min-height: 48px;
-    }
+    .signal-row { display: grid; grid-template-columns: 50px 40px 80px 1fr 80px 80px 100px 70px; gap: 4px; padding: 8px 12px; align-items: center; border-bottom: 1px solid #1a2533; font-size: 13px; transition: background 0.15s; background: #111a24; min-height: 48px; }
     .signal-row:last-child { border-bottom: none; }
     .signal-row:hover { background: #1a2633; }
     .signal-row .col-sym { font-weight: 700; color: #f0f4fa; font-size: 14px; }
@@ -45,17 +40,7 @@
     .signal-row .col-entry { color: #9ab0c9; font-size: 12px; white-space: nowrap; }
     .signal-row .col-tp { color: #33d9a8; font-weight: 500; font-size: 12px; }
     .signal-row .col-sl { color: #f25b6a; font-weight: 500; font-size: 12px; }
-    .signal-row .col-conf {
-      font-weight: 700;
-      font-size: 13px;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      justify-content: center;
-      flex-wrap: wrap;
-      color: #d6e4f0;
-    }
+    .signal-row .col-conf { font-weight: 700; font-size: 13px; text-align: center; display: flex; align-items: center; gap: 4px; justify-content: center; flex-wrap: wrap; color: #d6e4f0; }
     .signal-row .col-conf.high { color: #33d9a8; }
     .signal-row .col-conf.medium { color: #f4c95d; }
     .signal-row .col-conf.low { color: #f25b6a; }
@@ -76,11 +61,7 @@
     .history-list::-webkit-scrollbar { width: 4px; }
     .history-list::-webkit-scrollbar-track { background: #0a111a; border-radius: 4px; }
     .history-list::-webkit-scrollbar-thumb { background: #2d3f52; border-radius: 4px; }
-    .history-item {
-      display: grid; grid-template-columns: 45px 30px 55px 60px 75px 55px;
-      gap: 4px 6px; padding: 7px 10px; font-size: 12px; align-items: center;
-      border-bottom: 1px solid #1a2533; background: #111a24; min-height: 44px;
-    }
+    .history-item { display: grid; grid-template-columns: 45px 30px 55px 60px 75px 55px; gap: 4px 6px; padding: 7px 10px; font-size: 12px; align-items: center; border-bottom: 1px solid #1a2533; background: #111a24; min-height: 44px; }
     .history-item:last-child { border-bottom: none; }
     .history-item:hover { background: #1a2633; }
     .history-item .h-sym { font-weight: 700; color: #f0f4fa; font-size: 13px; }
@@ -107,11 +88,7 @@
     }
     @media (max-width: 650px) {
       .signals-header { display: none; }
-      .signal-row {
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-template-rows: auto auto auto auto;
-        gap: 2px 8px; padding: 10px 12px; border-left: 3px solid transparent;
-      }
+      .signal-row { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto auto; gap: 2px 8px; padding: 10px 12px; border-left: 3px solid transparent; }
       .signal-row.long { border-left-color: #33d9a8; }
       .signal-row.short { border-left-color: #f25b6a; }
       .signal-row .col-sym { grid-column: 1 / 2; grid-row: 1 / 2; font-size: 16px; }
@@ -122,11 +99,7 @@
       .signal-row .col-sl { grid-column: 2 / 3; grid-row: 3 / 4; font-size: 11px; }
       .signal-row .col-conf { grid-column: 3 / 4; grid-row: 3 / 4; font-size: 14px; text-align: right; justify-content: flex-end; }
       .signal-row .col-time { display: none; }
-      .history-item {
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-template-rows: auto auto;
-        gap: 2px 6px; padding: 8px 10px;
-      }
+      .history-item { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 2px 6px; padding: 8px 10px; }
       .history-item .h-sym { grid-column: 1 / 2; grid-row: 1 / 2; font-size: 14px; }
       .history-item .h-dir { grid-column: 2 / 3; grid-row: 1 / 2; text-align: left; }
       .history-item .h-time { grid-column: 3 / 4; grid-row: 1 / 2; text-align: right; }
@@ -177,7 +150,7 @@
       <span>TP</span> <span>SL</span> <span>Confidence</span> <span>Time</span>
     </div>
     <div class="signals-grid" id="signalsGrid">
-      <div class="empty-state">No active signals. Waiting for setup...</div>
+      <div class="empty-state">No active signals. Waiting for high-probability setup...</div>
     </div>
   </div>
   <div class="history-section">
@@ -193,10 +166,9 @@
 
 <script>
   // ================================================================
-  //  CONFIG
+  //  CONFIG - UPDATED URL
   // ================================================================
-  const GOOGLE_SCRIPT_URL =
-    'https://script.google.com/macros/s/AKfycbw_Dm7ShMbtispqIZAGen1g9ZKHbaMYGLuJuipsliNv6bD_4vx0fsEOo2V2CdE5HzdH/exec';
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPTNsQK67PxGsNw9qn1uLq05jygVHldLtKtD0Fxln3lP2kEL1_LJrcJ-tk6lCnYYGt/exec';
 
   const TICK_SIZE = {
     'BTCUSDT': 0.01, 'ETHUSDT': 0.01, 'BNBUSDT': 0.01,
@@ -207,6 +179,9 @@
   const SCAN_INTERVAL = 15000;
   const HISTORY_INTERVAL = 30000;
   const SIGNAL_EXPIRY_MINUTES = 30;
+  
+  // MINIMUM STRENGTH REQUIRED TO OPEN A TRADE (Strict Mode)
+  const MINIMUM_STRENGTH_THRESHOLD = 75; 
 
   const $ = id => document.getElementById(id);
   const signalsGrid = $('signalsGrid');
@@ -225,12 +200,10 @@
   function formatPriceShort(value, tick) { if (!tick) return value.toFixed(2); const decimals = Math.max(0, Math.ceil(-Math.log10(tick))); return value.toFixed(decimals); }
 
   // ================================================================
-  //  TECHNICAL INDICATORS (unchanged)
+  //  TECHNICAL INDICATORS
   // ================================================================
   function calcEMA(data, period) {
-    const ema = [];
-    const k = 2 / (period + 1);
-    let sum = 0;
+    const ema = []; const k = 2 / (period + 1); let sum = 0;
     for (let i = 0; i < data.length; i++) {
       if (i < period - 1) { sum += data[i]; ema.push(null); }
       else if (i === period - 1) { sum += data[i]; ema.push(sum / period); }
@@ -238,10 +211,8 @@
     }
     return ema;
   }
-
   function calcRSI(closes, period = 14) {
-    const rsi = [];
-    let gain = 0, loss = 0;
+    const rsi = []; let gain = 0, loss = 0;
     for (let i = 1; i < closes.length; i++) {
       const diff = closes[i] - closes[i - 1];
       if (i <= period) {
@@ -249,21 +220,18 @@
         if (i === period) {
           let avgGain = gain / period, avgLoss = loss / period;
           const rs = avgLoss === 0 ? 0 : avgGain / avgLoss;
-          const val = avgLoss === 0 ? 100 : 100 - (100 / (1 + rs));
-          rsi.push(val);
+          rsi.push(avgLoss === 0 ? 100 : 100 - (100 / (1 + rs)));
         } else rsi.push(null);
       } else {
         const avgGain = ((gain * (period - 1)) + (diff >= 0 ? diff : 0)) / period;
         const avgLoss = ((loss * (period - 1)) + (diff < 0 ? Math.abs(diff) : 0)) / period;
         gain = avgGain * period; loss = avgLoss * period;
         const rs = avgLoss === 0 ? 0 : avgGain / avgLoss;
-        const val = avgLoss === 0 ? 100 : 100 - (100 / (1 + rs));
-        rsi.push(val);
+        rsi.push(avgLoss === 0 ? 100 : 100 - (100 / (1 + rs)));
       }
     }
     return rsi;
   }
-
   function calcBB(closes, period = 20, stdDev = 2) {
     const upper = [], lower = [];
     for (let i = 0; i < closes.length; i++) {
@@ -272,24 +240,19 @@
       const mean = sum / period;
       let sq = 0; for (let j = i - period + 1; j <= i; j++) sq += (closes[j] - mean) ** 2;
       const stdev = Math.sqrt(sq / period);
-      upper.push(mean + stdDev * stdev);
-      lower.push(mean - stdDev * stdev);
+      upper.push(mean + stdDev * stdev); lower.push(mean - stdDev * stdev);
     }
     return { upper, lower };
   }
-
   function calcVWAP(highs, lows, closes, volumes) {
-    const vwap = [];
-    let cumPV = 0, cumVol = 0;
+    const vwap = []; let cumPV = 0, cumVol = 0;
     for (let i = 0; i < closes.length; i++) {
       const typical = (highs[i] + lows[i] + closes[i]) / 3;
-      cumPV += typical * volumes[i];
-      cumVol += volumes[i];
+      cumPV += typical * volumes[i]; cumVol += volumes[i];
       vwap.push(cumVol === 0 ? null : cumPV / cumVol);
     }
     return vwap;
   }
-
   function calcATR(highs, lows, closes, period = 14) {
     if (highs.length < period + 1) return null;
     const tr = [];
@@ -302,12 +265,13 @@
     let atr = 0;
     for (let i = 0; i < period; i++) atr += tr[i];
     atr /= period;
-    for (let i = period; i < tr.length; i++) {
-      atr = (atr * (period - 1) + tr[i]) / period;
-    }
+    for (let i = period; i < tr.length; i++) { atr = (atr * (period - 1) + tr[i]) / period; }
     return atr;
   }
 
+  // ================================================================
+  //  STRICT CONFLUENCE LOGIC (UPDATED)
+  // ================================================================
   function analyzeCoin(data, symbol) {
     const closes = data.map(d => d.close);
     const highs = data.map(d => d.high);
@@ -332,35 +296,56 @@
     const lower = bb.lower[idx];
     const vwapVal = vwap[idx];
     const vol = volumes[idx];
+    
+    // Stricter Volume Threshold (Requires 2x average volume for a breakout)
     const avgVol = volumes.slice(-20).reduce((a, b) => a + b, 0) / 20;
-    const volSpike = vol > avgVol * 1.8;
+    const volSpike = vol > avgVol * 2.0; 
 
-    let longScore = 0, shortScore = 0;
     const conditions = { EMA: false, RSI: false, BB: false, VWAP: false, VOL: false };
-
-    if (e5 !== null && e20 !== null) {
-      if (e5 > e20) { longScore += 1; conditions.EMA = true; }
-      else if (e5 < e20) { shortScore += 1; conditions.EMA = true; }
+    
+    // Track aligned forces rather than just a simple score
+    let trend = 0; // 1 for Long, -1 for Short
+    let momentum = 0; // 1 for Long, -1 for Short
+    
+    // 1. Trend Analysis (EMA & VWAP must agree)
+    if (e5 !== null && e20 !== null && vwapVal !== null) {
+      if (e5 > e20 && price > vwapVal) trend = 1;
+      else if (e5 < e20 && price < vwapVal) trend = -1;
     }
-    if (r !== null && r < 30) { longScore += 1; conditions.RSI = true; }
-    else if (r !== null && r > 70) { shortScore += 1; conditions.RSI = true; }
-    if (lower !== null && price < lower * 1.005) { longScore += 1; conditions.BB = true; }
-    if (upper !== null && price > upper * 0.995) { shortScore += 1; conditions.BB = true; }
-    if (vwapVal !== null && price > vwapVal) { longScore += 1; conditions.VWAP = true; }
-    if (vwapVal !== null && price < vwapVal) { shortScore += 1; conditions.VWAP = true; }
-    if (volSpike) { longScore += 0.5; shortScore += 0.5; conditions.VOL = true; }
 
+    // 2. Momentum Analysis (RSI & Bollinger Bands)
+    if (r !== null && lower !== null && upper !== null) {
+      if ((r < 40 && price <= lower * 1.01) || (r > 55 && r < 70)) momentum = 1;
+      else if ((r > 60 && price >= upper * 0.99) || (r < 45 && r > 30)) momentum = -1;
+    }
+
+    let baseScore = 0;
     let direction = 'NEUTRAL';
-    let strength = 0;
-    if (longScore >= shortScore && longScore >= 2.5) {
+
+    // To get a signal, Trend and Momentum MUST align
+    if (trend === 1 && momentum === 1) {
       direction = 'LONG';
-      strength = Math.min(100, Math.round((longScore / 5) * 100));
-    } else if (shortScore > longScore && shortScore >= 2.5) {
+      baseScore = 60;
+      if (e5 > e20) conditions.EMA = true;
+      if (price > vwapVal) conditions.VWAP = true;
+      if (price <= lower * 1.01) conditions.BB = true;
+    } else if (trend === -1 && momentum === -1) {
       direction = 'SHORT';
-      strength = Math.min(100, Math.round((shortScore / 5) * 100));
+      baseScore = 60;
+      if (e5 < e20) conditions.EMA = true;
+      if (price < vwapVal) conditions.VWAP = true;
+      if (price >= upper * 0.99) conditions.BB = true;
     } else {
+      // Conflicting signals = no trade (filters out random signals)
       return null;
     }
+
+    // Boost score based on volatility and volume confirmation
+    if (volSpike) { baseScore += 25; conditions.VOL = true; }
+    if (direction === 'LONG' && r < 35) { baseScore += 15; conditions.RSI = true; } 
+    else if (direction === 'SHORT' && r > 65) { baseScore += 15; conditions.RSI = true; }
+
+    const strength = Math.min(99, baseScore);
     return { direction, strength, price, condDisplay: conditions, atr };
   }
 
@@ -371,15 +356,12 @@
       tpMove = Math.max(atr * 1.5, tick * 5);
       slMove = Math.max(atr * 1.0, tick * 3);
     } else {
-      const tpMoveRaw = Math.max(price * 0.008, tick * 3);
-      const slMoveRaw = Math.max(price * 0.006, tick * 2);
-      tpMove = roundToTick(tpMoveRaw, tick);
-      slMove = roundToTick(slMoveRaw, tick);
+      tpMove = roundToTick(Math.max(price * 0.008, tick * 3), tick);
+      slMove = roundToTick(Math.max(price * 0.006, tick * 2), tick);
     }
-    if (tpMove <= slMove) {
-      tpMove = roundToTick(slMove * 1.3, tick);
-    }
+    if (tpMove <= slMove) tpMove = roundToTick(slMove * 1.3, tick);
     const spread = roundToTick(Math.max(price * 0.002, tick * 2), tick);
+    
     let entryLow, entryHigh, tp, sl;
     if (direction === 'LONG') {
       entryLow = roundToTick(price - spread / 2, tick);
@@ -392,12 +374,9 @@
       tp = roundToTick(entryLow - tpMove, tick);
       sl = roundToTick(entryHigh + slMove, tick);
     }
-    if (tp === entryLow || tp === entryHigh) {
-      tp = roundToTick(tp + (direction === 'LONG' ? tick : -tick), tick);
-    }
-    if (sl === entryLow || sl === entryHigh) {
-      sl = roundToTick(sl + (direction === 'SHORT' ? tick : -tick), tick);
-    }
+    if (tp === entryLow || tp === entryHigh) tp = roundToTick(tp + (direction === 'LONG' ? tick : -tick), tick);
+    if (sl === entryLow || sl === entryHigh) sl = roundToTick(sl + (direction === 'SHORT' ? tick : -tick), tick);
+    
     const actualTpMove = Math.abs(tp - (direction === 'LONG' ? entryHigh : entryLow));
     const actualSlMove = Math.abs(sl - (direction === 'LONG' ? entryLow : entryHigh));
     const rr = actualSlMove > 0 ? actualTpMove / actualSlMove : 0;
@@ -405,7 +384,7 @@
   }
 
   // ================================================================
-  //  FETCH COINS (FIXED: SEQUENTIAL WITH DELAY & RETRY)
+  //  FETCH COINS (LIVE BINANCE API)
   // ================================================================
   async function fetchSingleCoin(symbol, attempt = 1) {
     try {
@@ -432,9 +411,7 @@
         ...analysis
       };
     } catch (e) {
-      console.warn(`Attempt ${attempt} failed for ${symbol}:`, e.message);
       if (attempt < 3) {
-        // Wait 500ms before retry
         await new Promise(r => setTimeout(r, 500));
         return fetchSingleCoin(symbol, attempt + 1);
       }
@@ -447,19 +424,13 @@
     for (const symbol of COINS) {
       const result = await fetchSingleCoin(symbol);
       if (result) results.push(result);
-      // Wait 200ms between requests to avoid rate limits
-      await new Promise(r => setTimeout(r, 200));
-    }
-    if (results.length === 0) {
-      console.error('No coins fetched at all. Check network or Binance status.');
-    } else {
-      console.log(`Fetched ${results.length} coins successfully.`);
+      await new Promise(r => setTimeout(r, 200)); // Respect Rate Limits
     }
     return results.sort((a, b) => b.strength - a.strength);
   }
 
   // ================================================================
-  //  GOOGLE SHEETS (no-cors)
+  //  GOOGLE SHEETS SYNC (REMOVED NO-CORS FOR RELIABILITY)
   // ================================================================
   let lastSheetError = null;
 
@@ -477,19 +448,17 @@
         tp: signal.tp,
         sl: signal.sl
       };
-      await fetch(GOOGLE_SCRIPT_URL, {
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message);
+      
       lastSheetError = null;
-      console.log('✅ Sheet add sent (no-cors)');
       return true;
     } catch (e) {
-      const msg = '❌ Sheet Add Error: ' + e.message;
-      console.error(msg);
-      lastSheetError = msg;
+      lastSheetError = 'Add Error: ' + e.message;
       return false;
     }
   }
@@ -497,19 +466,17 @@
   async function updateSignalStatus(id, status, closedPrice, closeTime) {
     try {
       const payload = { action: 'update', id, status, closedPrice, closeTime };
-      await fetch(GOOGLE_SCRIPT_URL, {
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message);
+      
       lastSheetError = null;
-      console.log('✅ Sheet update sent (no-cors)');
       return true;
     } catch (e) {
-      const msg = '❌ Sheet Update Error: ' + e.message;
-      console.error(msg);
-      lastSheetError = msg;
+      lastSheetError = 'Update Error: ' + e.message;
       return false;
     }
   }
@@ -521,10 +488,7 @@
       const json = await response.json();
       if (json.success && json.data) return json.data;
       return [];
-    } catch (e) {
-      console.warn('⚠️ Fetch history failed:', e.message);
-      return [];
-    }
+    } catch (e) { return []; }
   }
 
   // ================================================================
@@ -533,9 +497,8 @@
   function getLocalHistory() {
     try { const raw = localStorage.getItem('scalpHistory'); return raw ? JSON.parse(raw) : []; } catch { return []; }
   }
-
   function saveLocalHistory(h) {
-    try { localStorage.setItem('scalpHistory', JSON.stringify(h)); } catch {}
+    try { localStorage.setItem('scalpHistory', JSON.stringify(h.slice(0, 100))); } catch {} // Keep last 100 to prevent memory leaks
   }
 
   // ================================================================
@@ -543,86 +506,48 @@
   // ================================================================
   let isProcessing = false;
   const activeSignals = new Map();
-
-  function generateId() {
-    return 'sig_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
-  }
+  function generateId() { return 'sig_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4); }
 
   async function processScan() {
     if (isProcessing) return;
     isProcessing = true;
-    refreshBtn.disabled = true;
-    refreshBtn.innerHTML = '<span class="spinner"></span>';
+    refreshBtn.disabled = true; refreshBtn.innerHTML = '<span class="spinner"></span>';
 
     try {
       const all = await fetchAllCoins();
-      if (!all || all.length === 0) {
-        throw new Error('No data from Binance. Check console for details.');
-      }
-
-      const priceMap = {};
-      all.forEach(c => priceMap[c.symbol] = c.livePrice);
-
+      const priceMap = {}; all.forEach(c => priceMap[c.symbol] = c.livePrice);
       const history = getLocalHistory();
       const now = Date.now();
 
-      // Check expiry for existing signals
+      // Check Expired
       for (const [symbol, signal] of activeSignals) {
         if (signal.status === 'OPEN' && (now - signal.openTime) > SIGNAL_EXPIRY_MINUTES * 60 * 1000) {
-          signal.status = 'EXPIRED';
-          signal.result = '⏰ Expired';
-          signal.closedPrice = signal.livePrice;
-          signal.closeTime = now;
-          for (let i = 0; i < history.length; i++) {
-            if (history[i].id === signal.id) {
-              history[i].status = 'EXPIRED';
-              history[i].result = '⏰ Expired';
-              history[i].closedPrice = signal.livePrice;
-              history[i].closeTime = now;
-              break;
-            }
-          }
+          signal.status = 'EXPIRED'; signal.result = '⏰ Expired'; signal.closedPrice = signal.livePrice; signal.closeTime = now;
+          let hIdx = history.findIndex(h => h.id === signal.id);
+          if(hIdx >= 0) { history[hIdx].status = 'EXPIRED'; history[hIdx].result = '⏰ Expired'; history[hIdx].closeTime = now; }
           activeSignals.delete(symbol);
+          await updateSignalStatus(signal.id, 'EXPIRED', signal.livePrice, now);
         }
       }
-      if (history.length > 0) saveLocalHistory(history);
 
-      // Add new signals
+      // Add New High-Confidence Signals
       for (const s of all) {
-        if (!activeSignals.has(s.symbol) && s.strength >= 60) {
+        if (!activeSignals.has(s.symbol) && s.strength >= MINIMUM_STRENGTH_THRESHOLD) {
           const params = generateSignalParams(s.symbol, s.livePrice, s.direction, s.atr);
           const newSig = {
-            id: generateId(),
-            symbol: s.symbol,
-            direction: s.direction,
-            entryLow: params.entryLow,
-            entryHigh: params.entryHigh,
-            tp: params.tp,
-            sl: params.sl,
-            rr: params.rr,
-            tick: params.tick,
-            strength: s.strength,
-            timestamp: new Date().toISOString(),
-            openTime: now,
-            livePrice: s.livePrice,
-            changePercent: s.changePercent,
-            status: 'OPEN'
+            id: generateId(), symbol: s.symbol, direction: s.direction,
+            entryLow: params.entryLow, entryHigh: params.entryHigh, tp: params.tp, sl: params.sl, rr: params.rr, tick: params.tick, strength: s.strength, timestamp: new Date().toISOString(), openTime: now, livePrice: s.livePrice, changePercent: s.changePercent, status: 'OPEN'
           };
           activeSignals.set(s.symbol, newSig);
           await addSignalToSheet(newSig);
-          let hist = getLocalHistory();
-          hist.push({ ...newSig, result: '—', closedPrice: null, closeTime: null });
-          saveLocalHistory(hist);
+          history.push({ ...newSig, result: '—', closedPrice: null, closeTime: null });
         } else {
           const existing = activeSignals.get(s.symbol);
-          if (existing) {
-            existing.livePrice = s.livePrice;
-            existing.changePercent = s.changePercent;
-          }
+          if (existing) { existing.livePrice = s.livePrice; existing.changePercent = s.changePercent; }
         }
       }
 
-      // Check TP/SL hits
+      // Check TP/SL Hits
       let historyUpdated = false;
       const toRemove = [];
       for (const [symbol, signal] of activeSignals) {
@@ -630,54 +555,40 @@
         if (!currentPrice) continue;
         let hitStatus = null;
         if (signal.direction === 'LONG') {
-          if (currentPrice >= signal.tp) hitStatus = 'PROFIT';
-          else if (currentPrice <= signal.sl) hitStatus = 'LOSS';
+          if (currentPrice >= signal.tp) hitStatus = 'PROFIT'; else if (currentPrice <= signal.sl) hitStatus = 'LOSS';
         } else {
-          if (currentPrice <= signal.tp) hitStatus = 'PROFIT';
-          else if (currentPrice >= signal.sl) hitStatus = 'LOSS';
+          if (currentPrice <= signal.tp) hitStatus = 'PROFIT'; else if (currentPrice >= signal.sl) hitStatus = 'LOSS';
         }
+        
         if (hitStatus) {
           const closeTime = Date.now();
-          signal.status = hitStatus;
-          signal.result = hitStatus === 'PROFIT' ? 'TP Hit ✅' : 'SL Hit ❌';
-          signal.closedPrice = currentPrice;
-          signal.closeTime = closeTime;
+          signal.status = hitStatus; signal.result = hitStatus === 'PROFIT' ? 'TP Hit ✅' : 'SL Hit ❌'; signal.closedPrice = currentPrice; signal.closeTime = closeTime;
           toRemove.push(symbol);
-          for (let i = 0; i < history.length; i++) {
-            if (history[i].id === signal.id) {
-              history[i].status = hitStatus;
-              history[i].result = signal.result;
-              history[i].closedPrice = currentPrice;
-              history[i].closeTime = closeTime;
-              historyUpdated = true;
-              break;
-            }
+          let hIdx = history.findIndex(h => h.id === signal.id);
+          if (hIdx >= 0) {
+            history[hIdx].status = hitStatus; history[hIdx].result = signal.result; history[hIdx].closedPrice = currentPrice; history[hIdx].closeTime = closeTime;
+            historyUpdated = true;
           }
           await updateSignalStatus(signal.id, hitStatus, currentPrice, closeTime);
         }
       }
       for (const sym of toRemove) activeSignals.delete(sym);
-      if (historyUpdated) saveLocalHistory(history);
+      saveLocalHistory(history);
 
       // Render
       const active = Array.from(activeSignals.values()).filter(s => s.status === 'OPEN');
       liveCount.textContent = active.length;
-      renderSignals(active);
-      renderHistory(history);
+      renderSignals(active); renderHistory(history);
 
       if (lastSheetError) {
-        statusText.innerHTML = `🔴 <span class="error">Sheet Error!</span> Check console. Last: ${lastSheetError.substring(0, 60)}...`;
+        statusText.innerHTML = `🔴 <span class="error">Database Sync Error</span>`;
       } else {
         statusText.innerHTML = `🟢 <span class="live">Live</span> · ${active.length} active · ${new Date().toLocaleTimeString()}`;
       }
-
     } catch (err) {
-      console.error(err);
-      statusText.innerHTML = '🔴 Error: ' + err.message;
+      statusText.innerHTML = '🔴 Market Error: Offline or Rate Limited';
     } finally {
-      refreshBtn.disabled = false;
-      refreshBtn.innerHTML = '⟳ Refresh';
-      isProcessing = false;
+      refreshBtn.disabled = false; refreshBtn.innerHTML = '⟳ Refresh'; isProcessing = false;
     }
   }
 
@@ -686,20 +597,15 @@
   // ================================================================
   function renderSignals(signals) {
     if (!signals || signals.length === 0) {
-      signalsGrid.innerHTML = `<div class="empty-state">No active signals. Waiting...</div>`;
+      signalsGrid.innerHTML = `<div class="empty-state">No active signals. Waiting for high-probability setup...</div>`;
       return;
     }
     let html = '';
-    const maxDisplay = 10;
-    const displayed = signals.slice(0, maxDisplay);
+    const displayed = signals.slice(0, 10);
     displayed.forEach(s => {
-      const dirClass = s.direction.toLowerCase();
-      const dirDisplay = s.direction === 'LONG' ? '▲' : '▼';
-      const tick = s.tick || 0.01;
-      const confidence = s.strength || 0;
-      let confClass = 'low';
-      if (confidence >= 80) confClass = 'high';
-      else if (confidence >= 60) confClass = 'medium';
+      const dirClass = s.direction.toLowerCase(); const dirDisplay = s.direction === 'LONG' ? '▲' : '▼';
+      const tick = s.tick || 0.01; const confidence = s.strength || 0;
+      let confClass = confidence >= 85 ? 'high' : (confidence >= 75 ? 'medium' : 'low');
 
       html += `
         <div class="signal-row ${dirClass}">
@@ -710,18 +616,13 @@
           <span class="col-tp">${formatPriceShort(s.tp, tick)}</span>
           <span class="col-sl">${formatPriceShort(s.sl, tick)}</span>
           <span class="col-conf ${confClass}">
-            <div class="conf-bar-container">
-              <div class="conf-bar ${confClass}" style="width:${confidence}%"></div>
-            </div>
+            <div class="conf-bar-container"><div class="conf-bar ${confClass}" style="width:${confidence}%"></div></div>
             ${confidence}%
           </span>
           <span class="col-time">${fmtTime(s.timestamp)}</span>
         </div>
       `;
     });
-    if (signals.length > maxDisplay) {
-      html += `<div class="empty-state" style="padding:8px;">+ ${signals.length - maxDisplay} more signals not shown</div>`;
-    }
     signalsGrid.innerHTML = html;
   }
 
@@ -729,8 +630,7 @@
     const closedTrades = history.filter(h => h.status === 'PROFIT' || h.status === 'LOSS' || h.status === 'EXPIRED');
     if (!closedTrades || closedTrades.length === 0) {
       historyList.innerHTML = `<div class="empty-state">No completed trades yet.</div>`;
-      historyCount.textContent = '0 entries';
-      return;
+      historyCount.textContent = '0 entries'; return;
     }
     const sorted = closedTrades.sort((a, b) => (b.closeTime || 0) - (a.closeTime || 0)).slice(0, 50);
     historyCount.textContent = sorted.length + ' entries';
@@ -744,11 +644,8 @@
       else if (h.status === 'EXPIRED') { resultText = '⏰ Exp'; resultClass = 'loss'; }
       let durationStr = '—', durClass = '';
       if (h.openTime && h.closeTime) {
-        const durMs = h.closeTime - h.openTime;
-        durationStr = fmtDuration(durMs);
-        if (durMs < 120000) durClass = 'fast';
-        else if (durMs < 600000) durClass = 'medium';
-        else durClass = 'slow';
+        const durMs = h.closeTime - h.openTime; durationStr = fmtDuration(durMs);
+        durClass = durMs < 120000 ? 'fast' : (durMs < 600000 ? 'medium' : 'slow');
       }
       const priceDisplay = h.closedPrice ? formatPrice(h.closedPrice, tick) : '—';
       html += `
@@ -765,68 +662,41 @@
     historyList.innerHTML = html;
   }
 
-  // ================================================================
-  //  SYNC REMOTE & AUTO REFRESH
-  // ================================================================
   async function syncRemoteHistory() {
     try {
       const remote = await fetchHistoryFromSheet();
       if (remote && remote.length > 0) {
         const transformed = remote.map(r => ({
-          id: r.ID || r.id,
-          symbol: r.Symbol || r.symbol,
-          direction: r.Direction || r.direction,
-          entryLow: parseFloat(r.EntryMin || r.entryMin),
-          entryHigh: parseFloat(r.EntryMax || r.entryMax),
-          tp: parseFloat(r.TP || r.tp),
-          sl: parseFloat(r.SL || r.sl),
-          timestamp: r.Timestamp || r.timestamp,
-          status: r.Status || r.status,
-          result: r.Result || r.result,
-          closedPrice: parseFloat(r.ClosedPrice || r.closedPrice) || null,
-          openTime: r.OpenTime ? parseInt(r.OpenTime) : null,
-          closeTime: r.CloseTime ? parseInt(r.CloseTime) : null,
-          tick: 0.001
+          id: r.id || r.ID, symbol: r.symbol || r.Symbol, direction: r.direction || r.Direction,
+          entryLow: parseFloat(r.entrymin || r.EntryMin), entryHigh: parseFloat(r.entrymax || r.EntryMax),
+          tp: parseFloat(r.tp || r.TP), sl: parseFloat(r.sl || r.SL), timestamp: r.timestamp || r.Timestamp,
+          status: r.status || r.Status, result: r.result || r.Result, closedPrice: parseFloat(r.closedprice || r.ClosedPrice) || null,
+          openTime: r.opentime || r.OpenTime ? parseInt(r.opentime || r.OpenTime) : null,
+          closeTime: r.closetime || r.CloseTime ? parseInt(r.closetime || r.CloseTime) : null, tick: 0.001
         }));
-        const local = getLocalHistory();
-        const merged = [...local];
+        
+        let local = getLocalHistory();
         for (const r of transformed) {
-          const existingIdx = merged.findIndex(l => l.id === r.id);
-          if (existingIdx >= 0) {
-            if (r.closeTime && !merged[existingIdx].closeTime) {
-              merged[existingIdx] = { ...merged[existingIdx], ...r };
-            }
-          } else {
-            merged.push(r);
-          }
+          const existingIdx = local.findIndex(l => l.id === r.id);
+          if (existingIdx >= 0) { if (r.closeTime && !local[existingIdx].closeTime) local[existingIdx] = { ...local[existingIdx], ...r }; }
+          else local.push(r);
         }
-        saveLocalHistory(merged);
-        renderHistory(merged);
+        saveLocalHistory(local); renderHistory(local);
       }
-    } catch (e) { /* ignore */ }
+    } catch (e) {}
   }
 
   let scanInterval = null, historyInterval = null;
-
-  async function fullUpdate() {
-    await processScan();
-    await syncRemoteHistory();
-  }
-
+  async function fullUpdate() { await processScan(); await syncRemoteHistory(); }
   function startAutoRefresh() {
-    if (scanInterval) clearInterval(scanInterval);
-    if (historyInterval) clearInterval(historyInterval);
+    if (scanInterval) clearInterval(scanInterval); if (historyInterval) clearInterval(historyInterval);
     fullUpdate();
     scanInterval = setInterval(processScan, SCAN_INTERVAL);
-    historyInterval = setInterval(() => {
-      const hist = getLocalHistory();
-      renderHistory(hist);
-    }, HISTORY_INTERVAL);
+    historyInterval = setInterval(() => { renderHistory(getLocalHistory()); }, HISTORY_INTERVAL);
   }
 
   refreshBtn.addEventListener('click', () => {
-    if (scanInterval) clearInterval(scanInterval);
-    if (historyInterval) clearInterval(historyInterval);
+    if (scanInterval) clearInterval(scanInterval); if (historyInterval) clearInterval(historyInterval);
     fullUpdate().finally(() => startAutoRefresh());
   });
 
