@@ -6,24 +6,3 @@
     "firebase-admin": "^12.0.0"
   }
 }
-
----
-
-### Step 5: The GitHub Actions YAML 
-This file tells GitHub to wake up and run `bot.js` every 5 minutes. 
-Create a file at this exact path in your repo: `.github/workflows/bot.yml`
-
-
-http://googleusercontent.com/immersive_entry_chip/1
-
----
-
-### Step 6: The True Real-Time Viewer App (Frontend)
-Your viewers will load this HTML file. Notice that there is **no `setInterval`** fetching data. It uses Firebase `onSnapshot`. If the GitHub Action writes a profit to the database at exactly 2:05 PM, this webpage will visually update itself at 2:05 PM without the user ever clicking refresh.
-
-(Remember to replace the `firebaseConfig` block with the public config block you get from your Firebase Project Settings -> General -> "Web App").
-
-
-http://googleusercontent.com/immersive_entry_chip/2
-
-Once you push these files to your GitHub repository, go to the **Actions** tab on GitHub. You will see your "ScalpScanner Engine" workflow listed there. It will start running automatically every 5 minutes forever, totally separated from your computer.
