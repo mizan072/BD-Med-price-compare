@@ -70,9 +70,6 @@
     .history-item .h-dir.short { color: #f25b6a; }
     .history-item .h-time { color: #5f7d9a; font-size: 10px; white-space: nowrap; }
     .history-item .h-duration { font-size: 10px; font-weight: 600; text-align: center; background: #1a2430; padding: 1px 6px; border-radius: 20px; white-space: nowrap; }
-    .history-item .h-duration.fast { color: #33d9a8; }
-    .history-item .h-duration.medium { color: #f4c95d; }
-    .history-item .h-duration.slow { color: #f25b6a; }
     .history-item .h-result { font-weight: 700; font-size: 12px; text-align: center; }
     .history-item .h-result.win { color: #33d9a8; }
     .history-item .h-result.loss { color: #f25b6a; }
@@ -80,57 +77,19 @@
     @media (max-width: 768px) {
       .signals-header { font-size: 9px; grid-template-columns: 45px 35px 70px 1fr 70px 70px 80px 60px; }
       .signal-row { grid-template-columns: 45px 35px 70px 1fr 70px 70px 80px 60px; font-size: 12px; }
-      .signal-row .col-sym { font-size: 13px; }
-      .signal-row .col-entry { font-size: 11px; }
-      .signal-row .col-tp, .signal-row .col-sl { font-size: 11px; }
-      .signal-row .col-conf { font-size: 12px; }
-      .conf-bar-container { width: 30px; }
     }
     @media (max-width: 650px) {
       .signals-header { display: none; }
       .signal-row { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto auto; gap: 2px 8px; padding: 10px 12px; border-left: 3px solid transparent; }
-      .signal-row.long { border-left-color: #33d9a8; }
-      .signal-row.short { border-left-color: #f25b6a; }
       .signal-row .col-sym { grid-column: 1 / 2; grid-row: 1 / 2; font-size: 16px; }
-      .signal-row .col-dir { grid-column: 2 / 3; grid-row: 1 / 2; text-align: left; }
-      .signal-row .col-price { grid-column: 3 / 4; grid-row: 1 / 2; text-align: right; font-size: 14px; }
-      .signal-row .col-entry { grid-column: 1 / 3; grid-row: 2 / 3; font-size: 11px; color: #7a94af; }
-      .signal-row .col-tp { grid-column: 1 / 2; grid-row: 3 / 4; font-size: 11px; }
-      .signal-row .col-sl { grid-column: 2 / 3; grid-row: 3 / 4; font-size: 11px; }
-      .signal-row .col-conf { grid-column: 3 / 4; grid-row: 3 / 4; font-size: 14px; text-align: right; justify-content: flex-end; }
+      .signal-row .col-dir { grid-column: 2 / 3; grid-row: 1 / 2; }
+      .signal-row .col-price { grid-column: 3 / 4; grid-row: 1 / 2; text-align: right; }
+      .signal-row .col-entry { grid-column: 1 / 3; grid-row: 2 / 3; }
+      .signal-row .col-tp { grid-column: 1 / 2; grid-row: 3 / 4; }
+      .signal-row .col-sl { grid-column: 2 / 3; grid-row: 3 / 4; }
+      .signal-row .col-conf { grid-column: 3 / 4; grid-row: 3 / 4; text-align: right; justify-content: flex-end; }
       .signal-row .col-time { display: none; }
       .history-item { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 2px 6px; padding: 8px 10px; }
-      .history-item .h-sym { grid-column: 1 / 2; grid-row: 1 / 2; font-size: 14px; }
-      .history-item .h-dir { grid-column: 2 / 3; grid-row: 1 / 2; text-align: left; }
-      .history-item .h-time { grid-column: 3 / 4; grid-row: 1 / 2; text-align: right; }
-      .history-item .h-duration { grid-column: 1 / 2; grid-row: 2 / 3; text-align: left; background: none; padding: 0; }
-      .history-item .h-result { grid-column: 2 / 3; grid-row: 2 / 3; text-align: left; }
-      .history-item .h-price { grid-column: 3 / 4; grid-row: 2 / 3; text-align: right; }
-      .history-item .h-duration.fast, .history-item .h-duration.medium, .history-item .h-duration.slow { background: none; padding: 0; }
-    }
-    @media (max-width: 480px) {
-      body { padding: 8px; }
-      .header h1 { font-size: 20px; gap: 6px; }
-      .header h1 span { font-size: 10px; padding: 2px 10px; }
-      .badge { font-size: 11px; padding: 4px 10px; }
-      .top-bar { padding: 8px 12px; border-radius: 12px; }
-      .top-bar .status { font-size: 11px; }
-      .refresh-btn { padding: 5px 14px; font-size: 12px; min-height: 38px; }
-      .signal-row { padding: 8px 10px; }
-      .signal-row .col-sym { font-size: 15px; }
-      .signal-row .col-price { font-size: 13px; }
-      .signal-row .col-conf { font-size: 13px; }
-      .conf-bar-container { width: 32px; }
-      .history-item { font-size: 11px; }
-    }
-    @media (max-width: 380px) {
-      .header h1 { font-size: 18px; }
-      .header h1 span { display: none; }
-      .badge { font-size: 10px; padding: 3px 8px; }
-      .signal-row .col-sym { font-size: 14px; }
-      .signal-row .col-price { font-size: 12px; }
-      .signal-row .col-conf { font-size: 12px; justify-content: flex-end; }
-      .conf-bar-container { width: 28px; }
     }
   </style>
 </head>
@@ -150,7 +109,7 @@
       <span>TP</span> <span>SL</span> <span>Confidence</span> <span>Time</span>
     </div>
     <div class="signals-grid" id="signalsGrid">
-      <div class="empty-state">No active signals. Waiting for high-probability setup...</div>
+      <div class="empty-state">Scanning markets for high-probability setups...</div>
     </div>
   </div>
   <div class="history-section">
@@ -166,7 +125,7 @@
 
 <script>
   // ================================================================
-  //  CONFIG - UPDATED URL
+  //  CONFIG & BACKEND INTERFACE
   // ================================================================
   const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPTNsQK67PxGsNw9qn1uLq05jygVHldLtKtD0Fxln3lP2kEL1_LJrcJ-tk6lCnYYGt/exec';
 
@@ -176,12 +135,12 @@
     'XRPUSDT': 0.0001, 'ADAUSDT': 0.0001, 'DOGEUSDT': 0.00001
   };
   const COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','LINKUSDT'];
-  const SCAN_INTERVAL = 15000;
-  const HISTORY_INTERVAL = 30000;
+  const SCAN_INTERVAL = 12000;
+  const HISTORY_INTERVAL = 25000;
   const SIGNAL_EXPIRY_MINUTES = 30;
   
-  // MINIMUM STRENGTH REQUIRED TO OPEN A TRADE (Strict Mode)
-  const MINIMUM_STRENGTH_THRESHOLD = 75; 
+  // Real-Data Confident Filter Boundary
+  const MINIMUM_STRENGTH_THRESHOLD = 60; 
 
   const $ = id => document.getElementById(id);
   const signalsGrid = $('signalsGrid');
@@ -195,19 +154,19 @@
   function roundToTick(value, tick) { const factor = 1 / tick; return Math.round(value * factor) / factor; }
   function formatPrice(value, tick) { if (!tick) return '$' + value.toFixed(2); const decimals = Math.max(0, Math.ceil(-Math.log10(tick))); return '$' + value.toFixed(decimals); }
   function fmtTime(iso) { if (!iso) return '—'; try { const d = new Date(iso); return d.toLocaleTimeString('en-US', { hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit' }); } catch { return iso; } }
-  function fmtDuration(ms) { if (!ms || ms < 0) return '—'; const totalSec = Math.floor(ms / 1000); if (totalSec < 60) return totalSec + 's'; const min = Math.floor(totalSec / 60); const sec = totalSec % 60; return min + 'm ' + sec + 's'; }
+  function fmtDuration(ms) { if (!ms || ms < 0) return '—'; const totalSec = Math.floor(ms / 1000); if (totalSec < 60) return totalSec + 's'; return Math.floor(totalSec / 60) + 'm ' + (totalSec % 60) + 's'; }
   function getSymbol(s) { return s.replace('USDT',''); }
   function formatPriceShort(value, tick) { if (!tick) return value.toFixed(2); const decimals = Math.max(0, Math.ceil(-Math.log10(tick))); return value.toFixed(decimals); }
 
   // ================================================================
-  //  TECHNICAL INDICATORS
+  //  TECHNICAL INDICATORS (CALCULATED MATHEMATICALLY FROM REAL CANDLES)
   // ================================================================
   function calcEMA(data, period) {
     const ema = []; const k = 2 / (period + 1); let sum = 0;
     for (let i = 0; i < data.length; i++) {
       if (i < period - 1) { sum += data[i]; ema.push(null); }
       else if (i === period - 1) { sum += data[i]; ema.push(sum / period); }
-      else { const val = data[i] * k + ema[i - 1] * (1 - k); ema.push(val); }
+      else { ema.push(data[i] * k + ema[i - 1] * (1 - k)); }
     }
     return ema;
   }
@@ -219,15 +178,13 @@
         if (diff >= 0) gain += diff; else loss += Math.abs(diff);
         if (i === period) {
           let avgGain = gain / period, avgLoss = loss / period;
-          const rs = avgLoss === 0 ? 0 : avgGain / avgLoss;
-          rsi.push(avgLoss === 0 ? 100 : 100 - (100 / (1 + rs)));
+          rsi.push(avgLoss === 0 ? 100 : 100 - (100 / (1 + (avgGain / avgLoss))));
         } else rsi.push(null);
       } else {
         const avgGain = ((gain * (period - 1)) + (diff >= 0 ? diff : 0)) / period;
         const avgLoss = ((loss * (period - 1)) + (diff < 0 ? Math.abs(diff) : 0)) / period;
         gain = avgGain * period; loss = avgLoss * period;
-        const rs = avgLoss === 0 ? 0 : avgGain / avgLoss;
-        rsi.push(avgLoss === 0 ? 100 : 100 - (100 / (1 + rs)));
+        rsi.push(avgLoss === 0 ? 100 : 100 - (100 / (1 + (avgGain / avgLoss))));
       }
     }
     return rsi;
@@ -247,8 +204,7 @@
   function calcVWAP(highs, lows, closes, volumes) {
     const vwap = []; let cumPV = 0, cumVol = 0;
     for (let i = 0; i < closes.length; i++) {
-      const typical = (highs[i] + lows[i] + closes[i]) / 3;
-      cumPV += typical * volumes[i]; cumVol += volumes[i];
+      cumPV += ((highs[i] + lows[i] + closes[i]) / 3) * volumes[i]; cumVol += volumes[i];
       vwap.push(cumVol === 0 ? null : cumPV / cumVol);
     }
     return vwap;
@@ -257,166 +213,105 @@
     if (highs.length < period + 1) return null;
     const tr = [];
     for (let i = 1; i < highs.length; i++) {
-      const hl = highs[i] - lows[i];
-      const hc = Math.abs(highs[i] - closes[i - 1]);
-      const lc = Math.abs(lows[i] - closes[i - 1]);
-      tr.push(Math.max(hl, hc, lc));
+      tr.push(Math.max(highs[i] - lows[i], Math.abs(highs[i] - closes[i - 1]), Math.abs(lows[i] - closes[i - 1])));
     }
-    let atr = 0;
-    for (let i = 0; i < period; i++) atr += tr[i];
-    atr /= period;
+    let atr = tr.slice(0, period).reduce((a, b) => a + b, 0) / period;
     for (let i = period; i < tr.length; i++) { atr = (atr * (period - 1) + tr[i]) / period; }
     return atr;
   }
 
   // ================================================================
-  //  STRICT CONFLUENCE LOGIC (UPDATED)
+  //  CALCULATIVE CONFLUENCE ENGINE
   // ================================================================
   function analyzeCoin(data, symbol) {
     const closes = data.map(d => d.close);
     const highs = data.map(d => d.high);
     const lows = data.map(d => d.low);
     const volumes = data.map(d => d.volume);
-    const len = closes.length;
-    if (len < 60) return null;
+    if (closes.length < 60) return null;
 
-    const ema5 = calcEMA(closes, 5);
-    const ema20 = calcEMA(closes, 20);
-    const rsi = calcRSI(closes, 14);
+    const idx = closes.length - 1;
+    const ema5 = calcEMA(closes, 5)[idx];
+    const ema20 = calcEMA(closes, 20)[idx];
+    const rsi = calcRSI(closes, 14)[idx - 1]; // Offset index alignment check
     const bb = calcBB(closes, 20, 2);
-    const vwap = calcVWAP(highs, lows, closes, volumes);
+    const vwapVal = calcVWAP(highs, lows, closes, volumes)[idx];
     const atr = calcATR(highs, lows, closes, 14);
 
-    const idx = len - 1;
     const price = closes[idx];
-    const e5 = ema5[idx];
-    const e20 = ema20[idx];
-    const r = rsi[idx];
     const upper = bb.upper[idx];
     const lower = bb.lower[idx];
-    const vwapVal = vwap[idx];
     const vol = volumes[idx];
     
-    // Stricter Volume Threshold (Requires 2x average volume for a breakout)
     const avgVol = volumes.slice(-20).reduce((a, b) => a + b, 0) / 20;
-    const volSpike = vol > avgVol * 2.0; 
+    const volSpike = vol > avgVol * 1.35; 
 
     const conditions = { EMA: false, RSI: false, BB: false, VWAP: false, VOL: false };
+    let trend = 0; 
+    let momentum = 0; 
     
-    // Track aligned forces rather than just a simple score
-    let trend = 0; // 1 for Long, -1 for Short
-    let momentum = 0; // 1 for Long, -1 for Short
-    
-    // 1. Trend Analysis (EMA & VWAP must agree)
-    if (e5 !== null && e20 !== null && vwapVal !== null) {
-      if (e5 > e20 && price > vwapVal) trend = 1;
-      else if (e5 < e20 && price < vwapVal) trend = -1;
+    if (ema5 && ema20 && vwapVal) {
+      if (ema5 > ema20 && price > vwapVal) trend = 1;
+      else if (ema5 < ema20 && price < vwapVal) trend = -1;
     }
 
-    // 2. Momentum Analysis (RSI & Bollinger Bands)
-    if (r !== null && lower !== null && upper !== null) {
-      if ((r < 40 && price <= lower * 1.01) || (r > 55 && r < 70)) momentum = 1;
-      else if ((r > 60 && price >= upper * 0.99) || (r < 45 && r > 30)) momentum = -1;
+    if (rsi && lower && upper) {
+      if (rsi < 48 || price <= lower * 1.015) momentum = 1;
+      else if (rsi > 52 || price >= upper * 0.985) momentum = -1;
     }
 
     let baseScore = 0;
     let direction = 'NEUTRAL';
 
-    // To get a signal, Trend and Momentum MUST align
     if (trend === 1 && momentum === 1) {
-      direction = 'LONG';
-      baseScore = 60;
-      if (e5 > e20) conditions.EMA = true;
-      if (price > vwapVal) conditions.VWAP = true;
-      if (price <= lower * 1.01) conditions.BB = true;
+      direction = 'LONG'; baseScore = 62;
+      conditions.EMA = true; conditions.VWAP = true;
     } else if (trend === -1 && momentum === -1) {
-      direction = 'SHORT';
-      baseScore = 60;
-      if (e5 < e20) conditions.EMA = true;
-      if (price < vwapVal) conditions.VWAP = true;
-      if (price >= upper * 0.99) conditions.BB = true;
+      direction = 'SHORT'; baseScore = 62;
+      conditions.EMA = true; conditions.VWAP = true;
     } else {
-      // Conflicting signals = no trade (filters out random signals)
-      return null;
+      return null; 
     }
 
-    // Boost score based on volatility and volume confirmation
-    if (volSpike) { baseScore += 25; conditions.VOL = true; }
-    if (direction === 'LONG' && r < 35) { baseScore += 15; conditions.RSI = true; } 
-    else if (direction === 'SHORT' && r > 65) { baseScore += 15; conditions.RSI = true; }
+    if (volSpike) { baseScore += 18; conditions.VOL = true; }
+    if (direction === 'LONG' && rsi < 40) { baseScore += 15; conditions.RSI = true; } 
+    else if (direction === 'SHORT' && rsi > 60) { baseScore += 15; conditions.RSI = true; }
 
-    const strength = Math.min(99, baseScore);
-    return { direction, strength, price, condDisplay: conditions, atr };
+    return { direction, strength: Math.min(99, baseScore), price, condDisplay: conditions, atr };
   }
 
   function generateSignalParams(symbol, price, direction, atr) {
     const tick = getTick(symbol);
-    let tpMove, slMove;
-    if (atr && atr > tick * 2) {
-      tpMove = Math.max(atr * 1.5, tick * 5);
-      slMove = Math.max(atr * 1.0, tick * 3);
-    } else {
-      tpMove = roundToTick(Math.max(price * 0.008, tick * 3), tick);
-      slMove = roundToTick(Math.max(price * 0.006, tick * 2), tick);
-    }
-    if (tpMove <= slMove) tpMove = roundToTick(slMove * 1.3, tick);
-    const spread = roundToTick(Math.max(price * 0.002, tick * 2), tick);
+    let tpMove = atr && atr > tick * 2 ? Math.max(atr * 1.4, tick * 4) : roundToTick(price * 0.006, tick);
+    let slMove = atr && atr > tick * 2 ? Math.max(atr * 1.1, tick * 3) : roundToTick(price * 0.005, tick);
     
-    let entryLow, entryHigh, tp, sl;
-    if (direction === 'LONG') {
-      entryLow = roundToTick(price - spread / 2, tick);
-      entryHigh = roundToTick(price + spread / 2, tick);
-      tp = roundToTick(entryHigh + tpMove, tick);
-      sl = roundToTick(entryLow - slMove, tick);
-    } else {
-      entryLow = roundToTick(price - spread / 2, tick);
-      entryHigh = roundToTick(price + spread / 2, tick);
-      tp = roundToTick(entryLow - tpMove, tick);
-      sl = roundToTick(entryHigh + slMove, tick);
-    }
-    if (tp === entryLow || tp === entryHigh) tp = roundToTick(tp + (direction === 'LONG' ? tick : -tick), tick);
-    if (sl === entryLow || sl === entryHigh) sl = roundToTick(sl + (direction === 'SHORT' ? tick : -tick), tick);
+    const spread = roundToTick(Math.max(price * 0.001, tick * 2), tick);
+    let entryLow = roundToTick(price - spread / 2, tick);
+    let entryHigh = roundToTick(price + spread / 2, tick);
     
-    const actualTpMove = Math.abs(tp - (direction === 'LONG' ? entryHigh : entryLow));
-    const actualSlMove = Math.abs(sl - (direction === 'LONG' ? entryLow : entryHigh));
-    const rr = actualSlMove > 0 ? actualTpMove / actualSlMove : 0;
-    return { entryLow, entryHigh, tp, sl, rr, tick };
+    let tp = direction === 'LONG' ? roundToTick(entryHigh + tpMove, tick) : roundToTick(entryLow - tpMove, tick);
+    let sl = direction === 'LONG' ? roundToTick(entryLow - slMove, tick) : roundToTick(entryHigh + slMove, tick);
+    
+    return { entryLow, entryHigh, tp, sl, tick };
   }
 
   // ================================================================
-  //  FETCH COINS (LIVE BINANCE API)
+  //  LIVE MARKET DATA RETRIEVAL
   // ================================================================
-  async function fetchSingleCoin(symbol, attempt = 1) {
+  async function fetchSingleCoin(symbol) {
     try {
-      const kResp = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=120`);
-      if (!kResp.ok) throw new Error(`Klines HTTP ${kResp.status}`);
+      const kResp = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=100`);
+      if (!kResp.ok) return null;
       const raw = await kResp.json();
       const data = raw.map(c => ({
-        open: parseFloat(c[1]), high: parseFloat(c[2]), low: parseFloat(c[3]),
-        close: parseFloat(c[4]), volume: parseFloat(c[5])
+        open: parseFloat(c[1]), high: parseFloat(c[2]), low: parseFloat(c[3]), close: parseFloat(c[4]), volume: parseFloat(c[5])
       }));
-      if (data.length < 60) throw new Error('Not enough candles');
-
-      const tResp = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
-      if (!tResp.ok) throw new Error(`Ticker HTTP ${tResp.status}`);
-      const ticker = await tResp.json();
 
       const analysis = analyzeCoin(data, symbol);
       if (!analysis) return null;
 
-      return {
-        symbol,
-        livePrice: parseFloat(ticker.lastPrice),
-        changePercent: parseFloat(ticker.priceChangePercent),
-        ...analysis
-      };
-    } catch (e) {
-      if (attempt < 3) {
-        await new Promise(r => setTimeout(r, 500));
-        return fetchSingleCoin(symbol, attempt + 1);
-      }
-      return null;
-    }
+      return { symbol, livePrice: data[data.length - 1].close, ...analysis };
+    } catch (e) { return null; }
   }
 
   async function fetchAllCoins() {
@@ -424,89 +319,60 @@
     for (const symbol of COINS) {
       const result = await fetchSingleCoin(symbol);
       if (result) results.push(result);
-      await new Promise(r => setTimeout(r, 200)); // Respect Rate Limits
+      await new Promise(r => setTimeout(r, 150)); 
     }
     return results.sort((a, b) => b.strength - a.strength);
   }
 
   // ================================================================
-  //  GOOGLE SHEETS SYNC (REMOVED NO-CORS FOR RELIABILITY)
+  //  SHEET SYNC INTEGRATION
   // ================================================================
   let lastSheetError = null;
 
   async function addSignalToSheet(signal) {
     try {
-      const payload = {
-        action: 'add',
-        id: signal.id,
-        timestamp: signal.timestamp,
-        openTime: signal.openTime,
-        symbol: signal.symbol,
-        direction: signal.direction,
-        entryMin: signal.entryLow,
-        entryMax: signal.entryHigh,
-        tp: signal.tp,
-        sl: signal.sl
-      };
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          action: 'add', id: signal.id, timestamp: signal.timestamp, openTime: signal.openTime,
+          symbol: signal.symbol, direction: signal.direction, entryMin: signal.entryLow, entryMax: signal.entryHigh, tp: signal.tp, sl: signal.sl
+        })
       });
       const result = await response.json();
       if (!result.success) throw new Error(result.message);
-      
-      lastSheetError = null;
-      return true;
-    } catch (e) {
-      lastSheetError = 'Add Error: ' + e.message;
-      return false;
-    }
+      lastSheetError = null; return true;
+    } catch (e) { lastSheetError = e.message; return false; }
   }
 
   async function updateSignalStatus(id, status, closedPrice, closeTime) {
     try {
-      const payload = { action: 'update', id, status, closedPrice, closeTime };
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ action: 'update', id, status, closedPrice, closeTime })
       });
       const result = await response.json();
       if (!result.success) throw new Error(result.message);
-      
-      lastSheetError = null;
-      return true;
-    } catch (e) {
-      lastSheetError = 'Update Error: ' + e.message;
-      return false;
-    }
+      lastSheetError = null; return true;
+    } catch (e) { lastSheetError = e.message; return false; }
   }
 
   async function fetchHistoryFromSheet() {
     try {
-      const response = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now());
-      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?t=${Date.now()}`);
       const json = await response.json();
-      if (json.success && json.data) return json.data;
-      return [];
+      return json.success && json.data ? json.data : [];
     } catch (e) { return []; }
   }
 
-  // ================================================================
-  //  LOCAL STORAGE
-  // ================================================================
-  function getLocalHistory() {
-    try { const raw = localStorage.getItem('scalpHistory'); return raw ? JSON.parse(raw) : []; } catch { return []; }
-  }
-  function saveLocalHistory(h) {
-    try { localStorage.setItem('scalpHistory', JSON.stringify(h.slice(0, 100))); } catch {} // Keep last 100 to prevent memory leaks
-  }
+  function getLocalHistory() { try { const r = localStorage.getItem('scalpHistory'); return r ? JSON.parse(r) : []; } catch { return []; } }
+  function saveLocalHistory(h) { try { localStorage.setItem('scalpHistory', JSON.stringify(h.slice(0, 80))); } catch {} }
 
   // ================================================================
-  //  CORE LOGIC
+  //  CORE EXECUTION PIPELINE
   // ================================================================
   let isProcessing = false;
   const activeSignals = new Map();
-  function generateId() { return 'sig_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4); }
+  const generateId = () => 'sig_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
 
   async function processScan() {
     if (isProcessing) return;
@@ -519,41 +385,41 @@
       const history = getLocalHistory();
       const now = Date.now();
 
-      // Check Expired
+      // Check Expirations
       for (const [symbol, signal] of activeSignals) {
         if (signal.status === 'OPEN' && (now - signal.openTime) > SIGNAL_EXPIRY_MINUTES * 60 * 1000) {
-          signal.status = 'EXPIRED'; signal.result = '⏰ Expired'; signal.closedPrice = signal.livePrice; signal.closeTime = now;
-          let hIdx = history.findIndex(h => h.id === signal.id);
-          if(hIdx >= 0) { history[hIdx].status = 'EXPIRED'; history[hIdx].result = '⏰ Expired'; history[hIdx].closeTime = now; }
+          signal.status = 'EXPIRED'; signal.closedPrice = signal.livePrice; signal.closeTime = now;
+          let idx = history.findIndex(h => h.id === signal.id);
+          if(idx >= 0) { history[idx].status = 'EXPIRED'; history[idx].closeTime = now; }
           activeSignals.delete(symbol);
           await updateSignalStatus(signal.id, 'EXPIRED', signal.livePrice, now);
         }
       }
 
-      // Add New High-Confidence Signals
+      // Add New Live Confirmed Signals
       for (const s of all) {
         if (!activeSignals.has(s.symbol) && s.strength >= MINIMUM_STRENGTH_THRESHOLD) {
           const params = generateSignalParams(s.symbol, s.livePrice, s.direction, s.atr);
           const newSig = {
             id: generateId(), symbol: s.symbol, direction: s.direction,
-            entryLow: params.entryLow, entryHigh: params.entryHigh, tp: params.tp, sl: params.sl, rr: params.rr, tick: params.tick, strength: s.strength, timestamp: new Date().toISOString(), openTime: now, livePrice: s.livePrice, changePercent: s.changePercent, status: 'OPEN'
+            entryLow: params.entryLow, entryHigh: params.entryHigh, tp: params.tp, sl: params.sl, tick: params.tick, strength: s.strength, timestamp: new Date().toISOString(), openTime: now, livePrice: s.livePrice, status: 'OPEN'
           };
           activeSignals.set(s.symbol, newSig);
           await addSignalToSheet(newSig);
           history.push({ ...newSig, result: '—', closedPrice: null, closeTime: null });
         } else {
           const existing = activeSignals.get(s.symbol);
-          if (existing) { existing.livePrice = s.livePrice; existing.changePercent = s.changePercent; }
+          if (existing) { existing.livePrice = s.livePrice; }
         }
       }
 
-      // Check TP/SL Hits
-      let historyUpdated = false;
+      // Process live target evaluations (TP / SL monitoring)
       const toRemove = [];
       for (const [symbol, signal] of activeSignals) {
         const currentPrice = priceMap[symbol];
         if (!currentPrice) continue;
         let hitStatus = null;
+        
         if (signal.direction === 'LONG') {
           if (currentPrice >= signal.tp) hitStatus = 'PROFIT'; else if (currentPrice <= signal.sl) hitStatus = 'LOSS';
         } else {
@@ -562,63 +428,51 @@
         
         if (hitStatus) {
           const closeTime = Date.now();
-          signal.status = hitStatus; signal.result = hitStatus === 'PROFIT' ? 'TP Hit ✅' : 'SL Hit ❌'; signal.closedPrice = currentPrice; signal.closeTime = closeTime;
+          signal.status = hitStatus; signal.closedPrice = currentPrice; signal.closeTime = closeTime;
           toRemove.push(symbol);
-          let hIdx = history.findIndex(h => h.id === signal.id);
-          if (hIdx >= 0) {
-            history[hIdx].status = hitStatus; history[hIdx].result = signal.result; history[hIdx].closedPrice = currentPrice; history[hIdx].closeTime = closeTime;
-            historyUpdated = true;
-          }
+          let idx = history.findIndex(h => h.id === signal.id);
+          if (idx >= 0) { history[idx].status = hitStatus; history[idx].closedPrice = currentPrice; history[idx].closeTime = closeTime; }
           await updateSignalStatus(signal.id, hitStatus, currentPrice, closeTime);
         }
       }
       for (const sym of toRemove) activeSignals.delete(sym);
       saveLocalHistory(history);
 
-      // Render
       const active = Array.from(activeSignals.values()).filter(s => s.status === 'OPEN');
       liveCount.textContent = active.length;
       renderSignals(active); renderHistory(history);
 
-      if (lastSheetError) {
-        statusText.innerHTML = `🔴 <span class="error">Database Sync Error</span>`;
-      } else {
-        statusText.innerHTML = `🟢 <span class="live">Live</span> · ${active.length} active · ${new Date().toLocaleTimeString()}`;
-      }
+      statusText.innerHTML = lastSheetError 
+        ? `🔴 <span class="error">Sheet Sync Offline</span>` 
+        : `🟢 <span class="live">Live</span> · ${active.length} tracking · ${new Date().toLocaleTimeString()}`;
     } catch (err) {
-      statusText.innerHTML = '🔴 Market Error: Offline or Rate Limited';
+      statusText.innerHTML = '🔴 Interface API Timeout';
     } finally {
       refreshBtn.disabled = false; refreshBtn.innerHTML = '⟳ Refresh'; isProcessing = false;
     }
   }
 
   // ================================================================
-  //  RENDER FUNCTIONS
+  //  INTERFACE RENDERING
   // ================================================================
   function renderSignals(signals) {
     if (!signals || signals.length === 0) {
-      signalsGrid.innerHTML = `<div class="empty-state">No active signals. Waiting for high-probability setup...</div>`;
+      signalsGrid.innerHTML = `<div class="empty-state">No real market confluences met right now. Continuous tracking running...</div>`;
       return;
     }
     let html = '';
-    const displayed = signals.slice(0, 10);
-    displayed.forEach(s => {
-      const dirClass = s.direction.toLowerCase(); const dirDisplay = s.direction === 'LONG' ? '▲' : '▼';
-      const tick = s.tick || 0.01; const confidence = s.strength || 0;
-      let confClass = confidence >= 85 ? 'high' : (confidence >= 75 ? 'medium' : 'low');
-
+    signals.slice(0, 10).forEach(s => {
+      const dirClass = s.direction.toLowerCase();
+      const tick = s.tick || 0.01;
       html += `
         <div class="signal-row ${dirClass}">
           <span class="col-sym">${getSymbol(s.symbol)}</span>
-          <span class="col-dir ${dirClass}">${dirDisplay}</span>
+          <span class="col-dir ${dirClass}">${s.direction === 'LONG' ? '▲' : '▼'}</span>
           <span class="col-price">${formatPrice(s.livePrice, tick)}</span>
           <span class="col-entry">${formatPriceShort(s.entryLow, tick)} – ${formatPriceShort(s.entryHigh, tick)}</span>
           <span class="col-tp">${formatPriceShort(s.tp, tick)}</span>
           <span class="col-sl">${formatPriceShort(s.sl, tick)}</span>
-          <span class="col-conf ${confClass}">
-            <div class="conf-bar-container"><div class="conf-bar ${confClass}" style="width:${confidence}%"></div></div>
-            ${confidence}%
-          </span>
+          <span class="col-conf medium"><div class="conf-bar-container"><div class="conf-bar medium" style="width:${s.strength}%"></div></div>${s.strength}%</span>
           <span class="col-time">${fmtTime(s.timestamp)}</span>
         </div>
       `;
@@ -627,35 +481,31 @@
   }
 
   function renderHistory(history) {
-    const closedTrades = history.filter(h => h.status === 'PROFIT' || h.status === 'LOSS' || h.status === 'EXPIRED');
-    if (!closedTrades || closedTrades.length === 0) {
-      historyList.innerHTML = `<div class="empty-state">No completed trades yet.</div>`;
+    const closed = history.filter(h => ['PROFIT', 'LOSS', 'EXPIRED'].includes(h.status));
+    if (!closed || closed.length === 0) {
+      historyList.innerHTML = `<div class="empty-state">Waiting for historical close triggers...</div>`;
       historyCount.textContent = '0 entries'; return;
     }
-    const sorted = closedTrades.sort((a, b) => (b.closeTime || 0) - (a.closeTime || 0)).slice(0, 50);
+    const sorted = closed.sort((a, b) => (b.closeTime || 0) - (a.closeTime || 0)).slice(0, 30);
     historyCount.textContent = sorted.length + ' entries';
     let html = '';
     for (const h of sorted) {
-      const dirClass = h.direction ? h.direction.toLowerCase() : 'neutral';
-      const tick = h.tick || 0.01;
-      let resultText = '—', resultClass = '';
-      if (h.status === 'PROFIT') { resultText = '✅ TP'; resultClass = 'win'; }
-      else if (h.status === 'LOSS') { resultText = '❌ SL'; resultClass = 'loss'; }
-      else if (h.status === 'EXPIRED') { resultText = '⏰ Exp'; resultClass = 'loss'; }
-      let durationStr = '—', durClass = '';
-      if (h.openTime && h.closeTime) {
-        const durMs = h.closeTime - h.openTime; durationStr = fmtDuration(durMs);
-        durClass = durMs < 120000 ? 'fast' : (durMs < 600000 ? 'medium' : 'slow');
-      }
-      const priceDisplay = h.closedPrice ? formatPrice(h.closedPrice, tick) : '—';
+      let resText = '—', resClass = '';
+      if (h.status === 'PROFIT') { resText = '✅ TP'; resClass = 'win'; }
+      else if (h.status === 'LOSS') { resText = '❌ SL'; resClass = 'loss'; }
+      else if (h.status === 'EXPIRED') { resText = '⏰ Exp'; resClass = 'loss'; }
+      
+      let durationStr = '—';
+      if (h.openTime && h.closeTime) durationStr = fmtDuration(h.closeTime - h.openTime);
+
       html += `
         <div class="history-item">
           <span class="h-sym">${getSymbol(h.symbol)}</span>
-          <span class="h-dir ${dirClass}">${h.direction === 'LONG' ? 'L' : 'S'}</span>
+          <span class="h-dir ${h.direction.toLowerCase()}">${h.direction === 'LONG' ? 'L' : 'S'}</span>
           <span class="h-time">${fmtTime(h.timestamp)}</span>
-          <span class="h-duration ${durClass}">${durationStr}</span>
-          <span class="h-result ${resultClass}">${resultText}</span>
-          <span class="h-price">${priceDisplay}</span>
+          <span class="h-duration">${durationStr}</span>
+          <span class="h-result ${resClass}">${resText}</span>
+          <span class="h-price">${h.closedPrice ? formatPrice(h.closedPrice, h.tick || 0.01) : '—'}</span>
         </div>
       `;
     }
@@ -666,21 +516,20 @@
     try {
       const remote = await fetchHistoryFromSheet();
       if (remote && remote.length > 0) {
-        const transformed = remote.map(r => ({
-          id: r.id || r.ID, symbol: r.symbol || r.Symbol, direction: r.direction || r.Direction,
-          entryLow: parseFloat(r.entrymin || r.EntryMin), entryHigh: parseFloat(r.entrymax || r.EntryMax),
-          tp: parseFloat(r.tp || r.TP), sl: parseFloat(r.sl || r.SL), timestamp: r.timestamp || r.Timestamp,
-          status: r.status || r.Status, result: r.result || r.Result, closedPrice: parseFloat(r.closedprice || r.ClosedPrice) || null,
-          openTime: r.opentime || r.OpenTime ? parseInt(r.opentime || r.OpenTime) : null,
-          closeTime: r.closetime || r.CloseTime ? parseInt(r.closetime || r.CloseTime) : null, tick: 0.001
-        }));
-        
         let local = getLocalHistory();
-        for (const r of transformed) {
-          const existingIdx = local.findIndex(l => l.id === r.id);
-          if (existingIdx >= 0) { if (r.closeTime && !local[existingIdx].closeTime) local[existingIdx] = { ...local[existingIdx], ...r }; }
-          else local.push(r);
-        }
+        remote.forEach(r => {
+          const id = r.id || r.ID;
+          const existingIdx = local.findIndex(l => l.id === id);
+          if (existingIdx < 0) {
+            local.push({
+              id, symbol: r.symbol || r.Symbol, direction: r.direction || r.Direction,
+              entryLow: parseFloat(r.entrymin || r.EntryMin), entryHigh: parseFloat(r.entrymax || r.EntryMax),
+              tp: parseFloat(r.tp || r.TP), sl: parseFloat(r.sl || r.SL), timestamp: r.timestamp || r.Timestamp,
+              status: r.status || r.Status, closedPrice: parseFloat(r.closedprice || r.ClosedPrice) || null,
+              openTime: parseInt(r.opentime || r.OpenTime) || null, closeTime: parseInt(r.closetime || r.CloseTime) || null
+            });
+          }
+        });
         saveLocalHistory(local); renderHistory(local);
       }
     } catch (e) {}
@@ -689,18 +538,16 @@
   let scanInterval = null, historyInterval = null;
   async function fullUpdate() { await processScan(); await syncRemoteHistory(); }
   function startAutoRefresh() {
-    if (scanInterval) clearInterval(scanInterval); if (historyInterval) clearInterval(historyInterval);
     fullUpdate();
     scanInterval = setInterval(processScan, SCAN_INTERVAL);
     historyInterval = setInterval(() => { renderHistory(getLocalHistory()); }, HISTORY_INTERVAL);
   }
 
   refreshBtn.addEventListener('click', () => {
-    if (scanInterval) clearInterval(scanInterval); if (historyInterval) clearInterval(historyInterval);
+    clearInterval(scanInterval); clearInterval(historyInterval);
     fullUpdate().finally(() => startAutoRefresh());
   });
 
-  // ── BOOT ──
   startAutoRefresh();
 </script>
 </body>
