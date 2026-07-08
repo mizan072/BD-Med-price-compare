@@ -7,14 +7,15 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 
-// 2. Config & Indicators (Same Math as your frontend)
+// 2. Config & Indicators
 const COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','LINKUSDT'];
 const MIN_STRENGTH = 60;
 const TICK_SIZE = { 'BTCUSDT': 0.01, 'ETHUSDT': 0.01, 'SOLUSDT': 0.001, 'XRPUSDT': 0.0001, 'DOGEUSDT': 0.00001, 'ADAUSDT': 0.0001 };
+
 function getTick(symbol) { return TICK_SIZE[symbol] || 0.01; }
 function roundToTick(val, tick) { const f = 1/tick; return Math.round(val*f)/f; }
 
-// --- Indicator Math Functions (Simplified for brevity but identical in logic) ---
+// --- Indicator Math Functions ---
 function calcEMA(closes, period) {
     let ema = [], k = 2/(period+1), sum = 0;
     for (let i=0; i<closes.length; i++) {
@@ -24,6 +25,7 @@ function calcEMA(closes, period) {
     }
     return ema;
 }
+
 function calcRSI(closes, period=14) {
     let rsi = [], gain = 0, loss = 0;
     for(let i=1; i<closes.length; i++) {
@@ -39,6 +41,7 @@ function calcRSI(closes, period=14) {
     }
     return rsi;
 }
+
 function calcVWAP(highs, lows, closes, vols) {
     let vwap = [], cumPV = 0, cumVol = 0;
     for(let i=0; i<closes.length; i++) {
@@ -57,10 +60,14 @@ function analyzeCoin(data, symbol) {
 
     let trend = 0, momentum = 0;
     if (e5 > e20 && price > vwap) trend = 1; else if (e5 < e20 && price < vwap) trend = -1;
-    if (rsi < 48) momentum = 1; else if (rsi > 52) momentum = -1; // Simplified BB momentum
+    if (rsi < 48) momentum = 1; else if (rsi > 52) momentum = -1;
 
     if (trend === 1 && momentum === 1) return { direction: 'LONG', strength: 65, price };
     if (trend === -1 && momentum === -1) return { direction: 'SHORT', strength: 65, price };
+    
+    // ⚠️ Uncomment the line below ONLY IF you want to force a test trade on every coin!
+    // return { direction: 'LONG', strength: 99, price }; 
+    
     return null;
 }
 
@@ -79,9 +86,16 @@ async function runBot() {
     // B. Fetch 120 candles (10 hours) for all coins to check targets AND find new setups
     for (const symbol of COINS) {
         try {
-            // Fetch Binance Data (Native fetch available in Node 18+)
-            const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=120`);
+            // Fetch Binance Data using their public data-api to bypass US IP blocks
+            const res = await fetch(`https://data-api.binance.vision/api/v3/klines?symbol=${symbol}&interval=5m&limit=120`);
+            
+            if (!res.ok) throw new Error(`API HTTP Error: ${res.status}`);
+            
             const raw = await res.json();
+            
+            // Safeguard to ensure Binance actually returned an array of data
+            if (!Array.isArray(raw)) throw new Error(`API Blocked/Invalid: ${JSON.stringify(raw)}`);
+
             const data = raw.map(c => ({ 
                 time: c[0], open: parseFloat(c[1]), high: parseFloat(c[2]), low: parseFloat(c[3]), close: parseFloat(c[4]), vol: parseFloat(c[5]) 
             }));
