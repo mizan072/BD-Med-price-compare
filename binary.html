@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ScalpScanner | USD/JPY Binary</title>
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <!-- TradingView Lightweight Charts -->
-    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     
     <style>
         :root {
@@ -42,6 +39,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
         .title-group h1 { margin: 0; font-size: 24px; display: flex; align-items: center; gap: 10px; }
         .tag { background: var(--accent-yellow); color: #000; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; }
@@ -70,7 +69,6 @@
         }
         .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .chart-header h3 { margin: 0; font-size: 16px; color: var(--text-muted); }
-        #tv_chart { width: 100%; height: 400px; }
 
         /* HISTORY GRID */
         .grid-panel {
@@ -78,10 +76,11 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
+            overflow-x: auto;
         }
         .grid-panel h3 { margin: 0 0 15px 0; font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;}
         
-        table { width: 100%; border-collapse: collapse; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th { text-align: left; padding: 12px; color: var(--text-muted); font-weight: normal; font-size: 12px; border-bottom: 1px solid var(--border-color); }
         td { padding: 15px 12px; border-bottom: 1px solid rgba(30, 41, 59, 0.5); font-size: 14px; }
         tr:hover td { background: rgba(255,255,255,0.02); }
@@ -107,24 +106,42 @@
         <div class="title-group">
             <h1>📡 ScalpScanner <span class="tag">BINARY</span></h1>
         </div>
-        <div class="status-badge">🟢 Live · Connected to TwelveData API</div>
+        <div class="status-badge">🟢 Live · Connected to Database</div>
     </div>
 
-    <!-- 1. MASTER CLOCK -->
     <div class="clock-panel">
         <h2>TIME UNTIL NEXT 5M CANDLE EVALUATION</h2>
         <div id="masterClock" class="timer-display">00:00</div>
     </div>
 
-    <!-- 2. LIVE CHART -->
     <div class="chart-container">
         <div class="chart-header">
-            <h3>📈 LIVE MARKET (BINANCE PROXY FOR USD/JPY)</h3>
+            <h3>📈 LIVE MARKET (USD/JPY)</h3>
         </div>
-        <div id="tv_chart"></div>
-    </div>
+        <div class="tradingview-widget-container" style="height: 450px; width: 100%;">
+          <div id="tradingview_usdjpy" style="height: 450px; width: 100%;"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+          <script type="text/javascript">
+          new TradingView.widget({
+            "autosize": true,
+            "symbol": "FX:USDJPY",
+            "interval": "5",
+            "timezone": "Asia/Dhaka",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "enable_publishing": false,
+            "backgroundColor": "#151a23",
+            "gridColor": "#1e293b",
+            "hide_top_toolbar": true,
+            "hide_legend": true,
+            "save_image": false,
+            "container_id": "tradingview_usdjpy"
+          });
+          </script>
+        </div>
+        </div>
 
-    <!-- 3. RESOLUTION HISTORY -->
     <div class="grid-panel">
         <h3>📜 USD/JPY Candle Analysis History</h3>
         <table>
@@ -146,15 +163,16 @@
 
 <script>
     // --- FIREBASE SETUP ---
+    // Your exact configuration is now hardcoded here
     const firebaseConfig = {
-        // PASTE YOUR FIREBASE CONFIG OBJECT HERE
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_AUTH_DOMAIN",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_STORAGE_BUCKET",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyC1zcOaqRf9_zHylKg_ERfAzl6rnYOKAi0",
+        authDomain: "scalpscanner-74a22.firebaseapp.com",
+        projectId: "scalpscanner-74a22",
+        storageBucket: "scalpscanner-74a22.firebasestorage.app",
+        messagingSenderId: "265105859600",
+        appId: "1:265105859600:web:3c00612e48453274c25695"
     };
+    
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
@@ -178,38 +196,17 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // --- TRADINGVIEW CHART ---
-    const chartProperties = {
-        layout: { background: { type: 'solid', color: '#151a23' }, textColor: '#64748b' },
-        grid: { vertLines: { color: '#1e293b' }, horzLines: { color: '#1e293b' } },
-        timeScale: { timeVisible: true, secondsVisible: false, borderColor: '#1e293b' }
-    };
-    const chart = LightweightCharts.createChart(document.getElementById('tv_chart'), chartProperties);
-    const candleSeries = chart.addCandlestickSeries({
-        upColor: '#10b981', downColor: '#ef4444', borderVisible: false, wickUpColor: '#10b981', wickDownColor: '#ef4444'
-    });
-
-    const binanceSymbol = 'USDJPY'; 
-    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/usdtjpy@kline_5m`);
-    ws.onmessage = function(event) {
-        const message = JSON.parse(event.data);
-        const candle = message.k;
-        candleSeries.update({
-            time: candle.t / 1000, open: parseFloat(candle.o), high: parseFloat(candle.h), low: parseFloat(candle.l), close: parseFloat(candle.c)
-        });
-    };
-
     // --- FIREBASE LISTENER FOR HISTORY ---
     db.collection('binary_signals')
       .where('symbol', '==', 'USD/JPY')
       .orderBy('timestamp', 'desc')
-      .limit(15)
+      .limit(20)
       .onSnapshot(snapshot => {
         const historyBody = document.getElementById('historyBody');
         historyBody.innerHTML = '';
 
         if (snapshot.empty) {
-            historyBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b;">No recent market analysis.</td></tr>`;
+            historyBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b;">No market analysis generated yet. Waiting for bot cycle...</td></tr>`;
             return;
         }
 
@@ -238,6 +235,7 @@
             if (data.status === 'WIN') resHtml = `<span class="result-win">WIN</span>`;
             else if (data.status === 'LOSS') resHtml = `<span class="result-loss">LOSS</span>`;
             else if (data.status === 'PENDING') resHtml = `<span class="result-pending">LIVE NOW</span>`;
+            else if (data.status === 'NO TRADE') resHtml = `<span class="result-none">--</span>`;
 
             historyBody.innerHTML += `
                 <tr>
