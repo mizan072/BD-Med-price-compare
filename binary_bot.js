@@ -7,9 +7,9 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 
-// 2. DEDICATED MODE: Only USD/JPY
-const COINS = ['USD/JPY'];
-const API_KEY = process.env.TWELVE_DATA_API_KEY;
+// 2. DEDICATED MODE: Only USD/JPY via Yahoo Finance
+// Yahoo Finance symbol for USD/JPY is "JPY=X"
+const SYMBOL = 'JPY=X'; 
 
 // --- Indicator Math Functions ---
 function calcSMA(closes, period) {
@@ -102,15 +102,15 @@ function analyzeCandle(data) {
 
 // 4. MAIN ENGINE
 async function runBinaryBot() {
-    console.log("🚀 Waking up USD/JPY Binary Engine...");
+    console.log("🚀 Waking up USD/JPY Binary Engine (YAHOO FINANCE LIVE DATA)...");
     
     const signalsRef = db.collection('binary_signals');
     
-    // Cleanup old pending trades (Stuck data)
+    // Cleanup old pending trades (Wait 15 mins max to clean stuck data)
     const oldPendingSnap = await signalsRef.where('status', '==', 'PENDING').get();
     const nowTime = Date.now();
     for (const doc of oldPendingSnap.docs) {
-        if (nowTime - doc.data().timestamp > 25 * 60 * 1000) { 
+        if (nowTime - doc.data().timestamp > 15 * 60 * 1000) { 
             await signalsRef.doc(doc.id).update({ status: 'EXPIRED' });
         }
     }
@@ -120,65 +120,78 @@ async function runBinaryBot() {
     const pendingTrades = [];
     pendingSnap.forEach(doc => pendingTrades.push({ id: doc.id, ...doc.data() }));
 
-    for (const symbol of COINS) {
-        try {
-            console.log(`Fetching USD/JPY...`);
-            const res = await fetch(`https://api.twelvedata.com/time_series?symbol=${symbol}&interval=5min&outputsize=40&timezone=UTC&apikey=${API_KEY}`);
-            const json = await res.json();
-            
-            const data = json.values.map(c => ({
-                time: new Date(c.datetime.replace(' ', 'T') + 'Z').getTime(),
-                open: parseFloat(c.open),
-                high: parseFloat(c.high),
-                low: parseFloat(c.low),
-                close: parseFloat(c.close)
-            })).reverse();
+    try {
+        console.log(`Fetching LIVE USD/JPY from Yahoo Finance...`);
+        // Yahoo Finance public API (No API key required, 100% real-time for Forex)
+        const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${SYMBOL}?interval=5m&range=2d`);
+        const json = await res.json();
+        
+        const result = json.chart.result[0];
+        const timestamps = result.timestamp;
+        const quotes = result.indicators.quote[0];
 
-            const closedCandles = data.slice(0, -1); 
-            const justClosedCandle = closedCandles[closedCandles.length - 1];
-            const activelyFormingCandle = data[data.length - 1];
-
-            // 1. RECONCILE PAST TRADES
-            const activeTrades = pendingTrades.filter(t => t.symbol === symbol);
-            for (const trade of activeTrades) {
-                if (justClosedCandle.time >= trade.targetCandleTime) {
-                    const isGreen = justClosedCandle.close > justClosedCandle.open;
-                    const isRed = justClosedCandle.close < justClosedCandle.open;
-                    
-                    let result = 'LOSS';
-                    if ((trade.signal === 'CALL' && isGreen) || (trade.signal === 'PUT' && isRed)) result = 'WIN';
-                    else if (justClosedCandle.close === justClosedCandle.open) result = 'TIE';
-
-                    await signalsRef.doc(trade.id).update({ 
-                        status: result, 
-                        closePrice: justClosedCandle.close,
-                        resolvedAt: Date.now()
-                    });
-                }
+        let data = [];
+        // Map Yahoo's arrays into clean candle objects, filtering out empty (null) data points
+        for (let i = 0; i < timestamps.length; i++) {
+            if (quotes.close[i] !== null && quotes.open[i] !== null) {
+                data.push({
+                    time: timestamps[i] * 1000, // Convert from seconds to JS milliseconds
+                    open: parseFloat(quotes.open[i]),
+                    high: parseFloat(quotes.high[i]),
+                    low: parseFloat(quotes.low[i]),
+                    close: parseFloat(quotes.close[i])
+                });
             }
-
-            // 2. ANALYZE CURRENT MARKET
-            if (activeTrades.length === 0) {
-                const analysis = analyzeCandle(closedCandles);
-                
-                const newRecord = {
-                    symbol: symbol,
-                    signal: analysis.signal,
-                    probability: analysis.probability,
-                    status: analysis.signal === 'NO TRADE' ? 'NO TRADE' : 'PENDING',
-                    timestamp: Date.now(),
-                    targetCandleTime: activelyFormingCandle.time,
-                    entryPrice: activelyFormingCandle.open,
-                    reason: analysis.reason
-                };
-                
-                await signalsRef.add(newRecord);
-                console.log(`🎯 Market Analyzed: ${analysis.signal}`);
-            }
-            
-        } catch (e) {
-            console.error(`⚠️ Error:`, e.message);
         }
+        
+        // Yahoo data is oldest-to-newest. 
+        // The last item is the currently forming (unclosed) candle. The second to last is the one that just closed.
+        const activelyFormingCandle = data[data.length - 1];
+        const closedCandles = data.slice(0, -1);
+        const justClosedCandle = closedCandles[closedCandles.length - 1];
+
+        // 1. RECONCILE PAST TRADES
+        const activeTrades = pendingTrades.filter(t => t.symbol === 'USD/JPY');
+        for (const trade of activeTrades) {
+            // Check if the justClosedCandle represents the target period
+            if (justClosedCandle.time >= trade.targetCandleTime) {
+                const isGreen = justClosedCandle.close > justClosedCandle.open;
+                const isRed = justClosedCandle.close < justClosedCandle.open;
+                
+                let tradeResult = 'LOSS';
+                if ((trade.signal === 'CALL' && isGreen) || (trade.signal === 'PUT' && isRed)) tradeResult = 'WIN';
+                else if (justClosedCandle.close === justClosedCandle.open) tradeResult = 'TIE';
+
+                await signalsRef.doc(trade.id).update({ 
+                    status: tradeResult, 
+                    closePrice: justClosedCandle.close,
+                    resolvedAt: Date.now()
+                });
+                console.log(`🏁 Resolved USD/JPY: ${tradeResult}`);
+            }
+        }
+
+        // 2. ANALYZE CURRENT MARKET (Based on the just closed candle)
+        if (activeTrades.length === 0) {
+            const analysis = analyzeCandle(closedCandles);
+            
+            const newRecord = {
+                symbol: 'USD/JPY',
+                signal: analysis.signal,
+                probability: analysis.probability,
+                status: analysis.signal === 'NO TRADE' ? 'NO TRADE' : 'PENDING',
+                timestamp: Date.now(),
+                targetCandleTime: activelyFormingCandle.time,
+                entryPrice: activelyFormingCandle.open,
+                reason: analysis.reason
+            };
+            
+            await signalsRef.add(newRecord);
+            console.log(`🎯 Market Analyzed: ${analysis.signal}`);
+        }
+        
+    } catch (e) {
+        console.error(`⚠️ Yahoo Finance Fetch Error:`, e.message);
     }
 }
 
