@@ -2,85 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
   <title>ScalpScanner Pro - Live Signals</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
-    body { background: #090d14; min-height: 100vh; padding: 12px; display: flex; justify-content: center; }
-    .app { max-width: 900px; width: 100%; }
+    body { background: #090d14; min-height: 100vh; padding: 12px; display: flex; justify-content: center; color: #d6e4f0; }
+    .app { max-width: 950px; width: 100%; }
     
     /* Header & Badges */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
     .header h1 { color: #f0f4fa; font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
-    .header h1 span { background: linear-gradient(135deg, #33d9a8, #1db883); font-size: 12px; font-weight: 600; padding: 2px 12px; border-radius: 30px; color: #090d14; }
-    .badge { background: #161f2b; padding: 5px 14px; border-radius: 40px; color: #9ab0c9; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid #253240; white-space: nowrap; }
-    .badge .dot { width: 7px; height: 7px; background: #33d9a8; border-radius: 50%; display: inline-block; animation: pulse-dot 1.6s infinite; }
+    .header h1 span { background: linear-gradient(135deg, #33d9a8, #1db883); font-size: 12px; font-weight: 600; padding: 3px 12px; border-radius: 30px; color: #090d14; text-transform: uppercase; letter-spacing: 0.5px;}
+    .badge { background: #161f2b; padding: 6px 14px; border-radius: 40px; color: #9ab0c9; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid #253240; white-space: nowrap; }
+    .badge .dot { width: 8px; height: 8px; background: #33d9a8; border-radius: 50%; display: inline-block; animation: pulse-dot 1.6s infinite; }
     @keyframes pulse-dot { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.3; transform: scale(0.9); } }
     
     /* Top Bar */
-    .top-bar { display: flex; justify-content: space-between; align-items: center; background: #111a24; padding: 10px 16px; border-radius: 14px; border: 1px solid #1e2c3b; margin-bottom: 16px; flex-wrap: wrap; gap: 6px; }
-    .top-bar .status { color: #7a94af; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; background: #111a24; padding: 12px 18px; border-radius: 12px; border: 1px solid #1e2c3b; margin-bottom: 20px; flex-wrap: wrap; gap: 6px; }
+    .top-bar .status { color: #7a94af; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
     .top-bar .status .live { color: #33d9a8; font-weight: 600; }
     
     /* Container Styles */
-    .signals-container, .history-section { background: #111a24; border-radius: 16px; border: 1px solid #1e2c3b; overflow: hidden; margin-bottom: 24px; }
+    .signals-container, .history-section { background: #111a24; border-radius: 12px; border: 1px solid #1e2c3b; overflow: hidden; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
     .history-section { padding-top: 12px; }
     
     /* Grid Headers */
-    .signals-header { display: grid; grid-template-columns: 70px 50px 1fr 80px 80px 80px; gap: 8px; padding: 10px 14px; background: #0a111a; border-bottom: 1px solid #1e2c3b; color: #5f7d9a; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    .history-header { display: flex; justify-content: space-between; align-items: center; padding: 0 14px 10px 14px; flex-wrap: wrap; gap: 6px; }
-    .history-header h3 { color: #9ab0c9; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .signals-header { display: grid; grid-template-columns: 75px 65px 1fr 90px 90px 90px; gap: 10px; padding: 12px 18px; background: #0c141d; border-bottom: 1px solid #1e2c3b; color: #5f7d9a; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .history-header { display: flex; justify-content: space-between; align-items: center; padding: 0 18px 12px 18px; flex-wrap: wrap; gap: 6px; }
+    .history-header h3 { color: #9ab0c9; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;}
+    .history-grid-header { display: grid; grid-template-columns: 75px 65px 90px 90px 1fr 100px; gap: 10px; padding: 8px 18px; background: #0c141d; border-bottom: 1px solid #1e2c3b; border-top: 1px solid #1e2c3b; color: #5f7d9a; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     
     /* Grid Lists */
     .signals-grid, .history-list { display: flex; flex-direction: column; max-height: 420px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-    .history-list { max-height: 340px; padding-bottom: 4px; }
+    .history-list { max-height: 400px; padding-bottom: 4px; }
     .signals-grid::-webkit-scrollbar, .history-list::-webkit-scrollbar { width: 4px; }
     .signals-grid::-webkit-scrollbar-track, .history-list::-webkit-scrollbar-track { background: #0a111a; }
     .signals-grid::-webkit-scrollbar-thumb, .history-list::-webkit-scrollbar-thumb { background: #2d3f52; border-radius: 4px; }
     
     /* Rows */
-    .signal-row { display: grid; grid-template-columns: 70px 50px 1fr 80px 80px 80px; gap: 8px; padding: 12px 14px; align-items: center; border-bottom: 1px solid #1a2533; font-size: 13px; transition: background 0.15s; background: #111a24; min-height: 48px; }
-    .history-item { display: grid; grid-template-columns: 70px 50px 100px 1fr 100px; gap: 8px; padding: 10px 14px; font-size: 12px; align-items: center; border-bottom: 1px solid #1a2533; background: #111a24; min-height: 44px; }
+    .signal-row { display: grid; grid-template-columns: 75px 65px 1fr 90px 90px 90px; gap: 10px; padding: 14px 18px; align-items: center; border-bottom: 1px solid #1a2533; font-size: 13px; transition: background 0.15s; background: #111a24; min-height: 52px; }
+    .history-item { display: grid; grid-template-columns: 75px 65px 90px 90px 1fr 100px; gap: 10px; padding: 12px 18px; font-size: 13px; align-items: center; border-bottom: 1px solid #1a2533; background: #111a24; min-height: 48px; }
     .signal-row:last-child, .history-item:last-child { border-bottom: none; }
-    .signal-row:hover, .history-item:hover { background: #1a2633; }
+    .signal-row:hover, .history-item:hover { background: #15202b; }
     
-    /* Cell Typography */
-    .col-sym, .h-sym { font-weight: 700; color: #f0f4fa; font-size: 14px; }
+    /* Cell Typography & Badges */
+    .col-sym, .h-sym { font-weight: 700; color: #ffffff; font-size: 15px; }
     .col-dir, .h-dir { font-weight: 700; font-size: 13px; text-align: left; }
     .col-dir.long, .h-dir.long { color: #33d9a8; }
     .col-dir.short, .h-dir.short { color: #f25b6a; }
-    .col-entry { color: #9ab0c9; font-size: 13px; white-space: nowrap; }
-    .col-tp { color: #33d9a8; font-weight: 500; font-size: 13px; }
-    .col-sl { color: #f25b6a; font-weight: 500; font-size: 13px; }
-    .col-time, .h-time { color: #5f7d9a; font-size: 11px; text-align: right; white-space: nowrap; }
+    .col-entry { color: #9ab0c9; font-size: 13px; white-space: nowrap; font-family: monospace;}
+    .col-tp { color: #33d9a8; font-weight: 500; font-size: 13px; font-family: monospace;}
+    .col-sl { color: #f25b6a; font-weight: 500; font-size: 13px; font-family: monospace;}
+    .col-time, .h-time { color: #5f7d9a; font-size: 12px; text-align: right; white-space: nowrap; }
+    .h-time-left { color: #5f7d9a; font-size: 12px; text-align: left; white-space: nowrap; }
     
-    .h-result { font-weight: 700; font-size: 12px; text-align: center; }
-    .h-result.win { color: #33d9a8; }
-    .h-result.loss { color: #f25b6a; }
-    .h-price { font-size: 12px; color: #7a94af; text-align: right; white-space: nowrap; }
+    /* Duration Pill */
+    .duration-pill { background: #1a2533; color: #9ab0c9; font-size: 11px; padding: 3px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #2d3f52;}
     
+    /* Result Badges */
+    .badge-result { padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+    .badge-profit { background: rgba(51, 217, 168, 0.1); color: #33d9a8; border: 1px solid rgba(51, 217, 168, 0.2); }
+    .badge-loss { background: rgba(242, 91, 106, 0.1); color: #f25b6a; border: 1px solid rgba(242, 91, 106, 0.2); }
+    .badge-expired { background: rgba(244, 201, 93, 0.1); color: #f4c95d; border: 1px solid rgba(244, 201, 93, 0.2); }
+    
+    .h-price { font-size: 13px; color: #7a94af; text-align: right; white-space: nowrap; font-family: monospace;}
     .signal-row.long { border-left: 3px solid #33d9a8; }
     .signal-row.short { border-left: 3px solid #f25b6a; }
-    .empty-state { color: #5f7d9a; text-align: center; padding: 28px 10px; font-size: 13px; }
+    .empty-state { color: #5f7d9a; text-align: center; padding: 32px 10px; font-size: 14px; font-style: italic;}
 
     /* Mobile Responsive Logic */
-    @media (max-width: 650px) {
-      .signals-header { display: none; }
-      .signal-row { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto; gap: 6px 12px; padding: 12px; border-left: 3px solid transparent; }
+    @media (max-width: 768px) {
+      .signals-header, .history-grid-header { display: none; }
+      .signal-row { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto; gap: 8px 12px; padding: 14px; border-left: 4px solid transparent; }
       .signal-row.long { border-left-color: #33d9a8; }
       .signal-row.short { border-left-color: #f25b6a; }
-      .signal-row .col-sym { grid-column: 1 / 2; grid-row: 1 / 2; font-size: 16px; }
-      .signal-row .col-dir { grid-column: 2 / 3; grid-row: 1 / 2; text-align: right;}
-      .signal-row .col-entry { grid-column: 1 / 3; grid-row: 2 / 3; font-size: 12px; }
-      .signal-row .col-tp { grid-column: 1 / 2; grid-row: 3 / 4; font-size: 12px; }
-      .signal-row .col-sl { grid-column: 2 / 3; grid-row: 3 / 4; text-align: right; font-size: 12px;}
+      .signal-row .col-sym { grid-column: 1 / 2; grid-row: 1 / 2; font-size: 17px; }
+      .signal-row .col-dir { grid-column: 2 / 3; grid-row: 1 / 2; text-align: right; font-size: 14px;}
+      .signal-row .col-entry { grid-column: 1 / 3; grid-row: 2 / 3; font-size: 13px; }
+      .signal-row .col-tp { grid-column: 1 / 2; grid-row: 3 / 4; font-size: 13px; }
+      .signal-row .col-sl { grid-column: 2 / 3; grid-row: 3 / 4; text-align: right; font-size: 13px;}
       .signal-row .col-time { display: none; }
       
-      .history-item { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 4px 8px; padding: 10px; }
-      .history-item .h-sym { grid-column: 1 / 2; grid-row: 1 / 2; font-size: 14px; }
+      .history-item { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 8px; padding: 14px; }
+      .history-item .h-sym { grid-column: 1 / 2; grid-row: 1 / 2; font-size: 15px; }
       .history-item .h-dir { grid-column: 2 / 3; grid-row: 1 / 2; text-align: center; }
-      .history-item .h-time { grid-column: 3 / 4; grid-row: 1 / 2; text-align: right; }
-      .history-item .h-result { grid-column: 1 / 3; grid-row: 2 / 3; text-align: left; }
+      .history-item .h-time-left { grid-column: 3 / 4; grid-row: 1 / 2; text-align: right; }
+      .history-item .h-duration-wrapper { display: none; }
+      .history-item .h-result-wrapper { grid-column: 1 / 3; grid-row: 2 / 3; text-align: left; }
       .history-item .h-price { grid-column: 3 / 4; grid-row: 2 / 3; text-align: right; }
     }
   </style>
@@ -88,27 +96,30 @@
 <body>
 <div class="app">
   <div class="header">
-    <h1>📡 ScalpScanner <span>LIVE</span></h1>
+    <h1>📡 ScalpScanner <span>Live</span></h1>
     <span class="badge"><span class="dot"></span> <span id="liveCount">0</span> active trades</span>
   </div>
   
   <div class="top-bar">
-    <span class="status">🟢 <span class="live">Live</span> · WebSocket Connected</span>
-    <span class="status" id="lastUpdated">Waiting for signals...</span>
+    <span class="status">🟢 <span class="live">Live</span> · Auto-sync Engine Active</span>
+    <span class="status" id="lastUpdated" style="font-family: monospace;">Waiting for sync...</span>
   </div>
   
   <div class="signals-container">
     <div class="signals-header">
-      <span>Coin</span> <span>Dir</span> <span>Entry Range</span> <span>Target (TP)</span> <span>Risk (SL)</span> <span>Time</span>
+      <span>Coin</span> <span>Dir</span> <span>Entry Zone</span> <span>Target (TP)</span> <span>Risk (SL)</span> <span>Time</span>
     </div>
     <div class="signals-grid" id="activeList">
-      <div class="empty-state">Loading active market data...</div>
+      <div class="empty-state">Loading real-time market data...</div>
     </div>
   </div>
 
   <div class="history-section">
     <div class="history-header">
-      <h3>📜 Trade History (Last 50)</h3>
+      <h3>📜 Trade History <span>(Last 50)</span></h3>
+    </div>
+    <div class="history-grid-header">
+      <span>Coin</span> <span>Dir</span> <span>Entry</span> <span>Duration</span> <span>Result</span> <span>Close Price</span>
     </div>
     <div class="history-list" id="historyList">
       <div class="empty-state">Loading history...</div>
@@ -121,18 +132,16 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  // Your web app's real Firebase configuration
+  // 🔴 TODO: PASTE YOUR REAL FIREBASE CONFIG HERE! 🔴
   const firebaseConfig = {
     apiKey: "AIzaSyC1zcOaqRf9_zHylKg_ERfAzl6rnYOKAi0",
     authDomain: "scalpscanner-74a22.firebaseapp.com",
-    databaseURL: "https://scalpscanner-74a22-default-rtdb.firebaseio.com",
     projectId: "scalpscanner-74a22",
     storageBucket: "scalpscanner-74a22.firebasestorage.app",
     messagingSenderId: "265105859600",
     appId: "1:265105859600:web:3c00612e48453274c25695"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
@@ -147,7 +156,7 @@
     catch { return iso; } 
   }
 
-  // Real-time listener for the "signals" collection
+  // Real-time listener
   const q = query(collection(db, "signals"), orderBy("timestamp", "desc"), limit(50));
   
   onSnapshot(q, (snapshot) => {
@@ -156,14 +165,10 @@
 
     snapshot.forEach((doc) => {
       const data = doc.data();
-      if (data.status === 'OPEN') {
-        active.push(data);
-      } else {
-        history.push(data);
-      }
+      if (data.status === 'OPEN') active.push(data);
+      else history.push(data);
     });
 
-    // Sort history by close time (newest closed trades first)
     history.sort((a, b) => parseInt(b.closeTime || 0) - parseInt(a.closeTime || 0));
 
     liveCount.innerText = active.length;
@@ -172,8 +177,8 @@
     renderActive(active);
     renderHistory(history);
   }, (error) => {
-    console.error("Firebase Snapshot Error: ", error);
-    activeList.innerHTML = `<div class="empty-state" style="color: #f25b6a;">Error connecting to database. Please refresh.</div>`;
+    console.error("Firebase Error: ", error);
+    activeList.innerHTML = `<div class="empty-state" style="color: #f25b6a;">Error connecting to database.</div>`;
   });
 
   function renderActive(trades) {
@@ -186,7 +191,6 @@
     trades.forEach(t => {
       const dir = (t.direction || '').toUpperCase();
       const dirClass = dir.toLowerCase();
-      // Handle both entryMin (backend) and entryLow (legacy) variables
       const entryLow = t.entryMin || t.entryLow || 0;
       const entryHigh = t.entryMax || t.entryHigh || 0;
       
@@ -194,7 +198,7 @@
         <div class="signal-row ${dirClass}">
           <span class="col-sym">${(t.symbol || '').replace('USDT', '')}</span>
           <span class="col-dir ${dirClass}">${dir === 'LONG' ? '▲ LONG' : '▼ SHORT'}</span>
-          <span class="col-entry">$${parseFloat(entryLow).toFixed(4)} – $${parseFloat(entryHigh).toFixed(4)}</span>
+          <span class="col-entry">$${parseFloat(entryLow).toFixed(4)} - $${parseFloat(entryHigh).toFixed(4)}</span>
           <span class="col-tp">TP: $${parseFloat(t.tp || 0).toFixed(4)}</span>
           <span class="col-sl">SL: $${parseFloat(t.sl || 0).toFixed(4)}</span>
           <span class="col-time">${fmtTime(t.timestamp)}</span>
@@ -215,18 +219,46 @@
       const dir = (t.direction || '').toUpperCase();
       const status = (t.status || '').toUpperCase();
       
-      let resText = '—', resClass = '';
-      if (status === 'PROFIT') { resText = '✅ TP Hit'; resClass = 'win'; }
-      else if (status === 'LOSS') { resText = '❌ SL Hit'; resClass = 'loss'; }
-      else if (status === 'EXPIRED') { resText = '⏰ Expired'; resClass = 'loss'; }
+      // Calculate Duration precisely
+      let durationStr = '—';
+      if (t.openTime && t.closeTime) {
+        let diffMs = t.closeTime - t.openTime;
+        let mins = Math.floor(diffMs / 60000);
+        if (mins < 1) durationStr = '< 1m';
+        else if (mins >= 60) durationStr = Math.floor(mins/60) + 'h ' + (mins%60) + 'm';
+        else durationStr = mins + 'm';
+      }
+
+      // Calculate PnL Percentage
+      let pnlStr = '';
+      if (t.closedPrice && (t.entryMin || t.entryLow)) {
+        const entryAvg = (parseFloat(t.entryMin || t.entryLow) + parseFloat(t.entryMax || t.entryHigh)) / 2;
+        let pnl = ((t.closedPrice - entryAvg) / entryAvg) * 100;
+        if (dir === 'SHORT') pnl = -pnl; // Flip for shorts
+        
+        const pnlColor = pnl >= 0 ? '#33d9a8' : '#f25b6a';
+        const pnlSign = pnl >= 0 ? '+' : '';
+        pnlStr = `<span style="color: ${pnlColor}; font-size: 11px; margin-left: 4px;">(${pnlSign}${pnl.toFixed(2)}%)</span>`;
+      }
+      
+      // Professional Result Badges
+      let badgeHTML = '';
+      if (status === 'PROFIT') { 
+        badgeHTML = `<span class="badge-result badge-profit">✅ TP Hit</span>`; 
+      } else if (status === 'LOSS') { 
+        badgeHTML = `<span class="badge-result badge-loss">❌ SL Hit</span>`; 
+      } else if (status === 'EXPIRED') { 
+        badgeHTML = `<span class="badge-result badge-expired">⏱️ Time Stop</span>`; 
+      }
 
       html += `
         <div class="history-item">
           <span class="h-sym">${(t.symbol || '').replace('USDT', '')}</span>
           <span class="h-dir ${dir.toLowerCase()}">${dir === 'LONG' ? 'LONG' : 'SHORT'}</span>
-          <span class="h-time">${fmtTime(t.timestamp)}</span>
-          <span class="h-result ${resClass}">${resText}</span>
-          <span class="h-price">$${parseFloat(t.closedPrice || 0).toFixed(4)}</span>
+          <span class="h-time-left">${fmtTime(t.timestamp)}</span>
+          <span class="h-duration-wrapper"><span class="duration-pill">${durationStr}</span></span>
+          <span class="h-result-wrapper">${badgeHTML}</span>
+          <span class="h-price">$${parseFloat(t.closedPrice || 0).toFixed(4)} <br/> ${pnlStr}</span>
         </div>
       `;
     });
