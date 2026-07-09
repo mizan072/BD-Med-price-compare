@@ -1,14 +1,14 @@
 const admin = require('firebase-admin');
 
-// 1. Initialize Firebase Securely from GitHub Secrets
+// 1. Initialize Firebase Securely
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 const db = admin.firestore();
 
-// 2. Config - Top 3 Major Quotex Pairs
-const COINS = ['EUR/USD', 'GBP/USD', 'USD/JPY'];
+// 2. DEDICATED MODE: Only USD/JPY
+const COINS = ['USD/JPY'];
 const API_KEY = process.env.TWELVE_DATA_API_KEY;
 
 // --- Indicator Math Functions ---
@@ -62,99 +62,72 @@ function calcRSI(closes, period = 14) {
     return rsi;
 }
 
-// 3. High-Activity Binary Options Signal Logic
-function analyzeCandle(data, symbol) {
+// 3. Signal Logic (Returns CALL, PUT, or NO TRADE)
+function analyzeCandle(data) {
     const closes = data.map(c => c.close);
     const highs = data.map(c => c.high);
     const lows = data.map(c => c.low);
-    
     const idx = closes.length - 1; 
     
-    // Calculate indicators
     const rsiArray = calcRSI(closes, 14);
     const bbArray = calcBB(closes, 20, 2);
     
     const rsi = rsiArray[rsiArray.length - 1];
     const bb = bbArray[bbArray.length - 1];
 
-    if (!rsi || !bb.upper || !bb.lower) return null;
+    if (!rsi || !bb.upper || !bb.lower) return { signal: 'NO TRADE', probability: 0, reason: 'Calculating Indicators' };
 
     let probability = 50;
     let signal = null;
 
-    // TRIGGER 1: Price pushing outside or touching the Bollinger Bands
-    const touchesLowerBB = lows[idx] <= bb.lower * 1.0002; // with a tiny entry buffer
+    const touchesLowerBB = lows[idx] <= bb.lower * 1.0002;
     const touchesUpperBB = highs[idx] >= bb.upper * 0.9998;
 
     if (touchesLowerBB) {
         signal = 'CALL';
-        probability += 20; // Base score for BB touch
-        
-        // Dynamic RSI weight: more oversold = higher confidence
-        if (rsi < 40) {
-            const rsiBonus = Math.min(25, (40 - rsi) * 1.5);
-            probability += rsiBonus;
-        }
+        probability += 20; 
+        if (rsi < 40) probability += Math.min(25, (40 - rsi) * 1.5);
     } else if (touchesUpperBB) {
         signal = 'PUT';
         probability += 20;
-        
-        if (rsi > 60) {
-            const rsiBonus = Math.min(25, (rsi - 60) * 1.5);
-            probability += rsiBonus;
-        }
+        if (rsi > 60) probability += Math.min(25, (rsi - 60) * 1.5);
     }
 
-    // If a signal exists, send it out as long as it crosses our activity threshold (lowered to 55 for testing)
     if (signal && probability >= 55) {
-        return { signal, probability: Math.min(98, Math.round(probability)) };
+        return { signal, probability: Math.min(98, Math.round(probability)), reason: 'Setup Found' };
     }
     
-    return null;
+    return { signal: 'NO TRADE', probability: 0, reason: 'Market Flat / No Setup' };
 }
 
-// 4. MAIN BINARY ENGINE LOOP
+// 4. MAIN ENGINE
 async function runBinaryBot() {
-    console.log("🚀 Waking up Forex Binary Engine...");
-    if (!API_KEY) {
-        console.error("❌ ERROR: TWELVE_DATA_API_KEY secret is missing inside GitHub!");
-        return;
-    }
+    console.log("🚀 Waking up USD/JPY Binary Engine...");
     
     const signalsRef = db.collection('binary_signals');
     
-    // A. Clean out older PENDING signals to prevent cluttering the interface
+    // Cleanup old pending trades (Stuck data)
     const oldPendingSnap = await signalsRef.where('status', '==', 'PENDING').get();
     const nowTime = Date.now();
     for (const doc of oldPendingSnap.docs) {
-        const d = doc.data();
-        if (nowTime - d.timestamp > 10 * 60 * 1000) { // older than 10 minutes
+        if (nowTime - doc.data().timestamp > 25 * 60 * 1000) { 
             await signalsRef.doc(doc.id).update({ status: 'EXPIRED' });
         }
     }
 
-    // B. Fetch fresh pending entries for standard win/loss evaluation
+    // Get Active Pending Trades to Resolve
     const pendingSnap = await signalsRef.where('status', '==', 'PENDING').get();
     const pendingTrades = [];
     pendingSnap.forEach(doc => pendingTrades.push({ id: doc.id, ...doc.data() }));
 
     for (const symbol of COINS) {
         try {
-            console.log(`Scanning historical bars for ${symbol}...`);
-            
-            // --- FIX IS HERE: ADDED &timezone=UTC ---
+            console.log(`Fetching USD/JPY...`);
             const res = await fetch(`https://api.twelvedata.com/time_series?symbol=${symbol}&interval=5min&outputsize=40&timezone=UTC&apikey=${API_KEY}`);
-            
-            if (!res.ok) throw new Error(`HTTP Error Status: ${res.status}`);
             const json = await res.json();
             
-            if (json.status === 'error') throw new Error(`TwelveData API Error: ${json.message}`);
-            if (!json.values || json.values.length === 0) throw new Error("No data returned from provider.");
-
-            // Twelve Data provides data newest-to-oldest; reverse it to chronology order
             const data = json.values.map(c => ({
-                // --- FIX IS HERE: ADDED + 'Z' TO FORCE UTC PARSING ---
-                time: new Date(c.datetime + 'Z').getTime(),
+                time: new Date(c.datetime.replace(' ', 'T') + 'Z').getTime(),
                 open: parseFloat(c.open),
                 high: parseFloat(c.high),
                 low: parseFloat(c.low),
@@ -165,9 +138,9 @@ async function runBinaryBot() {
             const justClosedCandle = closedCandles[closedCandles.length - 1];
             const activelyFormingCandle = data[data.length - 1];
 
-            // --- RECONCILIATION LOOP ---
-            const activeCoinTrades = pendingTrades.filter(t => t.symbol === symbol);
-            for (const trade of activeCoinTrades) {
+            // 1. RECONCILE PAST TRADES
+            const activeTrades = pendingTrades.filter(t => t.symbol === symbol);
+            for (const trade of activeTrades) {
                 if (justClosedCandle.time >= trade.targetCandleTime) {
                     const isGreen = justClosedCandle.close > justClosedCandle.open;
                     const isRed = justClosedCandle.close < justClosedCandle.open;
@@ -181,37 +154,32 @@ async function runBinaryBot() {
                         closePrice: justClosedCandle.close,
                         resolvedAt: Date.now()
                     });
-                    console.log(`🏁 Resolved ${symbol}: ${result}`);
                 }
             }
 
-            // --- GENERATE ACTIVE SIGNALS ---
-            if (activeCoinTrades.length === 0) {
-                const analysis = analyzeCandle(closedCandles, symbol);
+            // 2. ANALYZE CURRENT MARKET
+            if (activeTrades.length === 0) {
+                const analysis = analyzeCandle(closedCandles);
                 
-                if (analysis) {
-                    const newSignal = {
-                        symbol: symbol,
-                        signal: analysis.signal,
-                        probability: analysis.probability,
-                        status: 'PENDING',
-                        timestamp: Date.now(),
-                        targetCandleTime: activelyFormingCandle.time,
-                        entryPrice: activelyFormingCandle.open
-                    };
-                    await signalsRef.add(newSignal);
-                    console.log(`🎯 Signal Sent: ${symbol} -> ${analysis.signal} (${analysis.probability}%)`);
-                }
+                const newRecord = {
+                    symbol: symbol,
+                    signal: analysis.signal,
+                    probability: analysis.probability,
+                    status: analysis.signal === 'NO TRADE' ? 'NO TRADE' : 'PENDING',
+                    timestamp: Date.now(),
+                    targetCandleTime: activelyFormingCandle.time,
+                    entryPrice: activelyFormingCandle.open,
+                    reason: analysis.reason
+                };
+                
+                await signalsRef.add(newRecord);
+                console.log(`🎯 Market Analyzed: ${analysis.signal}`);
             }
             
-            // Wait 8 seconds between requests to perfectly respect Twelve Data's free tier limits
-            await new Promise(r => setTimeout(r, 8000)); 
-            
         } catch (e) {
-            console.error(`⚠️ Skipping ${symbol} iteration:`, e.message);
+            console.error(`⚠️ Error:`, e.message);
         }
     }
-    console.log("💤 Scanning cycle finished.");
 }
 
 runBinaryBot();
