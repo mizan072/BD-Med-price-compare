@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ScalpScanner | USD/JPY Binary</title>
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     
@@ -109,15 +110,18 @@
         <div class="status-badge">🟢 Live · Connected to Database</div>
     </div>
 
+    <!-- 1. MASTER CLOCK -->
     <div class="clock-panel">
         <h2>TIME UNTIL NEXT 5M CANDLE EVALUATION</h2>
         <div id="masterClock" class="timer-display">00:00</div>
     </div>
 
+    <!-- 2. LIVE CHART (OFFICIAL TRADINGVIEW WIDGET) -->
     <div class="chart-container">
         <div class="chart-header">
             <h3>📈 LIVE MARKET (USD/JPY)</h3>
         </div>
+        <!-- TradingView Widget BEGIN -->
         <div class="tradingview-widget-container" style="height: 450px; width: 100%;">
           <div id="tradingview_usdjpy" style="height: 450px; width: 100%;"></div>
           <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
@@ -140,8 +144,10 @@
           });
           </script>
         </div>
-        </div>
+        <!-- TradingView Widget END -->
+    </div>
 
+    <!-- 3. RESOLUTION HISTORY -->
     <div class="grid-panel">
         <h3>📜 USD/JPY Candle Analysis History</h3>
         <table>
@@ -163,7 +169,6 @@
 
 <script>
     // --- FIREBASE SETUP ---
-    // Your exact configuration is now hardcoded here
     const firebaseConfig = {
         apiKey: "AIzaSyC1zcOaqRf9_zHylKg_ERfAzl6rnYOKAi0",
         authDomain: "scalpscanner-74a22.firebaseapp.com",
@@ -197,8 +202,8 @@
     updateClock();
 
     // --- FIREBASE LISTENER FOR HISTORY ---
+    // FIX: Removed `.where('symbol', '==', 'USD/JPY')` to bypass the Firebase Index requirement.
     db.collection('binary_signals')
-      .where('symbol', '==', 'USD/JPY')
       .orderBy('timestamp', 'desc')
       .limit(20)
       .onSnapshot(snapshot => {
@@ -212,6 +217,10 @@
 
         snapshot.forEach(doc => {
             const data = doc.data();
+            
+            // Safety check in Javascript instead of a strict database rule
+            if(data.symbol !== 'USD/JPY') return;
+
             const date = new Date(data.timestamp);
             const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             
@@ -242,7 +251,7 @@
                     <td><strong style="color:var(--text-main);">${timeStr}</strong></td>
                     <td>${sigHtml}</td>
                     <td>${confHtml}</td>
-                    <td style="color:#64748b;">${data.signal === 'NO TRADE' ? '--' : data.entryPrice.toFixed(4)}</td>
+                    <td style="color:#64748b;">${data.signal === 'NO TRADE' || !data.entryPrice ? '--' : data.entryPrice.toFixed(4)}</td>
                     <td>${resHtml}</td>
                 </tr>
             `;
