@@ -51,22 +51,20 @@ function calcVWAP(highs, lows, closes, vols) {
     return vwap;
 }
 
-// 3. Signal Generation Logic
+// 3. Signal Generation Logic (Hyper-Active Mode)
 function analyzeCoin(data, symbol) {
     const closes = data.map(d=>d.close), highs = data.map(d=>d.high), lows = data.map(d=>d.low), vols = data.map(d=>d.vol);
     const idx = closes.length - 1, price = closes[idx];
-    const e5 = calcEMA(closes, 5)[idx], e20 = calcEMA(closes, 20)[idx], vwap = calcVWAP(highs, lows, closes, vols)[idx];
-    const rsi = calcRSI(closes, 14)[idx-1]; 
-
-    let trend = 0, momentum = 0;
-    if (e5 > e20 && price > vwap) trend = 1; else if (e5 < e20 && price < vwap) trend = -1;
-    if (rsi < 48) momentum = 1; else if (rsi > 52) momentum = -1;
-
-    if (trend === 1 && momentum === 1) return { direction: 'LONG', strength: 65, price };
-    if (trend === -1 && momentum === -1) return { direction: 'SHORT', strength: 65, price };
+    const e5 = calcEMA(closes, 5)[idx], e20 = calcEMA(closes, 20)[idx];
     
-    // ⚠️ Uncomment the line below ONLY IF you want to force a test trade on every coin!
-    // return { direction: 'LONG', strength: 99, price }; 
+    // Very loose logic: Just look at the moving averages.
+    let trend = 0;
+    if (e5 > e20) trend = 1; 
+    else if (e5 < e20) trend = -1;
+
+    // Trigger immediately on any trend
+    if (trend === 1) return { direction: 'LONG', strength: 75, price };
+    if (trend === -1) return { direction: 'SHORT', strength: 75, price };
     
     return null;
 }
