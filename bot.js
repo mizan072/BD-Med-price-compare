@@ -51,22 +51,36 @@ function calcVWAP(highs, lows, closes, vols) {
     return vwap;
 }
 
-// 3. Signal Generation Logic (Hyper-Active Mode)
+// 3. Professional Signal Generation Logic (Balanced Mode)
 function analyzeCoin(data, symbol) {
     const closes = data.map(d=>d.close), highs = data.map(d=>d.high), lows = data.map(d=>d.low), vols = data.map(d=>d.vol);
-    const idx = closes.length - 1, price = closes[idx];
-    const e5 = calcEMA(closes, 5)[idx], e20 = calcEMA(closes, 20)[idx];
+    const idx = closes.length - 1;
+    const price = closes[idx];
     
-    // Very loose logic: Just look at the moving averages.
-    let trend = 0;
-    if (e5 > e20) trend = 1; 
-    else if (e5 < e20) trend = -1;
+    // Calculate full arrays to get current and previous values
+    const ema5 = calcEMA(closes, 5);
+    const ema20 = calcEMA(closes, 20);
+    const vwap = calcVWAP(highs, lows, closes, vols);
+    const rsi = calcRSI(closes, 14);
 
-    // Trigger immediately on any trend
-    if (trend === 1) return { direction: 'LONG', strength: 75, price };
-    if (trend === -1) return { direction: 'SHORT', strength: 75, price };
+    const currE5 = ema5[idx], prevE5 = ema5[idx-1];
+    const currE20 = ema20[idx], prevE20 = ema20[idx-1];
+    const currVWAP = vwap[idx];
+    const currRSI = rsi[idx-1]; // Use previous closed candle RSI to avoid repainting
+
+    // 1. Detect Fresh Momentum Crosses
+    const crossUp = prevE5 <= prevE20 && currE5 > currE20;
+    const crossDown = prevE5 >= prevE20 && currE5 < currE20;
+
+    // 2. Validate with VWAP and RSI
+    if (crossUp && price > currVWAP && currRSI > 50 && currRSI < 75) {
+        return { direction: 'LONG', strength: 85, price };
+    }
+    if (crossDown && price < currVWAP && currRSI < 50 && currRSI > 25) {
+        return { direction: 'SHORT', strength: 85, price };
+    }
     
-    return null;
+    return null; // No perfect setup found, wait for the next cycle
 }
 
 // 4. MAIN CLOUD ENGINE LOOP
