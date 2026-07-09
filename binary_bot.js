@@ -62,14 +62,13 @@ function calcRSI(closes, period = 14) {
     return rsi;
 }
 
-// 3. High-Activity Binary Options Signal Logic
+// 3. Ultra-High-Activity Binary Options Signal Logic
 function analyzeCandle(data, symbol) {
     const closes = data.map(c => c.close);
     const highs = data.map(c => c.high);
     const lows = data.map(c => c.low);
     
     const idx = closes.length - 1; 
-    const currentPrice = closes[idx];
     
     // Calculate indicators
     const rsiArray = calcRSI(closes, 14);
@@ -83,31 +82,33 @@ function analyzeCandle(data, symbol) {
     let probability = 50;
     let signal = null;
 
-    // TRIGGER 1: Price pushing outside or touching the Bollinger Bands
-    const touchesLowerBB = lows[idx] <= bb.lower * 1.0002; // with a tiny entry buffer
-    const touchesUpperBB = highs[idx] >= bb.upper * 0.9998;
+    // Detect general directional momentum
+    const isPushingDown = lows[idx] < closes[idx - 1];
+    const isPushingUp = highs[idx] > closes[idx - 1];
 
-    if (touchesLowerBB) {
-        signal = 'CALL';
-        probability += 20; // Base score for BB touch
+    if (isPushingDown) {
+        signal = 'CALL'; // Expecting a bounce up
+        probability += 5; 
         
-        // Dynamic RSI weight: more oversold = higher confidence
-        if (rsi < 40) {
-            const rsiBonus = Math.min(25, (40 - rsi) * 1.5);
-            probability += rsiBonus;
-        }
-    } else if (touchesUpperBB) {
-        signal = 'PUT';
-        probability += 20;
+        // Add points if it's nearing the bottom band
+        if (lows[idx] <= bb.lower * 1.0005) probability += 15;
         
-        if (rsi > 60) {
-            const rsiBonus = Math.min(25, (rsi - 60) * 1.5);
-            probability += rsiBonus;
-        }
+        // Add points for low RSI
+        if (rsi < 45) probability += Math.min(25, (45 - rsi) * 1.5);
+        
+    } else if (isPushingUp) {
+        signal = 'PUT'; // Expecting a rejection down
+        probability += 5;
+        
+        // Add points if it's nearing the top band
+        if (highs[idx] >= bb.upper * 0.9995) probability += 15;
+        
+        // Add points for high RSI
+        if (rsi > 55) probability += Math.min(25, (rsi - 55) * 1.5);
     }
 
-    // If a signal exists, send it out as long as it crosses our activity threshold
-    if (signal && probability >= 65) {
+    // LOWERED THRESHOLD: Fire a signal if probability is just 55% or higher
+    if (signal && probability >= 55) {
         return { signal, probability: Math.min(98, Math.round(probability)) };
     }
     
@@ -129,7 +130,7 @@ async function runBinaryBot() {
     const nowTime = Date.now();
     for (const doc of oldPendingSnap.docs) {
         const d = doc.data();
-        if (nowTime - d.timestamp > 10 * 60 * 1000) { // older than 10 minutes
+        if (nowTime - d.timestamp > 10 * 60 * 1000) { 
             await signalsRef.doc(doc.id).update({ status: 'EXPIRED' });
         }
     }
@@ -142,13 +143,23 @@ async function runBinaryBot() {
     for (const symbol of COINS) {
         try {
             console.log(`Scanning historical bars for ${symbol}...`);
-            const res = await fetch(`https://api.twelvedata.com/api/v1/time_series?symbol=${symbol}&interval=5min&outputsize=40&apikey=${API_KEY}`);
+            
+            // ✅ EXACT FIX: Removed the invalid /api/v1/ path from the URL
+            const url = `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=5min&outputsize=40&apikey=${API_KEY}`;
+            const res = await fetch(url);
             
             if (!res.ok) throw new Error(`HTTP Error Status: ${res.status}`);
             const json = await res.json();
             
-            if (json.status === 'error') throw new Error(`TwelveData API Error: ${json.message}`);
-            if (!json.values || json.values.length === 0) throw new Error("No data returned from provider.");
+            // Log any API-level errors so they don't fail silently
+            if (json.status === 'error') {
+                console.error(`TwelveData API Error for ${symbol}: ${json.message}`);
+                continue;
+            }
+            if (!json.values || json.values.length === 0) {
+                console.error(`No data returned for ${symbol}`);
+                continue;
+            }
 
             // Twelve Data provides data newest-to-oldest; reverse it to chronology order
             const data = json.values.map(c => ({
@@ -199,6 +210,8 @@ async function runBinaryBot() {
                     };
                     await signalsRef.add(newSignal);
                     console.log(`🎯 Signal Sent: ${symbol} -> ${analysis.signal} (${analysis.probability}%)`);
+                } else {
+                    console.log(`No clear setup for ${symbol} right now.`);
                 }
             }
             
