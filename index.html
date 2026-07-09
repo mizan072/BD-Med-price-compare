@@ -18,9 +18,18 @@
     @keyframes pulse-dot { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.3; transform: scale(0.9); } }
     
     /* Top Bar */
-    .top-bar { display: flex; justify-content: space-between; align-items: center; background: #111a24; padding: 12px 18px; border-radius: 12px; border: 1px solid #1e2c3b; margin-bottom: 20px; flex-wrap: wrap; gap: 6px; }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; background: #111a24; padding: 12px 18px; border-radius: 12px; border: 1px solid #1e2c3b; margin-bottom: 12px; flex-wrap: wrap; gap: 6px; }
     .top-bar .status { color: #7a94af; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
     .top-bar .status .live { color: #33d9a8; font-weight: 600; }
+
+    /* Market Pulse Widget */
+    .market-pulse { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .pulse-card { background: #111a24; border: 1px solid #1e2c3b; border-radius: 12px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .pulse-card .label { font-size: 11px; color: #5f7d9a; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+    .pulse-card .value { font-size: 16px; font-weight: 700; color: #f0f4fa; }
+    .pulse-card .sub-value { font-size: 12px; font-weight: 600; margin-left: 6px; }
+    .analysis-card { grid-column: 1 / -1; background: linear-gradient(145deg, #111a24, #0a111a); border: 1px solid #2d3f52; }
+    .analysis-text { font-size: 13px; font-weight: 500; color: #9ab0c9; line-height: 1.5; }
     
     /* Container Styles */
     .signals-container, .history-section { background: #111a24; border-radius: 12px; border: 1px solid #1e2c3b; overflow: hidden; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
@@ -104,6 +113,29 @@
     <span class="status">🟢 <span class="live">Live</span> · Auto-sync Engine Active</span>
     <span class="status" id="lastUpdated" style="font-family: monospace;">Waiting for sync...</span>
   </div>
+
+  <!-- NEW: MARKET PULSE WIDGET -->
+  <div class="market-pulse">
+    <div class="pulse-card">
+      <span class="label">Bitcoin (Market Proxy)</span>
+      <div>
+        <span class="value" id="mp-btc-price">Loading...</span>
+        <span class="sub-value" id="mp-btc-change"></span>
+      </div>
+    </div>
+    <div class="pulse-card">
+      <span class="label">Overall Market Trend</span>
+      <span class="value" id="mp-trend">Analyzing...</span>
+    </div>
+    <div class="pulse-card">
+      <span class="label">Crypto Fear & Greed</span>
+      <span class="value" id="mp-fng">Loading...</span>
+    </div>
+    <div class="pulse-card analysis-card">
+      <span class="label">🤖 AI Market Analysis</span>
+      <span class="analysis-text" id="mp-analysis">Gathering market intelligence...</span>
+    </div>
+  </div>
   
   <div class="signals-container">
     <div class="signals-header">
@@ -127,19 +159,19 @@
   </div>
 </div>
 
-<!-- FIREBASE SDK -->
+<!-- FIREBASE SDK & APP LOGIC -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   // 🔴 TODO: PASTE YOUR REAL FIREBASE CONFIG HERE! 🔴
   const firebaseConfig = {
-    apiKey: "AIzaSyC1zcOaqRf9_zHylKg_ERfAzl6rnYOKAi0",
-    authDomain: "scalpscanner-74a22.firebaseapp.com",
-    projectId: "scalpscanner-74a22",
-    storageBucket: "scalpscanner-74a22.firebasestorage.app",
-    messagingSenderId: "265105859600",
-    appId: "1:265105859600:web:3c00612e48453274c25695"
+    apiKey: "PASTE_YOUR_API_KEY_HERE",
+    authDomain: "PASTE_YOUR_AUTH_DOMAIN_HERE",
+    projectId: "PASTE_YOUR_PROJECT_ID_HERE",
+    storageBucket: "PASTE_YOUR_STORAGE_BUCKET_HERE",
+    messagingSenderId: "PASTE_YOUR_MESSAGING_SENDER_ID_HERE",
+    appId: "PASTE_YOUR_APP_ID_HERE"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -156,7 +188,73 @@
     catch { return iso; } 
   }
 
-  // Real-time listener
+  // ==========================================
+  // NEW: MARKET PULSE FETCH LOGIC
+  // ==========================================
+  async function fetchMarketPulse() {
+    try {
+      // 1. Fetch BTC Price & 24h Change from Binance (Public API)
+      const btcRes = await fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT');
+      const btcData = await btcRes.json();
+      
+      const btcPrice = parseFloat(btcData.lastPrice);
+      const btcChange = parseFloat(btcData.priceChangePercent);
+      
+      const priceEl = document.getElementById('mp-btc-price');
+      const changeEl = document.getElementById('mp-btc-change');
+      const trendEl = document.getElementById('mp-trend');
+      
+      priceEl.innerText = `$${btcPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      changeEl.innerText = `${btcChange > 0 ? '+' : ''}${btcChange.toFixed(2)}%`;
+      changeEl.style.color = btcChange > 0 ? '#33d9a8' : '#f25b6a';
+
+      // Determine Market Trend based on BTC 24h Volatility
+      if (btcChange >= 1.5) {
+        trendEl.innerHTML = '<span style="color:#33d9a8">🐂 Bullish</span>';
+      } else if (btcChange <= -1.5) {
+        trendEl.innerHTML = '<span style="color:#f25b6a">🐻 Bearish</span>';
+      } else {
+        trendEl.innerHTML = '<span style="color:#f4c95d">⚖️ Sideways (Choppy)</span>';
+      }
+
+      // 2. Fetch Fear & Greed Index from Alternative.me
+      const fngRes = await fetch('https://api.alternative.me/fng/?limit=1');
+      const fngData = await fngRes.json();
+      
+      const fngValue = fngData.data[0].value;
+      const fngLabel = fngData.data[0].value_classification;
+      
+      document.getElementById('mp-fng').innerText = `${fngValue} - ${fngLabel}`;
+      
+      // 3. Generate Actionable Market Analysis
+      let analysisText = "";
+      if (btcChange >= 1.5 && fngValue > 50) {
+        analysisText = "The market is exhibiting strong bullish momentum with positive sentiment. Favorable conditions for LONG setups. Pullbacks may offer good entries.";
+      } else if (btcChange <= -1.5 && fngValue < 45) {
+        analysisText = "The market is under heavy bearish pressure with fearful sentiment. Favorable conditions for SHORT setups. Proceed with extreme caution on LONGs.";
+      } else if (Math.abs(btcChange) < 1.5 && fngValue >= 45 && fngValue <= 55) {
+        analysisText = "Market is currently moving sideways in a consolidation phase. Expect choppy price action with false breakouts. Strict TP/SL management is highly recommended.";
+      } else if (btcChange > 0) {
+        analysisText = "Market leans slightly positive but lacks major directional volume. Wait for clear breakouts before deploying capital.";
+      } else {
+        analysisText = "Market leans slightly negative. Altcoins may bleed against BTC. Avoid over-trading and wait for high-probability setups.";
+      }
+      
+      document.getElementById('mp-analysis').innerText = analysisText;
+      
+    } catch (err) {
+      console.error("Market Pulse Fetch Error:", err);
+      document.getElementById('mp-analysis').innerText = "Unable to generate analysis at this time.";
+    }
+  }
+
+  // Fetch Market Pulse on load, then every 60 seconds
+  fetchMarketPulse();
+  setInterval(fetchMarketPulse, 60000);
+
+  // ==========================================
+  // REAL-TIME FIREBASE LISTENER
+  // ==========================================
   const q = query(collection(db, "signals"), orderBy("timestamp", "desc"), limit(50));
   
   onSnapshot(q, (snapshot) => {
@@ -183,7 +281,7 @@
 
   function renderActive(trades) {
     if (trades.length === 0) {
-      activeList.innerHTML = `<div class="empty-state">No active trades currently open. Waiting for setups...</div>`;
+      activeList.innerHTML = `<div class="empty-state">No active trades currently open. Waiting for high-probability setups...</div>`;
       return;
     }
     
@@ -219,7 +317,7 @@
       const dir = (t.direction || '').toUpperCase();
       const status = (t.status || '').toUpperCase();
       
-      // Calculate Duration precisely
+      // Calculate Duration
       let durationStr = '—';
       if (t.openTime && t.closeTime) {
         let diffMs = t.closeTime - t.openTime;
@@ -227,18 +325,6 @@
         if (mins < 1) durationStr = '< 1m';
         else if (mins >= 60) durationStr = Math.floor(mins/60) + 'h ' + (mins%60) + 'm';
         else durationStr = mins + 'm';
-      }
-
-      // Calculate PnL Percentage
-      let pnlStr = '';
-      if (t.closedPrice && (t.entryMin || t.entryLow)) {
-        const entryAvg = (parseFloat(t.entryMin || t.entryLow) + parseFloat(t.entryMax || t.entryHigh)) / 2;
-        let pnl = ((t.closedPrice - entryAvg) / entryAvg) * 100;
-        if (dir === 'SHORT') pnl = -pnl; // Flip for shorts
-        
-        const pnlColor = pnl >= 0 ? '#33d9a8' : '#f25b6a';
-        const pnlSign = pnl >= 0 ? '+' : '';
-        pnlStr = `<span style="color: ${pnlColor}; font-size: 11px; margin-left: 4px;">(${pnlSign}${pnl.toFixed(2)}%)</span>`;
       }
       
       // Professional Result Badges
@@ -258,7 +344,7 @@
           <span class="h-time-left">${fmtTime(t.timestamp)}</span>
           <span class="h-duration-wrapper"><span class="duration-pill">${durationStr}</span></span>
           <span class="h-result-wrapper">${badgeHTML}</span>
-          <span class="h-price">$${parseFloat(t.closedPrice || 0).toFixed(4)} <br/> ${pnlStr}</span>
+          <span class="h-price">$${parseFloat(t.closedPrice || 0).toFixed(4)}</span>
         </div>
       `;
     });
@@ -266,4 +352,4 @@
   }
 </script>
 </body>
-</html>
+</html>v
