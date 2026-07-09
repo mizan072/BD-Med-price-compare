@@ -6,71 +6,90 @@
   <title>ScalpScanner - Binary Options</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
-    body { background: #090d14; min-height: 100vh; padding: 12px; display: flex; justify-content: center; color: #d6e4f0; }
+    body { background: #090d14; min-height: 100vh; padding: 16px; display: flex; justify-content: center; color: #d6e4f0; }
     .app { max-width: 950px; width: 100%; }
     
     /* Header */
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
-    .header h1 { color: #f0f4fa; font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-    .header h1 span { background: linear-gradient(135deg, #f4c95d, #e3a92b); font-size: 12px; font-weight: 700; padding: 3px 12px; border-radius: 30px; color: #090d14; text-transform: uppercase; letter-spacing: 0.5px;}
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .header h1 { color: #f0f4fa; font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+    .header h1 span { background: linear-gradient(135deg, #f4c95d, #e3a92b); font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 30px; color: #090d14; text-transform: uppercase; letter-spacing: 1px;}
     
-    /* Master Countdown Timer */
-    .timer-container { background: #111a24; border: 1px solid #1e2c3b; padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 12px;}
-    .timer-text { font-size: 14px; color: #9ab0c9; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
-    .clock { font-family: monospace; font-size: 28px; font-weight: 700; color: #f0f4fa; background: #0a111a; padding: 8px 16px; border-radius: 8px; border: 1px solid #2d3f52; letter-spacing: 2px;}
-    .clock.warning { color: #f4c95d; border-color: #f4c95d; animation: pulse-border 1s infinite; }
-    @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(244, 201, 93, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(244, 201, 93, 0); } 100% { box-shadow: 0 0 0 0 rgba(244, 201, 93, 0); } }
+    /* Connection Status */
+    .connection-status { background: #161f2b; padding: 6px 16px; border-radius: 40px; color: #9ab0c9; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 8px; border: 1px solid #253240; }
+    .connection-status .dot { width: 8px; height: 8px; background: #33d9a8; border-radius: 50%; display: inline-block; animation: pulse-dot 1.6s infinite; }
+    @keyframes pulse-dot { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.3; transform: scale(0.9); } }
+
+    /* Master Countdown Timer - ENHANCED */
+    .timer-container { background: linear-gradient(145deg, #111a24, #0a111a); border: 1px solid #1e2c3b; padding: 24px; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); gap: 12px;}
+    .timer-text { font-size: 13px; color: #5f7d9a; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; }
+    .clock { font-family: 'JetBrains Mono', monospace; font-size: 48px; font-weight: 700; color: #f0f4fa; background: #090d14; padding: 12px 32px; border-radius: 12px; border: 2px solid #2d3f52; letter-spacing: 4px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);}
+    .clock.warning { color: #f4c95d; border-color: #f4c95d; text-shadow: 0 0 15px rgba(244, 201, 93, 0.4); animation: pulse-border 1s infinite; }
+    @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(244, 201, 93, 0.4), inset 0 2px 10px rgba(0,0,0,0.5); } 70% { box-shadow: 0 0 0 12px rgba(244, 201, 93, 0), inset 0 2px 10px rgba(0,0,0,0.5); } 100% { box-shadow: 0 0 0 0 rgba(244, 201, 93, 0), inset 0 2px 10px rgba(0,0,0,0.5); } }
 
     /* Intelligence Hub */
-    .intelligence-hub { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 24px; }
-    .info-card { background: #111a24; border: 1px solid #1e2c3b; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
-    .info-card h4 { font-size: 11px; color: #5f7d9a; text-transform: uppercase; letter-spacing: 0.5px; }
-    .info-text { font-size: 13px; font-weight: 500; color: #d6e4f0; line-height: 1.5;}
+    .intelligence-hub { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .info-card { background: #111a24; border: 1px solid #1e2c3b; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; transition: transform 0.2s, box-shadow 0.2s;}
+    .info-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+    .info-card h4 { font-size: 12px; color: #7a94af; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;}
+    .info-text { font-size: 13px; font-weight: 500; color: #c4d4e3; line-height: 1.6;}
     .info-text strong { color: #f0f4fa; }
     .highlight-green { color: #33d9a8; font-weight: 600;}
     .highlight-red { color: #f25b6a; font-weight: 600;}
     .highlight-yellow { color: #f4c95d; font-weight: 600;}
     
-    .otc-warning { border-color: #f25b6a; background: rgba(242, 91, 106, 0.05); }
+    .otc-warning { border-color: #f25b6a; background: linear-gradient(145deg, rgba(242, 91, 106, 0.1), #111a24); }
     .otc-warning h4 { color: #f25b6a; }
     
     /* Lists */
     ul.checklist { list-style-type: none; padding-left: 0; }
-    ul.checklist li { font-size: 12px; color: #9ab0c9; margin-bottom: 4px; padding-left: 14px; position: relative; }
-    ul.checklist li::before { content: "•"; position: absolute; left: 0; color: #f4c95d; }
+    ul.checklist li { font-size: 13px; color: #c4d4e3; margin-bottom: 6px; padding-left: 18px; position: relative; line-height: 1.4;}
+    ul.checklist li::before { content: "•"; position: absolute; left: 0; top: -1px; color: #5f7d9a; font-size: 16px;}
 
     /* Grids */
-    .section-box { background: #111a24; border-radius: 12px; border: 1px solid #1e2c3b; overflow: hidden; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-    .section-header { padding: 12px 18px; background: #0c141d; border-bottom: 1px solid #1e2c3b; display: flex; justify-content: space-between; align-items: center;}
-    .section-header h3 { color: #9ab0c9; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .section-box { background: #111a24; border-radius: 14px; border: 1px solid #1e2c3b; overflow: hidden; margin-bottom: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+    .section-header { padding: 16px 20px; background: #0c141d; border-bottom: 1px solid #1e2c3b; display: flex; justify-content: space-between; align-items: center;}
+    .section-header h3 { color: #9ab0c9; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;}
     
-    .grid-row { display: grid; grid-template-columns: 80px 80px 100px 1fr 100px; gap: 10px; padding: 14px 18px; align-items: center; border-bottom: 1px solid #1a2533; font-size: 13px; }
-    .grid-row:hover { background: #15202b; }
-    .grid-row:last-child { border-bottom: none; }
+    /* Column Headers */
+    .grid-header { display: grid; grid-template-columns: 80px 80px 140px 1fr 100px; gap: 12px; padding: 12px 20px; background: #0a111a; border-bottom: 1px solid #1e2c3b; color: #5f7d9a; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .history-header-grid { display: grid; grid-template-columns: 80px 80px 120px 120px 1fr; gap: 12px; padding: 12px 20px; background: #0a111a; border-bottom: 1px solid #1e2c3b; color: #5f7d9a; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     
-    .col-sym { font-weight: 700; color: #ffffff; font-size: 15px; }
-    .col-sig { font-weight: 700; font-size: 13px; }
+    .grid-row { display: grid; grid-template-columns: 80px 80px 140px 1fr 100px; gap: 12px; padding: 16px 20px; align-items: center; border-bottom: 1px solid #1a2533; font-size: 14px; transition: background 0.15s;}
+    .history-row { display: grid; grid-template-columns: 80px 80px 120px 120px 1fr; gap: 12px; padding: 14px 20px; align-items: center; border-bottom: 1px solid #1a2533; font-size: 13px; transition: background 0.15s;}
+    
+    .grid-row:hover, .history-row:hover { background: #15202b; }
+    .grid-row:last-child, .history-row:last-child { border-bottom: none; }
+    
+    .col-sym { font-weight: 700; color: #ffffff; font-size: 16px; }
+    .col-sig { font-weight: 700; font-size: 14px; }
     .col-sig.call { color: #33d9a8; }
     .col-sig.put { color: #f25b6a; }
     
-    .prob-bar-container { background: #1e2c3b; height: 6px; border-radius: 3px; width: 100%; overflow: hidden; margin-top: 4px;}
-    .prob-bar { height: 100%; border-radius: 3px; }
-    .prob-text { font-size: 11px; color: #9ab0c9; font-family: monospace; }
+    .prob-bar-container { background: #1e2c3b; height: 8px; border-radius: 4px; width: 100%; overflow: hidden; margin-top: 6px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);}
+    .prob-bar { height: 100%; border-radius: 4px; transition: width 0.5s ease-out;}
+    .prob-text { font-size: 12px; color: #9ab0c9; font-family: 'JetBrains Mono', monospace; font-weight: 500;}
     
-    .badge-result { padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; justify-content: center; width: 80px;}
+    .badge-result { padding: 5px 12px; border-radius: 6px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; justify-content: center; width: 85px;}
     .badge-win { background: rgba(51, 217, 168, 0.1); color: #33d9a8; border: 1px solid rgba(51, 217, 168, 0.2); }
     .badge-loss { background: rgba(242, 91, 106, 0.1); color: #f25b6a; border: 1px solid rgba(242, 91, 106, 0.2); }
+    .badge-tie { background: #1e2c3b; color: #9ab0c9; border: 1px solid #2d3f52; }
     
-    .empty-state { color: #5f7d9a; text-align: center; padding: 32px 10px; font-size: 14px; font-style: italic;}
+    .empty-state { color: #5f7d9a; text-align: center; padding: 40px 20px; font-size: 14px; font-style: italic; display: flex; flex-direction: column; align-items: center; gap: 10px;}
+    .empty-state span { font-size: 24px; opacity: 0.5; }
 
     /* Mobile */
-    @media (max-width: 600px) {
-      .grid-row { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 8px; }
-      .grid-row .col-sym { grid-column: 1 / 2; }
-      .grid-row .col-sig { grid-column: 2 / 3; text-align: right; }
+    @media (max-width: 768px) {
+      .grid-header, .history-header-grid { display: none; }
+      .grid-row, .history-row { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 10px; }
+      .grid-row .col-sym, .history-row .col-sym { grid-column: 1 / 2; }
+      .grid-row .col-sig, .history-row .col-sig { grid-column: 2 / 3; text-align: right; }
       .grid-row .col-prob { grid-column: 1 / 3; }
-      .grid-row .col-time { grid-column: 1 / 2; color: #5f7d9a; font-size: 11px; }
+      .grid-row .col-time { grid-column: 1 / 2; color: #5f7d9a; font-size: 12px; }
       .grid-row .col-res { grid-column: 2 / 3; display: flex; justify-content: flex-end;}
+      
+      .history-row .col-price { grid-column: 1 / 2; color: #7a94af; font-size: 12px; }
+      .history-row .col-time { grid-column: 2 / 3; text-align: right; color: #5f7d9a; font-size: 12px; }
+      .history-row .col-res { grid-column: 1 / 3; display: flex; justify-content: flex-start; margin-top: 4px;}
     }
   </style>
 </head>
@@ -78,11 +97,14 @@
 <div class="app">
   <div class="header">
     <h1>📡 ScalpScanner <span>Binary</span></h1>
+    <div class="connection-status">
+      <span class="dot"></span> Live Connection
+    </div>
   </div>
 
   <!-- Master Clock -->
   <div class="timer-container">
-    <div class="timer-text">Time until next 5m candle:</div>
+    <div class="timer-text">Time until next 5m candle</div>
     <div class="clock" id="masterClock">00:00</div>
   </div>
 
@@ -90,7 +112,7 @@
   <div class="intelligence-hub">
     
     <!-- Analysis Card -->
-    <div class="info-card" style="grid-column: 1 / -1;">
+    <div class="info-card" style="grid-column: 1 / -1; background: linear-gradient(145deg, #111a24, #0a111a);">
       <h4>🤖 Binary Market Analysis</h4>
       <div class="info-text" id="marketAnalysis">Analyzing crypto volatility for binary options...</div>
     </div>
@@ -99,7 +121,7 @@
     <div class="info-card">
       <h4>📍 BD Trading Zones (BST)</h4>
       <div class="info-text">
-        <div id="currentSession" style="margin-bottom: 6px;">Session: Calculating...</div>
+        <div id="currentSession" style="margin-bottom: 8px;">Session: Calculating...</div>
         <strong>Best:</strong> 6:00 PM - 9:00 PM <span class="highlight-green">(London & NY)</span><br>
         <strong>Avoid:</strong> 3:00 AM - 6:00 AM <span class="highlight-red">(Dead Zone)</span>
       </div>
@@ -110,7 +132,7 @@
       <h4>⚠️ Market Status</h4>
       <div class="info-text" id="otcText">
         Standard Markets Open.<br>
-        <span style="font-size: 11px; color: #9ab0c9;">Crypto OTC begins Friday night. Avoid broker OTC assets entirely.</span>
+        <span style="font-size: 12px; color: #7a94af; display: inline-block; margin-top: 4px;">Crypto OTC begins Friday night. Avoid broker OTC assets entirely.</span>
       </div>
     </div>
 
@@ -120,7 +142,7 @@
       <ul class="checklist">
         <li>Risk strictly 1% to 2% per trade.</li>
         <li>Do not use excessive Martingale.</li>
-        <li>Avoid trading exactly on the hour (high volatility).</li>
+        <li>Avoid trading exactly on the hour.</li>
         <li>Check ForexFactory for major news.</li>
       </ul>
     </div>
@@ -129,10 +151,16 @@
   <!-- Live Predictions -->
   <div class="section-box">
     <div class="section-header">
-      <h3>🎯 Live Predictions (Next Candle)</h3>
+      <h3>🎯 Live Predictions <span>(Next Candle)</span></h3>
+    </div>
+    <div class="grid-header">
+      <span>Asset</span> <span>Signal</span> <span>Confidence</span> <span>Target Time</span> <span>Status</span>
     </div>
     <div id="pendingList">
-      <div class="empty-state">Waiting for next candle setup...</div>
+      <div class="empty-state">
+        <span>⏳</span>
+        Waiting for next candle setup...
+      </div>
     </div>
   </div>
 
@@ -141,8 +169,14 @@
     <div class="section-header">
       <h3>📜 5-Minute Resolution History</h3>
     </div>
+    <div class="history-header-grid">
+      <span>Asset</span> <span>Signal</span> <span>Entry Price</span> <span>Time</span> <span>Result</span>
+    </div>
     <div id="historyList">
-      <div class="empty-state">No binary trades recorded today.</div>
+      <div class="empty-state">
+        <span>📊</span>
+        No completed trades yet.
+      </div>
     </div>
   </div>
 
@@ -178,7 +212,6 @@
     const clockEl = document.getElementById('masterClock');
     clockEl.innerText = `0${minutesToNext}:${secondsToNext < 10 ? '0' : ''}${secondsToNext}`;
 
-    // Pulse warning in the last 30 seconds
     if (minutesToNext === 0 && secondsToNext <= 30) {
       clockEl.classList.add('warning');
     } else {
@@ -190,22 +223,18 @@
 
   // --- INTELLIGENCE HUB LOGIC ---
   async function updateIntelligence() {
-    // 1. Timezone & OTC Checking (Bangladesh is UTC+6)
     const now = new Date();
-    // Convert to BD Time roughly for logic checking
     const utcHours = now.getUTCHours();
     const bdHours = (utcHours + 6) % 24;
-    const utcDay = now.getUTCDay(); // 0 is Sunday, 6 is Saturday
+    const utcDay = now.getUTCDay();
     
-    // OTC Warning (Crypto markets are 24/7, but binary brokers push OTC on weekends)
     const otcCard = document.getElementById('otcCard');
     const otcText = document.getElementById('otcText');
     if (utcDay === 6 || utcDay === 0 || (utcDay === 5 && bdHours >= 22)) {
       otcCard.classList.add('otc-warning');
-      otcText.innerHTML = `<span class="highlight-red">WEEKEND OTC ACTIVE</span><br><span style="font-size: 11px;">Brokers are using algorithmic charts. Standard Technical Analysis is highly inaccurate. Trade at your own risk.</span>`;
+      otcText.innerHTML = `<span class="highlight-red">WEEKEND OTC ACTIVE</span><br><span style="font-size: 12px; color: #f25b6a; display: inline-block; margin-top: 4px; opacity: 0.8;">Brokers are using algorithmic charts. Standard Technical Analysis is highly inaccurate.</span>`;
     }
 
-    // Session Checking
     const sessionEl = document.getElementById('currentSession');
     if (bdHours >= 18 && bdHours <= 21) {
       sessionEl.innerHTML = `Session: <span class="highlight-green">London & NY Overlap 🔥</span>`;
@@ -217,7 +246,6 @@
       sessionEl.innerHTML = `Session: <span class="highlight-red">Low Volume / Dead Zone</span>`;
     }
 
-    // 2. Fetch Basic Crypto Sentiment for Binary Context
     try {
       const btcRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
       const btcData = await btcRes.json();
@@ -227,12 +255,11 @@
       if (Math.abs(btcChange) > 4) {
         analysis = `BTC volatility is extremely high (<span class="highlight-yellow">${btcChange.toFixed(2)}%</span>). 5-minute charts will have massive wicks. Beware of last-second price spikes ruining trades.`;
       } else if (Math.abs(btcChange) < 1) {
-        analysis = `Market is very flat (<span style="color:#9ab0c9;">${btcChange.toFixed(2)}%</span>). Candlestick formations may lack the momentum needed for clear Call/Put continuations.`;
+        analysis = `Market is very flat (<span style="color:#7a94af;">${btcChange.toFixed(2)}%</span>). Candlestick formations may lack the momentum needed for clear Call/Put continuations.`;
       } else {
         analysis = `Market volatility is moderate (<span class="highlight-green">${btcChange.toFixed(2)}%</span>). Candlestick patterns should respect Support/Resistance levels reliably today.`;
       }
       document.getElementById('marketAnalysis').innerHTML = analysis;
-
     } catch (e) {
       console.log("Market fetch failed", e);
     }
@@ -261,7 +288,7 @@
 
   function renderPending(trades) {
     if (trades.length === 0) {
-      pendingList.innerHTML = `<div class="empty-state">Analyzing market for next candle setups...</div>`;
+      pendingList.innerHTML = `<div class="empty-state"><span>⏳</span> Waiting for next candle setup...</div>`;
       return;
     }
     
@@ -280,8 +307,8 @@
               <div class="prob-bar" style="width: ${t.probability}%; background: ${color};"></div>
             </div>
           </div>
-          <span class="col-time" style="color:#5f7d9a; font-size:12px;">Predicting candle opening at ${new Date(t.targetCandleTime).toLocaleTimeString()}</span>
-          <span class="col-res"><span class="badge-result" style="background:#1e2c3b; color:#9ab0c9; border:none;">WAITING</span></span>
+          <span class="col-time" style="color:#7a94af; font-size:12px;">${new Date(t.targetCandleTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+          <span class="col-res"><span class="badge-result badge-tie">WAITING</span></span>
         </div>
       `;
     });
@@ -290,7 +317,7 @@
 
   function renderHistory(trades) {
     if (trades.length === 0) {
-      historyList.innerHTML = `<div class="empty-state">No binary trades recorded yet.</div>`;
+      historyList.innerHTML = `<div class="empty-state"><span>📊</span> No completed trades yet.</div>`;
       return;
     }
 
@@ -302,14 +329,14 @@
       
       if (res === 'WIN') resBadge = `<span class="badge-result badge-win">✅ WIN</span>`;
       else if (res === 'LOSS') resBadge = `<span class="badge-result badge-loss">❌ LOSS</span>`;
-      else resBadge = `<span class="badge-result" style="background:#1e2c3b; color:#9ab0c9;">➖ TIE</span>`;
+      else resBadge = `<span class="badge-result badge-tie">➖ TIE</span>`;
 
       html += `
-        <div class="grid-row">
+        <div class="history-row">
           <span class="col-sym">${t.symbol.replace('USDT', '')}</span>
           <span class="col-sig ${sig.toLowerCase()}">${sig === 'CALL' ? 'CALL' : 'PUT'}</span>
-          <span class="col-prob" style="color:#5f7d9a; font-size:12px;">Entry: $${parseFloat(t.entryPrice).toFixed(2)}</span>
-          <span class="col-time" style="color:#5f7d9a; font-size:12px;">${new Date(t.timestamp).toLocaleTimeString()}</span>
+          <span class="col-price" style="font-family: monospace; color:#9ab0c9;">$${parseFloat(t.entryPrice).toFixed(4)}</span>
+          <span class="col-time" style="color:#7a94af; font-size:12px;">${new Date(t.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
           <span class="col-res">${resBadge}</span>
         </div>
       `;
