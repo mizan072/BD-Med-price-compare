@@ -1,0 +1,26 @@
+name: Binary Options Engine
+
+on:
+schedule:
+- cron: '*/5 * * * *'
+workflow_dispatch:
+
+jobs:
+run-binary-bot:
+runs-on: ubuntu-latest
+steps:
+- name: Checkout Repository
+uses: actions/checkout@v4
+
+  - name: Setup Node.js
+    uses: actions/setup-node@v4
+    with:
+      node-version: '24'
+      
+  - name: Install Dependencies
+    run: npm install
+    
+  - name: Run Binary Engine
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+    run: node binary_bot.js
