@@ -1,404 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-  <title>ScalpScanner - Binary Options</title>
-  
-  <!-- TRADINGVIEW LIGHTWEIGHT CHARTS (PINNED TO STABLE VERSION) -->
-  <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScalpScanner | USD/JPY Binary</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <!-- TradingView Lightweight Charts -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+    
+    <style>
+        :root {
+            --bg-dark: #0b0e14;
+            --panel-bg: #151a23;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --accent-blue: #3b82f6;
+            --border-color: #1e293b;
+        }
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
-    body { background: #090d14; min-height: 100vh; padding: 12px; display: flex; justify-content: center; color: #d6e4f0; }
-    .app { max-width: 950px; width: 100%; }
-    
-    /* Header */
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
-    .header h1 { color: #f0f4fa; font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-    .header h1 span { background: linear-gradient(135deg, #f4c95d, #e3a92b); font-size: 12px; font-weight: 700; padding: 3px 12px; border-radius: 30px; color: #090d14; text-transform: uppercase; letter-spacing: 0.5px;}
-    
-    /* Master Countdown Timer */
-    .timer-container { background: #111a24; border: 1px solid #1e2c3b; padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 12px;}
-    .timer-text { font-size: 14px; color: #9ab0c9; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
-    .clock { font-family: monospace; font-size: 28px; font-weight: 700; color: #f0f4fa; background: #0a111a; padding: 8px 16px; border-radius: 8px; border: 1px solid #2d3f52; letter-spacing: 2px;}
-    .clock.warning { color: #f4c95d; border-color: #f4c95d; animation: pulse-border 1s infinite; }
-    @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(244, 201, 93, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(244, 201, 93, 0); } 100% { box-shadow: 0 0 0 0 rgba(244, 201, 93, 0); } }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
 
-    /* CHART CONTAINER */
-    .chart-section { background: #111a24; border: 1px solid #1e2c3b; border-radius: 12px; padding: 16px; margin-bottom: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .chart-header h3 { color: #9ab0c9; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    
-    .pair-selector { background: #0a111a; color: #f0f4fa; border: 1px solid #2d3f52; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; }
-    .pair-selector:focus { border-color: #f4c95d; }
-    
-    #tvchart { width: 100%; height: 350px; background: #0a111a; border-radius: 8px; overflow: hidden; border: 1px solid #1e2c3b; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    /* Intelligence Hub */
-    .intelligence-hub { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 24px; }
-    .info-card { background: #111a24; border: 1px solid #1e2c3b; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
-    .info-card h4 { font-size: 11px; color: #5f7d9a; text-transform: uppercase; letter-spacing: 0.5px; }
-    .info-text { font-size: 13px; font-weight: 500; color: #d6e4f0; line-height: 1.5;}
-    .info-text strong { color: #f0f4fa; }
-    .highlight-green { color: #33d9a8; font-weight: 600;}
-    .highlight-red { color: #f25b6a; font-weight: 600;}
-    .highlight-yellow { color: #f4c95d; font-weight: 600;}
-    
-    .otc-warning { border-color: #f25b6a; background: rgba(242, 91, 106, 0.05); }
-    .otc-warning h4 { color: #f25b6a; }
-    
-    /* Lists */
-    ul.checklist { list-style-type: none; padding-left: 0; }
-    ul.checklist li { font-size: 12px; color: #9ab0c9; margin-bottom: 4px; padding-left: 14px; position: relative; }
-    ul.checklist li::before { content: "•"; position: absolute; left: 0; color: #f4c95d; }
+        /* HEADER & CLOCK */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .title-group h1 { margin: 0; font-size: 24px; display: flex; align-items: center; gap: 10px; }
+        .tag { background: var(--accent-yellow); color: #000; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .status-badge { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;}
 
-    /* Grids */
-    .section-box { background: #111a24; border-radius: 12px; border: 1px solid #1e2c3b; overflow: hidden; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-    .section-header { padding: 12px 18px; background: #0c141d; border-bottom: 1px solid #1e2c3b; display: flex; justify-content: space-between; align-items: center;}
-    .section-header h3 { color: #9ab0c9; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    
-    .grid-row { display: grid; grid-template-columns: 80px 80px 120px 1fr 100px; gap: 10px; padding: 14px 18px; align-items: center; border-bottom: 1px solid #1a2533; font-size: 13px; }
-    .grid-row:hover { background: #15202b; }
-    .grid-row:last-child { border-bottom: none; }
-    
-    .col-sym { font-weight: 700; color: #ffffff; font-size: 15px; }
-    .col-sig { font-weight: 700; font-size: 14px; }
-    .col-sig.call { color: #33d9a8; }
-    .col-sig.put { color: #f25b6a; }
-    
-    /* NEW CONFIDENCE BAR STYLING */
-    .col-prob { display: flex; flex-direction: column; gap: 4px; justify-content: center; }
-    .prob-bar-container { background: #1e2c3b; height: 8px; border-radius: 4px; width: 100%; overflow: hidden;}
-    .prob-bar { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-    .prob-text { font-size: 12px; color: #d6e4f0; font-weight: 600; }
-    .prob-text span { color: #f4c95d; font-size: 14px; font-weight: 700; } /* Accent % */
-    
-    .badge-result { padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; justify-content: center; width: 80px;}
-    .badge-win { background: rgba(51, 217, 168, 0.1); color: #33d9a8; border: 1px solid rgba(51, 217, 168, 0.2); }
-    .badge-loss { background: rgba(242, 91, 106, 0.1); color: #f25b6a; border: 1px solid rgba(242, 91, 106, 0.2); }
-    
-    .empty-state { color: #5f7d9a; text-align: center; padding: 32px 10px; font-size: 14px; font-style: italic;}
+        .clock-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .clock-panel h2 { margin: 0 0 10px 0; color: var(--text-muted); font-size: 14px; letter-spacing: 1px; }
+        .timer-display { font-size: 64px; font-weight: bold; font-family: 'Courier New', Courier, monospace; letter-spacing: 4px; margin: 0; }
+        .pulse-yellow { color: var(--accent-yellow); text-shadow: 0 0 20px rgba(245, 158, 11, 0.4); animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-    /* Mobile */
-    @media (max-width: 600px) {
-      .grid-row { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 8px; }
-      .grid-row .col-sym { grid-column: 1 / 2; }
-      .grid-row .col-sig { grid-column: 2 / 3; text-align: right; }
-      .grid-row .col-prob { grid-column: 1 / 3; margin: 6px 0; }
-      .grid-row .col-time { grid-column: 1 / 2; color: #5f7d9a; font-size: 11px; }
-      .grid-row .col-res { grid-column: 2 / 3; display: flex; justify-content: flex-end;}
-    }
-  </style>
+        /* CHART CONTAINER */
+        .chart-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .chart-header h3 { margin: 0; font-size: 16px; color: var(--text-muted); }
+        #tv_chart { width: 100%; height: 400px; }
+
+        /* HISTORY GRID */
+        .grid-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .grid-panel h3 { margin: 0 0 15px 0; font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;}
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; color: var(--text-muted); font-weight: normal; font-size: 12px; border-bottom: 1px solid var(--border-color); }
+        td { padding: 15px 12px; border-bottom: 1px solid rgba(30, 41, 59, 0.5); font-size: 14px; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .signal-call { color: var(--accent-green); font-weight: bold; }
+        .signal-put { color: var(--accent-red); font-weight: bold; }
+        .signal-none { color: var(--text-muted); font-style: italic; }
+
+        .result-win { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;}
+        .result-loss { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;}
+        .result-pending { background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; animation: pulse 2s infinite;}
+        .result-none { background: rgba(100, 116, 139, 0.1); color: var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;}
+        
+        .conf-bar { height: 4px; background: var(--border-color); border-radius: 2px; margin-top: 4px; width: 60px; overflow: hidden; }
+        .conf-fill { height: 100%; }
+
+    </style>
 </head>
 <body>
-<div class="app">
-  <div class="header">
-    <h1>📡 ScalpScanner <span>Binary</span></h1>
-  </div>
 
-  <!-- Master Clock -->
-  <div class="timer-container">
-    <div class="timer-text">Time until next 5m candle:</div>
-    <div class="clock" id="masterClock">00:00</div>
-  </div>
-
-  <!-- TradingView Chart Section -->
-  <div class="chart-section">
-    <div class="chart-header">
-      <h3>📈 Live 5M Chart</h3>
-      <select id="pairSelector" class="pair-selector">
-        <option value="EURUSD">EUR/USD</option>
-        <option value="GBPUSD">GBP/USD</option>
-        <option value="USDJPY">USD/JPY</option>
-      </select>
-    </div>
-    <div id="tvchart"></div>
-  </div>
-
-  <!-- Trader Intelligence Hub -->
-  <div class="intelligence-hub">
-    <!-- Analysis Card -->
-    <div class="info-card" style="grid-column: 1 / -1;">
-      <h4>🤖 Binary Market Analysis</h4>
-      <div class="info-text" id="marketAnalysis">Analyzing crypto volatility for binary options...</div>
+<div class="container">
+    <div class="header">
+        <div class="title-group">
+            <h1>📡 ScalpScanner <span class="tag">BINARY</span></h1>
+        </div>
+        <div class="status-badge">🟢 Live · Connected to TwelveData API</div>
     </div>
 
-    <!-- BD Time Zones -->
-    <div class="info-card">
-      <h4>📍 BD Trading Zones (BST)</h4>
-      <div class="info-text">
-        <div id="currentSession" style="margin-bottom: 6px;">Session: Calculating...</div>
-        <strong>Best:</strong> 6:00 PM - 9:00 PM <span class="highlight-green">(London & NY)</span><br>
-        <strong>Avoid:</strong> 3:00 AM - 6:00 AM <span class="highlight-red">(Dead Zone)</span>
-      </div>
+    <!-- 1. MASTER CLOCK -->
+    <div class="clock-panel">
+        <h2>TIME UNTIL NEXT 5M CANDLE EVALUATION</h2>
+        <div id="masterClock" class="timer-display">00:00</div>
     </div>
 
-    <!-- OTC/Weekend Notice -->
-    <div class="info-card" id="otcCard">
-      <h4>⚠️ Market Status</h4>
-      <div class="info-text" id="otcText">
-        Standard Markets Open.<br>
-        <span style="font-size: 11px; color: #9ab0c9;">Crypto OTC begins Friday night. Avoid broker OTC assets entirely.</span>
-      </div>
+    <!-- 2. LIVE CHART -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3>📈 LIVE MARKET (BINANCE PROXY FOR USD/JPY)</h3>
+        </div>
+        <div id="tv_chart"></div>
     </div>
 
-    <!-- Binary Checklist -->
-    <div class="info-card">
-      <h4>📋 Pro Trader Checklist</h4>
-      <ul class="checklist">
-        <li>Risk strictly 1% to 2% per trade.</li>
-        <li>Do not use excessive Martingale.</li>
-        <li>Avoid trading exactly on the hour.</li>
-        <li>Check ForexFactory for major news.</li>
-      </ul>
+    <!-- 3. RESOLUTION HISTORY -->
+    <div class="grid-panel">
+        <h3>📜 USD/JPY Candle Analysis History</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Local Time (BST)</th>
+                    <th>Prediction</th>
+                    <th>Confidence</th>
+                    <th>Entry Price</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody">
+                <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Fetching analysis history...</td></tr>
+            </tbody>
+        </table>
     </div>
-  </div>
-
-  <!-- Live Predictions -->
-  <div class="section-box">
-    <div class="section-header">
-      <h3>🎯 Live Predictions (Next Candle)</h3>
-    </div>
-    <div id="pendingList">
-      <div class="empty-state">Waiting for next candle setup...</div>
-    </div>
-  </div>
-
-  <!-- History -->
-  <div class="section-box">
-    <div class="section-header">
-      <h3>📜 5-Minute Resolution History</h3>
-    </div>
-    <div id="historyList">
-      <div class="empty-state">No binary trades recorded today.</div>
-    </div>
-  </div>
-
 </div>
 
-<!-- FIREBASE SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-  // 🔴 TODO: PASTE YOUR REAL FIREBASE CONFIG HERE! 🔴
-  const firebaseConfig = {
-    apiKey: "AIzaSyC1zcOaqRf9_zHylKg_ERfAzl6rnYOKAi0",
-    authDomain: "scalpscanner-74a22.firebaseapp.com",
-    projectId: "scalpscanner-74a22",
-    storageBucket: "scalpscanner-74a22.firebasestorage.app",
-    messagingSenderId: "265105859600",
-    appId: "1:265105859600:web:3c00612e48453274c25695"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // --- TRADINGVIEW CHART LOGIC ---
-  const chartProperties = {
-    layout: {
-      background: { type: 'solid', color: '#0a111a' },
-      textColor: '#9ab0c9',
-    },
-    grid: { vertLines: { color: '#1e2c3b' }, horzLines: { color: '#1e2c3b' } },
-    timeScale: {
-      timeVisible: true,
-      secondsVisible: false,
-      shiftVisibleRangeOnNewBar: true,
-      rightOffset: 5,
-    },
-    kineticScroll: { touch: true, mouse: true },
-    crosshair: { mode: LightweightCharts.CrosshairMode.Normal }
-  };
-
-  const tvChart = LightweightCharts.createChart(document.getElementById('tvchart'), chartProperties);
-  let candleSeries = tvChart.addCandlestickSeries({
-    upColor: '#33d9a8', downColor: '#f25b6a', borderVisible: false, wickUpColor: '#33d9a8', wickDownColor: '#f25b6a',
-  });
-
-  let currentWs = null;
-
-  function loadChartData(symbol) {
-    if (currentWs) currentWs.close();
-    candleSeries.setData([]); 
-
-    let wsSymbol = 'eurusdt';
-    if(symbol === 'GBPUSD') wsSymbol = 'gbpusdt';
-    if(symbol === 'USDJPY') wsSymbol = 'btcusdt'; 
-
-    fetch(`https://api.binance.com/api/v3/klines?symbol=${wsSymbol.toUpperCase()}&interval=5m&limit=100`)
-      .then(res => res.json())
-      .then(data => {
-        const cdata = data.map(d => ({
-          time: d[0] / 1000,
-          open: parseFloat(d[1]), high: parseFloat(d[2]), low: parseFloat(d[3]), close: parseFloat(d[4])
-        }));
-        candleSeries.setData(cdata);
-      });
-
-    currentWs = new WebSocket(`wss://stream.binance.com:9443/ws/${wsSymbol}@kline_5m`);
-    currentWs.onmessage = function (event) {
-      const message = JSON.parse(event.data);
-      const kline = message.k;
-      candleSeries.update({
-        time: kline.t / 1000,
-        open: parseFloat(kline.o), high: parseFloat(kline.h), low: parseFloat(kline.l), close: parseFloat(kline.c)
-      });
+<script>
+    // --- FIREBASE SETUP ---
+    const firebaseConfig = {
+        // PASTE YOUR FIREBASE CONFIG OBJECT HERE
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
     };
-  }
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  loadChartData('EURUSD');
-  document.getElementById('pairSelector').addEventListener('change', (e) => loadChartData(e.target.value));
-  new ResizeObserver(entries => {
-    if (entries.length === 0 || entries[0].target !== document.getElementById('tvchart')) { return; }
-    const newRect = entries[0].contentRect;
-    tvChart.applyOptions({ height: newRect.height, width: newRect.width });
-  }).observe(document.getElementById('tvchart'));
+    // --- CLOCK LOGIC ---
+    function updateClock() {
+        const now = new Date();
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
+        const remainderMin = 4 - (minutes % 5);
+        const remainderSec = 59 - seconds;
 
-  // --- MASTER CLOCK LOGIC ---
-  function updateClock() {
-    const now = new Date();
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
-    
-    const minutesToNext = 4 - (minutes % 5);
-    const secondsToNext = 59 - seconds;
-    
-    const clockEl = document.getElementById('masterClock');
-    clockEl.innerText = `0${minutesToNext}:${secondsToNext < 10 ? '0' : ''}${secondsToNext}`;
-
-    if (minutesToNext === 0 && secondsToNext <= 30) {
-      clockEl.classList.add('warning');
-    } else {
-      clockEl.classList.remove('warning');
+        const clockEl = document.getElementById('masterClock');
+        clockEl.innerText = `0${remainderMin}:${remainderSec < 10 ? '0' : ''}${remainderSec}`;
+        
+        if (remainderMin === 0 && remainderSec <= 30) {
+            clockEl.className = 'timer-display pulse-yellow';
+        } else {
+            clockEl.className = 'timer-display';
+        }
     }
-  }
-  setInterval(updateClock, 1000);
-  updateClock();
+    setInterval(updateClock, 1000);
+    updateClock();
 
-  // --- INTELLIGENCE HUB LOGIC ---
-  async function updateIntelligence() {
-    const now = new Date();
-    const utcHours = now.getUTCHours();
-    const bdHours = (utcHours + 6) % 24;
-    const utcDay = now.getUTCDay(); 
-    
-    const otcCard = document.getElementById('otcCard');
-    const otcText = document.getElementById('otcText');
-    if (utcDay === 6 || utcDay === 0 || (utcDay === 5 && bdHours >= 22)) {
-      otcCard.classList.add('otc-warning');
-      otcText.innerHTML = `<span class="highlight-red">WEEKEND OTC ACTIVE</span><br><span style="font-size: 11px;">Brokers are using algorithmic charts. Standard Technical Analysis is highly inaccurate. Trade at your own risk.</span>`;
-    }
-
-    const sessionEl = document.getElementById('currentSession');
-    if (bdHours >= 18 && bdHours <= 21) {
-      sessionEl.innerHTML = `Session: <span class="highlight-green">London & NY Overlap 🔥</span>`;
-    } else if (bdHours >= 13 && bdHours < 18) {
-      sessionEl.innerHTML = `Session: <span class="highlight-yellow">London (Good Volatility)</span>`;
-    } else if (bdHours >= 6 && bdHours < 13) {
-      sessionEl.innerHTML = `Session: <span style="color:#9ab0c9;">Asian (Range Bound)</span>`;
-    } else {
-      sessionEl.innerHTML = `Session: <span class="highlight-red">Low Volume / Dead Zone</span>`;
-    }
-
-    try {
-      const btcRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
-      const btcData = await btcRes.json();
-      const btcChange = parseFloat(btcData.priceChangePercent);
-
-      let analysis = "";
-      if (Math.abs(btcChange) > 4) {
-        analysis = `BTC volatility is extremely high (<span class="highlight-yellow">${btcChange.toFixed(2)}%</span>). 5-minute charts will have massive wicks. Beware of last-second price spikes.`;
-      } else if (Math.abs(btcChange) < 1) {
-        analysis = `Market is very flat (<span style="color:#9ab0c9;">${btcChange.toFixed(2)}%</span>). Candlestick formations may lack the momentum needed for clear Call/Put continuations.`;
-      } else {
-        analysis = `Market volatility is moderate (<span class="highlight-green">${btcChange.toFixed(2)}%</span>). Candlestick patterns should respect Support/Resistance levels reliably today.`;
-      }
-      document.getElementById('marketAnalysis').innerHTML = analysis;
-    } catch (e) {}
-  }
-  updateIntelligence();
-
-  // --- FIREBASE DATA LOGIC ---
-  const pendingList = document.getElementById('pendingList');
-  const historyList = document.getElementById('historyList');
-
-  const q = query(collection(db, "binary_signals"), orderBy("timestamp", "desc"), limit(30));
-  
-  onSnapshot(q, (snapshot) => {
-    const pending = [];
-    const history = [];
-
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      if (data.status === 'PENDING') pending.push(data);
-      else history.push(data);
+    // --- TRADINGVIEW CHART ---
+    const chartProperties = {
+        layout: { background: { type: 'solid', color: '#151a23' }, textColor: '#64748b' },
+        grid: { vertLines: { color: '#1e293b' }, horzLines: { color: '#1e293b' } },
+        timeScale: { timeVisible: true, secondsVisible: false, borderColor: '#1e293b' }
+    };
+    const chart = LightweightCharts.createChart(document.getElementById('tv_chart'), chartProperties);
+    const candleSeries = chart.addCandlestickSeries({
+        upColor: '#10b981', downColor: '#ef4444', borderVisible: false, wickUpColor: '#10b981', wickDownColor: '#ef4444'
     });
 
-    renderPending(pending);
-    renderHistory(history);
-  });
+    const binanceSymbol = 'USDJPY'; 
+    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/usdtjpy@kline_5m`);
+    ws.onmessage = function(event) {
+        const message = JSON.parse(event.data);
+        const candle = message.k;
+        candleSeries.update({
+            time: candle.t / 1000, open: parseFloat(candle.o), high: parseFloat(candle.h), low: parseFloat(candle.l), close: parseFloat(candle.c)
+        });
+    };
 
-  function renderPending(trades) {
-    if (trades.length === 0) {
-      pendingList.innerHTML = `<div class="empty-state">Waiting for next candle setup...</div>`;
-      return;
-    }
-    
-    let html = '';
-    trades.forEach(t => {
-      const sig = t.signal.toUpperCase();
-      const color = sig === 'CALL' ? '#33d9a8' : '#f25b6a';
-      const prob = Math.round(t.probability); // Ensure clean whole number
-      
-      // UPDATED CONFIDENCE RENDER
-      html += `
-        <div class="grid-row">
-          <span class="col-sym">${t.symbol.replace('USDT', '')}</span>
-          <span class="col-sig ${sig.toLowerCase()}">${sig === 'CALL' ? '↗ CALL' : '↘ PUT'}</span>
-          <div class="col-prob">
-            <div class="prob-text">Confidence: <span>${prob}%</span></div>
-            <div class="prob-bar-container">
-              <div class="prob-bar" style="width: ${prob}%; background: ${color};"></div>
-            </div>
-          </div>
-          <span class="col-time" style="color:#5f7d9a; font-size:12px;">Predicting opening at ${new Date(t.targetCandleTime).toLocaleTimeString()}</span>
-          <span class="col-res"><span class="badge-result" style="background:#1e2c3b; color:#9ab0c9; border:none;">WAITING</span></span>
-        </div>
-      `;
+    // --- FIREBASE LISTENER FOR HISTORY ---
+    db.collection('binary_signals')
+      .where('symbol', '==', 'USD/JPY')
+      .orderBy('timestamp', 'desc')
+      .limit(15)
+      .onSnapshot(snapshot => {
+        const historyBody = document.getElementById('historyBody');
+        historyBody.innerHTML = '';
+
+        if (snapshot.empty) {
+            historyBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b;">No recent market analysis.</td></tr>`;
+            return;
+        }
+
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const date = new Date(data.timestamp);
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            // Format Signal Text
+            let sigHtml = `<span class="signal-none">NO TRADE</span>`;
+            if (data.signal === 'CALL') sigHtml = `<span class="signal-call">CALL ⬆</span>`;
+            if (data.signal === 'PUT') sigHtml = `<span class="signal-put">PUT ⬇</span>`;
+
+            // Format Confidence Bar
+            let confHtml = `<span style="color:#64748b; font-size: 12px;">--</span>`;
+            if (data.signal !== 'NO TRADE') {
+                const confColor = data.probability >= 80 ? 'var(--accent-green)' : 'var(--accent-yellow)';
+                confHtml = `
+                    <div style="font-weight:bold; font-size:14px;">${data.probability}%</div>
+                    <div class="conf-bar"><div class="conf-fill" style="width: ${data.probability}%; background: ${confColor};"></div></div>
+                `;
+            }
+
+            // Format Result Badge
+            let resHtml = `<span class="result-none">FLAT</span>`;
+            if (data.status === 'WIN') resHtml = `<span class="result-win">WIN</span>`;
+            else if (data.status === 'LOSS') resHtml = `<span class="result-loss">LOSS</span>`;
+            else if (data.status === 'PENDING') resHtml = `<span class="result-pending">LIVE NOW</span>`;
+
+            historyBody.innerHTML += `
+                <tr>
+                    <td><strong style="color:var(--text-main);">${timeStr}</strong></td>
+                    <td>${sigHtml}</td>
+                    <td>${confHtml}</td>
+                    <td style="color:#64748b;">${data.signal === 'NO TRADE' ? '--' : data.entryPrice.toFixed(4)}</td>
+                    <td>${resHtml}</td>
+                </tr>
+            `;
+        });
     });
-    pendingList.innerHTML = html;
-  }
-
-  function renderHistory(trades) {
-    if (trades.length === 0) {
-      historyList.innerHTML = `<div class="empty-state">No binary trades recorded yet.</div>`;
-      return;
-    }
-
-    let html = '';
-    trades.forEach(t => {
-      const sig = t.signal.toUpperCase();
-      const res = t.status.toUpperCase();
-      let resBadge = '';
-      
-      if (res === 'WIN') resBadge = `<span class="badge-result badge-win">✅ WIN</span>`;
-      else if (res === 'LOSS') resBadge = `<span class="badge-result badge-loss">❌ LOSS</span>`;
-      else resBadge = `<span class="badge-result" style="background:#1e2c3b; color:#9ab0c9;">➖ TIE</span>`;
-
-      html += `
-        <div class="grid-row">
-          <span class="col-sym">${t.symbol.replace('USDT', '')}</span>
-          <span class="col-sig ${sig.toLowerCase()}">${sig === 'CALL' ? 'CALL' : 'PUT'}</span>
-          <span class="col-prob" style="color:#5f7d9a; font-size:12px;">Entry: ${parseFloat(t.entryPrice).toFixed(5)}</span>
-          <span class="col-time" style="color:#5f7d9a; font-size:12px;">${new Date(t.timestamp).toLocaleTimeString()}</span>
-          <span class="col-res">${resBadge}</span>
-        </div>
-      `;
-    });
-    historyList.innerHTML = html;
-  }
 </script>
 </body>
 </html>
