@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-  <title>ScalpScanner - Forex Binary Options</title>
+  <title>ScalpScanner - Binary Options</title>
   
   <!-- TRADINGVIEW LIGHTWEIGHT CHARTS (PINNED TO STABLE VERSION) -->
   <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
@@ -25,7 +25,7 @@
     .clock.warning { color: #f4c95d; border-color: #f4c95d; animation: pulse-border 1s infinite; }
     @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(244, 201, 93, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(244, 201, 93, 0); } 100% { box-shadow: 0 0 0 0 rgba(244, 201, 93, 0); } }
 
-    /* --- NEW: CHART CONTAINER --- */
+    /* CHART CONTAINER */
     .chart-section { background: #111a24; border: 1px solid #1e2c3b; border-radius: 12px; padding: 16px; margin-bottom: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .chart-header h3 { color: #9ab0c9; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -58,18 +58,21 @@
     .section-header { padding: 12px 18px; background: #0c141d; border-bottom: 1px solid #1e2c3b; display: flex; justify-content: space-between; align-items: center;}
     .section-header h3 { color: #9ab0c9; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     
-    .grid-row { display: grid; grid-template-columns: 80px 80px 100px 1fr 100px; gap: 10px; padding: 14px 18px; align-items: center; border-bottom: 1px solid #1a2533; font-size: 13px; }
+    .grid-row { display: grid; grid-template-columns: 80px 80px 120px 1fr 100px; gap: 10px; padding: 14px 18px; align-items: center; border-bottom: 1px solid #1a2533; font-size: 13px; }
     .grid-row:hover { background: #15202b; }
     .grid-row:last-child { border-bottom: none; }
     
     .col-sym { font-weight: 700; color: #ffffff; font-size: 15px; }
-    .col-sig { font-weight: 700; font-size: 13px; }
+    .col-sig { font-weight: 700; font-size: 14px; }
     .col-sig.call { color: #33d9a8; }
     .col-sig.put { color: #f25b6a; }
     
-    .prob-bar-container { background: #1e2c3b; height: 6px; border-radius: 3px; width: 100%; overflow: hidden; margin-top: 4px;}
-    .prob-bar { height: 100%; border-radius: 3px; }
-    .prob-text { font-size: 11px; color: #9ab0c9; font-family: monospace; }
+    /* NEW CONFIDENCE BAR STYLING */
+    .col-prob { display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+    .prob-bar-container { background: #1e2c3b; height: 8px; border-radius: 4px; width: 100%; overflow: hidden;}
+    .prob-bar { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+    .prob-text { font-size: 12px; color: #d6e4f0; font-weight: 600; }
+    .prob-text span { color: #f4c95d; font-size: 14px; font-weight: 700; } /* Accent % */
     
     .badge-result { padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; justify-content: center; width: 80px;}
     .badge-win { background: rgba(51, 217, 168, 0.1); color: #33d9a8; border: 1px solid rgba(51, 217, 168, 0.2); }
@@ -82,7 +85,7 @@
       .grid-row { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 8px; }
       .grid-row .col-sym { grid-column: 1 / 2; }
       .grid-row .col-sig { grid-column: 2 / 3; text-align: right; }
-      .grid-row .col-prob { grid-column: 1 / 3; }
+      .grid-row .col-prob { grid-column: 1 / 3; margin: 6px 0; }
       .grid-row .col-time { grid-column: 1 / 2; color: #5f7d9a; font-size: 11px; }
       .grid-row .col-res { grid-column: 2 / 3; display: flex; justify-content: flex-end;}
     }
@@ -91,7 +94,7 @@
 <body>
 <div class="app">
   <div class="header">
-    <h1>📡 ScalpScanner <span>Forex Binary</span></h1>
+    <h1>📡 ScalpScanner <span>Binary</span></h1>
   </div>
 
   <!-- Master Clock -->
@@ -100,7 +103,7 @@
     <div class="clock" id="masterClock">00:00</div>
   </div>
 
-  <!-- NEW: TradingView Chart Section -->
+  <!-- TradingView Chart Section -->
   <div class="chart-section">
     <div class="chart-header">
       <h3>📈 Live 5M Chart</h3>
@@ -115,11 +118,10 @@
 
   <!-- Trader Intelligence Hub -->
   <div class="intelligence-hub">
-    
     <!-- Analysis Card -->
     <div class="info-card" style="grid-column: 1 / -1;">
-      <h4>🤖 Forex Market Analysis</h4>
-      <div class="info-text" id="marketAnalysis">Analyzing EUR/USD volatility for binary options...</div>
+      <h4>🤖 Binary Market Analysis</h4>
+      <div class="info-text" id="marketAnalysis">Analyzing crypto volatility for binary options...</div>
     </div>
 
     <!-- BD Time Zones -->
@@ -136,8 +138,8 @@
     <div class="info-card" id="otcCard">
       <h4>⚠️ Market Status</h4>
       <div class="info-text" id="otcText">
-        Forex Markets Open.<br>
-        <span style="font-size: 11px; color: #9ab0c9;">Always verify trading pairs do not end with "(OTC)" before placing entries.</span>
+        Standard Markets Open.<br>
+        <span style="font-size: 11px; color: #9ab0c9;">Crypto OTC begins Friday night. Avoid broker OTC assets entirely.</span>
       </div>
     </div>
 
@@ -147,7 +149,7 @@
       <ul class="checklist">
         <li>Risk strictly 1% to 2% per trade.</li>
         <li>Do not use excessive Martingale.</li>
-        <li>Avoid trading exactly on the hour (high volatility).</li>
+        <li>Avoid trading exactly on the hour.</li>
         <li>Check ForexFactory for major news.</li>
       </ul>
     </div>
@@ -199,95 +201,60 @@
       background: { type: 'solid', color: '#0a111a' },
       textColor: '#9ab0c9',
     },
-    grid: {
-      vertLines: { color: '#1e2c3b' },
-      horzLines: { color: '#1e2c3b' },
-    },
+    grid: { vertLines: { color: '#1e2c3b' }, horzLines: { color: '#1e2c3b' } },
     timeScale: {
       timeVisible: true,
       secondsVisible: false,
+      shiftVisibleRangeOnNewBar: true,
+      rightOffset: 5,
     },
-    crosshair: {
-      mode: LightweightCharts.CrosshairMode.Normal,
-    }
+    kineticScroll: { touch: true, mouse: true },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Normal }
   };
 
   const tvChart = LightweightCharts.createChart(document.getElementById('tvchart'), chartProperties);
   let candleSeries = tvChart.addCandlestickSeries({
-    upColor: '#33d9a8',
-    downColor: '#f25b6a',
-    borderVisible: false,
-    wickUpColor: '#33d9a8',
-    wickDownColor: '#f25b6a',
+    upColor: '#33d9a8', downColor: '#f25b6a', borderVisible: false, wickUpColor: '#33d9a8', wickDownColor: '#f25b6a',
   });
 
-  // Since getting free live WebSocket data for true Forex is difficult in the browser without an API key leaking,
-  // we will use a clever workaround: Polygon.io's free delayed crypto feed, but we'll use stablecoins pegged to fiat
-  // as a proxy, OR we just use Binance's free websocket for crypto if we want a flawless live feed.
-  // For this demonstration, I'm using Binance WebSocket for instant, fluid movement, but mapping the selector.
-  // Note: To get REAL Forex data here, you would need a frontend-friendly WebSocket provider like TwelveData's premium tier.
-  
   let currentWs = null;
 
   function loadChartData(symbol) {
-    if (currentWs) {
-      currentWs.close();
-    }
-    candleSeries.setData([]); // Clear old data
+    if (currentWs) currentWs.close();
+    candleSeries.setData([]); 
 
-    // Proxy mapping for free live data demonstration
-    // Since Binance doesn't have true EUR/USD, we use EUR/USDT as a very close proxy for chart movement
     let wsSymbol = 'eurusdt';
     if(symbol === 'GBPUSD') wsSymbol = 'gbpusdt';
-    if(symbol === 'USDJPY') {
-        // Binance doesn't have USDJPY directly in a clean way, we'll use a placeholder for the demo
-        wsSymbol = 'btcusdt'; 
-    }
+    if(symbol === 'USDJPY') wsSymbol = 'btcusdt'; 
 
-    // 1. Fetch historical data to populate the chart initially
     fetch(`https://api.binance.com/api/v3/klines?symbol=${wsSymbol.toUpperCase()}&interval=5m&limit=100`)
       .then(res => res.json())
       .then(data => {
         const cdata = data.map(d => ({
-          time: d[0] / 1000, // Unix timestamp in seconds
-          open: parseFloat(d[1]),
-          high: parseFloat(d[2]),
-          low: parseFloat(d[3]),
-          close: parseFloat(d[4])
+          time: d[0] / 1000,
+          open: parseFloat(d[1]), high: parseFloat(d[2]), low: parseFloat(d[3]), close: parseFloat(d[4])
         }));
         candleSeries.setData(cdata);
       });
 
-    // 2. Connect WebSocket for live ticking
     currentWs = new WebSocket(`wss://stream.binance.com:9443/ws/${wsSymbol}@kline_5m`);
     currentWs.onmessage = function (event) {
       const message = JSON.parse(event.data);
       const kline = message.k;
       candleSeries.update({
         time: kline.t / 1000,
-        open: parseFloat(kline.o),
-        high: parseFloat(kline.h),
-        low: parseFloat(kline.l),
-        close: parseFloat(kline.c)
+        open: parseFloat(kline.o), high: parseFloat(kline.h), low: parseFloat(kline.l), close: parseFloat(kline.c)
       });
     };
   }
 
-  // Initialize the chart
   loadChartData('EURUSD');
-
-  // Handle dropdown changes
-  document.getElementById('pairSelector').addEventListener('change', (e) => {
-    loadChartData(e.target.value);
-  });
-  
-  // Make chart responsive
+  document.getElementById('pairSelector').addEventListener('change', (e) => loadChartData(e.target.value));
   new ResizeObserver(entries => {
     if (entries.length === 0 || entries[0].target !== document.getElementById('tvchart')) { return; }
     const newRect = entries[0].contentRect;
     tvChart.applyOptions({ height: newRect.height, width: newRect.width });
   }).observe(document.getElementById('tvchart'));
-
 
   // --- MASTER CLOCK LOGIC ---
   function updateClock() {
@@ -301,7 +268,6 @@
     const clockEl = document.getElementById('masterClock');
     clockEl.innerText = `0${minutesToNext}:${secondsToNext < 10 ? '0' : ''}${secondsToNext}`;
 
-    // Pulse warning in the last 30 seconds
     if (minutesToNext === 0 && secondsToNext <= 30) {
       clockEl.classList.add('warning');
     } else {
@@ -322,7 +288,7 @@
     const otcText = document.getElementById('otcText');
     if (utcDay === 6 || utcDay === 0 || (utcDay === 5 && bdHours >= 22)) {
       otcCard.classList.add('otc-warning');
-      otcText.innerHTML = `<span class="highlight-red">WEEKEND OTC ACTIVE</span><br><span style="font-size: 11px;">Forex markets are closed. Brokers are using algorithmic OTC charts. Standard Technical Analysis is highly inaccurate. Trade at your own risk.</span>`;
+      otcText.innerHTML = `<span class="highlight-red">WEEKEND OTC ACTIVE</span><br><span style="font-size: 11px;">Brokers are using algorithmic charts. Standard Technical Analysis is highly inaccurate. Trade at your own risk.</span>`;
     }
 
     const sessionEl = document.getElementById('currentSession');
@@ -337,12 +303,20 @@
     }
 
     try {
-      const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=eur');
-      let analysis = "Forex volatility is currently moderate. Standard candlestick patterns should respect Support/Resistance levels reliably.";
+      const btcRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
+      const btcData = await btcRes.json();
+      const btcChange = parseFloat(btcData.priceChangePercent);
+
+      let analysis = "";
+      if (Math.abs(btcChange) > 4) {
+        analysis = `BTC volatility is extremely high (<span class="highlight-yellow">${btcChange.toFixed(2)}%</span>). 5-minute charts will have massive wicks. Beware of last-second price spikes.`;
+      } else if (Math.abs(btcChange) < 1) {
+        analysis = `Market is very flat (<span style="color:#9ab0c9;">${btcChange.toFixed(2)}%</span>). Candlestick formations may lack the momentum needed for clear Call/Put continuations.`;
+      } else {
+        analysis = `Market volatility is moderate (<span class="highlight-green">${btcChange.toFixed(2)}%</span>). Candlestick patterns should respect Support/Resistance levels reliably today.`;
+      }
       document.getElementById('marketAnalysis').innerHTML = analysis;
-    } catch (e) {
-      console.log("Market fetch failed", e);
-    }
+    } catch (e) {}
   }
   updateIntelligence();
 
@@ -368,7 +342,7 @@
 
   function renderPending(trades) {
     if (trades.length === 0) {
-      pendingList.innerHTML = `<div class="empty-state">Analyzing market for next candle setups...</div>`;
+      pendingList.innerHTML = `<div class="empty-state">Waiting for next candle setup...</div>`;
       return;
     }
     
@@ -376,18 +350,20 @@
     trades.forEach(t => {
       const sig = t.signal.toUpperCase();
       const color = sig === 'CALL' ? '#33d9a8' : '#f25b6a';
+      const prob = Math.round(t.probability); // Ensure clean whole number
       
+      // UPDATED CONFIDENCE RENDER
       html += `
         <div class="grid-row">
-          <span class="col-sym">${t.symbol}</span>
+          <span class="col-sym">${t.symbol.replace('USDT', '')}</span>
           <span class="col-sig ${sig.toLowerCase()}">${sig === 'CALL' ? '↗ CALL' : '↘ PUT'}</span>
           <div class="col-prob">
-            <div class="prob-text">Conf: ${t.probability}%</div>
+            <div class="prob-text">Confidence: <span>${prob}%</span></div>
             <div class="prob-bar-container">
-              <div class="prob-bar" style="width: ${t.probability}%; background: ${color};"></div>
+              <div class="prob-bar" style="width: ${prob}%; background: ${color};"></div>
             </div>
           </div>
-          <span class="col-time" style="color:#5f7d9a; font-size:12px;">Predicting candle opening at ${new Date(t.targetCandleTime).toLocaleTimeString()}</span>
+          <span class="col-time" style="color:#5f7d9a; font-size:12px;">Predicting opening at ${new Date(t.targetCandleTime).toLocaleTimeString()}</span>
           <span class="col-res"><span class="badge-result" style="background:#1e2c3b; color:#9ab0c9; border:none;">WAITING</span></span>
         </div>
       `;
@@ -413,7 +389,7 @@
 
       html += `
         <div class="grid-row">
-          <span class="col-sym">${t.symbol}</span>
+          <span class="col-sym">${t.symbol.replace('USDT', '')}</span>
           <span class="col-sig ${sig.toLowerCase()}">${sig === 'CALL' ? 'CALL' : 'PUT'}</span>
           <span class="col-prob" style="color:#5f7d9a; font-size:12px;">Entry: ${parseFloat(t.entryPrice).toFixed(5)}</span>
           <span class="col-time" style="color:#5f7d9a; font-size:12px;">${new Date(t.timestamp).toLocaleTimeString()}</span>
