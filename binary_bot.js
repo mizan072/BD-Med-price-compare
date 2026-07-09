@@ -1,14 +1,16 @@
 const admin = require('firebase-admin');
 
-// 1. Initialize Firebase Securely from GitHub Secrets
+// 1. Initialize Firebase Securely
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 const db = admin.firestore();
 
-// 2. Config
-const COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','LINKUSDT'];
+// 2. Config for Forex
+// We track the 3 most popular Quotex pairs to stay well under the 800/day free limit
+const PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY'];
+const API_KEY = process.env.TWELVE_DATA_API_KEY;
 
 // --- Indicator Math Functions ---
 function calcSMA(closes, period) {
@@ -68,6 +70,7 @@ function analyzeCandle(data, symbol) {
     const highs = data.map(c => c.high);
     const lows = data.map(c => c.low);
     
+    // Twelve Data only gives us CLOSED candles on this specific endpoint query
     const idx = closes.length - 1; // The candle that just perfectly closed
     const pIdx = idx - 1; // The candle before that
     
@@ -98,47 +101,60 @@ function analyzeCandle(data, symbol) {
 
     // ==========================================
     // ⚠️ TEST MODE OVERRIDE (UNCOMMENT TO TEST UI)
-    // Remove the two slashes '//' below to force the bot to spit out fake trades
     // ==========================================
     // return { signal: Math.random() > 0.5 ? 'CALL' : 'PUT', probability: Math.floor(Math.random() * (99 - 80 + 1) + 80) };
 
-    if (probability >= 85) return { signal, probability };
+    if (probability >= 80) return { signal, probability };
     return null;
 }
 
-// 4. MAIN BINARY ENGINE LOOP
+// 4. MAIN FOREX BINARY ENGINE LOOP
 async function runBinaryBot() {
-    console.log("🚀 Waking up Binary Engine...");
+    console.log("🚀 Waking up Forex Binary Engine...");
     const signalsRef = db.collection('binary_signals');
     
+    // Safety check for API Key
+    if (!API_KEY) {
+        console.error("❌ ERROR: TWELVE_DATA_API_KEY is missing from GitHub Secrets.");
+        return;
+    }
+
     // A. Read existing PENDING trades
     const pendingSnap = await signalsRef.where('status', '==', 'PENDING').get();
     const pendingTrades = [];
     pendingSnap.forEach(doc => pendingTrades.push({ id: doc.id, ...doc.data() }));
 
-    for (const symbol of COINS) {
+    // B. Fetch Data from Twelve Data API
+    for (const symbol of PAIRS) {
         try {
-            // Fetch Binance Data using their public data-api
-            const res = await fetch(`https://data-api.binance.vision/api/v3/klines?symbol=${symbol}&interval=5m&limit=40`);
-            if (!res.ok) throw new Error(`API HTTP Error: ${res.status}`);
-            
+            // Twelve Data API Endpoint for 5m Forex Data
+            const url = `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=5min&outputsize=40&apikey=${API_KEY}`;
+            const res = await fetch(url);
             const raw = await res.json();
-            if (!Array.isArray(raw)) throw new Error(`API Blocked/Invalid: ${JSON.stringify(raw)}`);
+            
+            if (raw.status === "error") throw new Error(`API Error: ${raw.message}`);
 
-            // Binance always returns the actively forming, incomplete candle as the last item in the array.
-            const data = raw.map(c => ({ 
-                time: c[0], open: parseFloat(c[1]), high: parseFloat(c[2]), low: parseFloat(c[3]), close: parseFloat(c[4])
+            // Twelve Data returns data from newest to oldest. We MUST reverse it for our TA functions.
+            const data = raw.values.reverse().map(c => ({ 
+                time: new Date(c.datetime).getTime(), 
+                open: parseFloat(c.open), 
+                high: parseFloat(c.high), 
+                low: parseFloat(c.low), 
+                close: parseFloat(c.close)
             }));
             
-            // Isolate the perfectly closed candles from the actively forming one
-            const closedCandles = data.slice(0, -1); 
+            // Twelve Data gives us only CLOSED candles in this specific format.
+            // The last item in the array is the candle that JUST closed.
+            const closedCandles = data; 
             const justClosedCandle = closedCandles[closedCandles.length - 1];
-            const activelyFormingCandle = data[data.length - 1];
+            
+            // We are predicting the NEXT candle, which will open at the current time + 5 minutes
+            const nextCandleTime = justClosedCandle.time + (5 * 60 * 1000);
 
             // --- RECONCILIATION LOOP (Check Wins/Losses) ---
             const activeCoinTrades = pendingTrades.filter(t => t.symbol === symbol);
             for (const trade of activeCoinTrades) {
-                // Check if the candle that just closed is the exact one we predicted
+                // If the candle that just closed is the one we were trying to predict
                 if (justClosedCandle.time >= trade.targetCandleTime) {
                     const isGreen = justClosedCandle.close > justClosedCandle.open;
                     const isRed = justClosedCandle.close < justClosedCandle.open;
@@ -155,41 +171,38 @@ async function runBinaryBot() {
                         closePrice: justClosedCandle.close,
                         resolvedAt: Date.now()
                     });
-                    console.log(`Resolved ${symbol} Binary Trade: ${result}`);
+                    console.log(`Resolved ${symbol} Forex Trade: ${result}`);
                 }
             }
 
             // --- PREDICT THE NEXT CANDLE ---
-            // Only search if there isn't already a pending trade for this coin
             if (activeCoinTrades.length === 0) {
                 const analysis = analyzeCandle(closedCandles, symbol);
                 
                 if (analysis) {
-                    // We are predicting the final closing color of the currently forming candle
                     const newSignal = {
                         symbol: symbol,
                         signal: analysis.signal,
                         probability: analysis.probability,
                         status: 'PENDING',
                         timestamp: Date.now(),
-                        targetCandleTime: activelyFormingCandle.time, // Identifies which exact 5m candle we are predicting
-                        entryPrice: activelyFormingCandle.open
+                        targetCandleTime: nextCandleTime,
+                        entryPrice: justClosedCandle.close // Approximate entry
                     };
                     await signalsRef.add(newSignal);
-                    console.log(`✅ Fired Binary Prediction: ${symbol} ${analysis.signal}`);
+                    console.log(`✅ Fired Forex Prediction: ${symbol} ${analysis.signal}`);
                 }
             }
             
-            // API rate limit respect
-            await new Promise(r => setTimeout(r, 200)); 
+            // Twelve Data allows 8 requests per minute on free tier. Be polite.
+            await new Promise(r => setTimeout(r, 8000)); 
             
         } catch (e) {
             console.error(`Error processing ${symbol}:`, e.message);
         }
     }
     
-    console.log("💤 Binary Engine finished.");
+    console.log("💤 Forex Binary Engine finished.");
 }
 
-// Ensure function is called correctly at the end
 runBinaryBot();
