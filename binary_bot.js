@@ -7,8 +7,8 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 
-// 2. Config for Forex
-const PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY'];
+// 2. Config - Top 3 Major Quotex Pairs
+const COINS = ['EUR/USD', 'GBP/USD', 'USD/JPY'];
 const API_KEY = process.env.TWELVE_DATA_API_KEY;
 
 // --- Indicator Math Functions ---
@@ -28,7 +28,7 @@ function calcBB(closes, period = 20, multiplier = 2) {
     let bb = [];
     const sma = calcSMA(closes, period);
     for (let i = 0; i < closes.length; i++) {
-        if (i < period - 1) {
+        if (i < period - 1 || !sma[i]) {
             bb.push({ upper: null, lower: null, mid: null });
             continue;
         }
@@ -62,147 +62,128 @@ function calcRSI(closes, period = 14) {
     return rsi;
 }
 
-// 3. Binary Options Signal Logic (Dynamic Confidence)
+// 3. High-Activity Binary Options Signal Logic
 function analyzeCandle(data, symbol) {
     const closes = data.map(c => c.close);
-    const opens = data.map(c => c.open);
     const highs = data.map(c => c.high);
     const lows = data.map(c => c.low);
     
-    // Twelve Data sends closed candles, so the last candle is our trigger candle
     const idx = closes.length - 1; 
-    const pIdx = idx - 1; 
+    const currentPrice = closes[idx];
     
-    // Baseline Confidence
-    let probability = 50; 
+    // Calculate indicators
+    const rsiArray = calcRSI(closes, 14);
+    const bbArray = calcBB(closes, 20, 2);
+    
+    const rsi = rsiArray[rsiArray.length - 1];
+    const bb = bbArray[bbArray.length - 1];
+
+    if (!rsi || !bb.upper || !bb.lower) return null;
+
+    let probability = 50;
     let signal = null;
 
-    const currClose = closes[idx], currOpen = opens[idx], currHigh = highs[idx], currLow = lows[idx];
-    const prevClose = closes[pIdx], prevOpen = opens[pIdx];
-    
-    // Direction Bias
-    const isBullish = currClose > currOpen;
-    const isBearish = currClose < currOpen;
+    // TRIGGER 1: Price pushing outside or touching the Bollinger Bands
+    const touchesLowerBB = lows[idx] <= bb.lower * 1.0002; // with a tiny entry buffer
+    const touchesUpperBB = highs[idx] >= bb.upper * 0.9998;
 
-    // Pattern Check
-    const bullishEngulfing = prevClose < prevOpen && currClose > currOpen && currClose > prevOpen && currOpen < prevClose;
-    const bearishEngulfing = prevClose > prevOpen && currClose < currOpen && currClose < prevOpen && currOpen > prevClose;
-
-    // Indicators
-    const rsi = calcRSI(closes)[idx];
-    const bb = calcBB(closes)[idx];
-    const sma = calcSMA(closes, 5)[idx]; 
-
-    // --- DYNAMIC CONFIDENCE SCORING ---
-    
-    if (isBullish) {
+    if (touchesLowerBB) {
         signal = 'CALL';
-        if (currClose > sma) probability += 8; // Trend confirmation
-        if (bullishEngulfing) probability += 15; // Strong pattern
+        probability += 20; // Base score for BB touch
         
-        // Dynamic RSI Score (Max +15%)
-        // The closer RSI gets to 30, the higher the score.
-        if (rsi < 45) {
-            const rsiBonus = Math.min(15, (45 - rsi) * 0.8);
+        // Dynamic RSI weight: more oversold = higher confidence
+        if (rsi < 40) {
+            const rsiBonus = Math.min(25, (40 - rsi) * 1.5);
             probability += rsiBonus;
         }
-        
-        // Dynamic Bollinger Bounce (Max +15%)
-        // Measures how close the wick got to piercing the bottom band
-        const distanceToLower = (currLow - bb.lower) / bb.lower;
-        if (distanceToLower <= 0) probability += 15; 
-        else if (distanceToLower <= 0.0005) probability += 10; 
-        else if (distanceToLower <= 0.001) probability += 5; 
-        
-    } else if (isBearish) {
+    } else if (touchesUpperBB) {
         signal = 'PUT';
-        if (currClose < sma) probability += 8; // Trend confirmation
-        if (bearishEngulfing) probability += 15; // Strong pattern
+        probability += 20;
         
-        // Dynamic RSI Score (Max +15%)
-        // The closer RSI gets to 70, the higher the score
-        if (rsi > 55) {
-            const rsiBonus = Math.min(15, (rsi - 55) * 0.8);
+        if (rsi > 60) {
+            const rsiBonus = Math.min(25, (rsi - 60) * 1.5);
             probability += rsiBonus;
         }
-        
-        // Dynamic Bollinger Rejection (Max +15%)
-        const distanceToUpper = (bb.upper - currHigh) / bb.upper;
-        if (distanceToUpper <= 0) probability += 15;
-        else if (distanceToUpper <= 0.0005) probability += 10;
-        else if (distanceToUpper <= 0.001) probability += 5;
     }
 
-    // Ensure probability doesn't exceed realistic numbers (Cap at 99%)
-    probability = Math.min(99, Math.round(probability));
-
-    // Threshold: Only fire if confidence is 75% or higher
-    if (probability >= 75) return { signal, probability };
+    // If a signal exists, send it out as long as it crosses our activity threshold
+    if (signal && probability >= 65) {
+        return { signal, probability: Math.min(98, Math.round(probability)) };
+    }
     
-    // Uncomment the line below if you want to FORCE fake test signals right now
-    // return { signal: Math.random() > 0.5 ? 'CALL' : 'PUT', probability: Math.floor(Math.random() * (99 - 75 + 1) + 75) };
-
     return null;
 }
 
-// 4. MAIN FOREX BINARY ENGINE LOOP
+// 4. MAIN BINARY ENGINE LOOP
 async function runBinaryBot() {
     console.log("🚀 Waking up Forex Binary Engine...");
-    const signalsRef = db.collection('binary_signals');
-    
     if (!API_KEY) {
-        console.error("❌ ERROR: TWELVE_DATA_API_KEY is missing from GitHub Secrets.");
+        console.error("❌ ERROR: TWELVE_DATA_API_KEY secret is missing inside GitHub!");
         return;
     }
+    
+    const signalsRef = db.collection('binary_signals');
+    
+    // A. Clean out older PENDING signals to prevent cluttering the interface
+    const oldPendingSnap = await signalsRef.where('status', '==', 'PENDING').get();
+    const nowTime = Date.now();
+    for (const doc of oldPendingSnap.docs) {
+        const d = doc.data();
+        if (nowTime - d.timestamp > 10 * 60 * 1000) { // older than 10 minutes
+            await signalsRef.doc(doc.id).update({ status: 'EXPIRED' });
+        }
+    }
 
+    // B. Fetch fresh pending entries for standard win/loss evaluation
     const pendingSnap = await signalsRef.where('status', '==', 'PENDING').get();
     const pendingTrades = [];
     pendingSnap.forEach(doc => pendingTrades.push({ id: doc.id, ...doc.data() }));
 
-    for (const symbol of PAIRS) {
+    for (const symbol of COINS) {
         try {
-            // Twelve Data API for Forex
-            const url = `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=5min&outputsize=40&apikey=${API_KEY}`;
-            const res = await fetch(url);
-            const raw = await res.json();
+            console.log(`Scanning historical bars for ${symbol}...`);
+            const res = await fetch(`https://api.twelvedata.com/api/v1/time_series?symbol=${symbol}&interval=5min&outputsize=40&apikey=${API_KEY}`);
             
-            if (raw.status === "error") throw new Error(`API Error: ${raw.message}`);
+            if (!res.ok) throw new Error(`HTTP Error Status: ${res.status}`);
+            const json = await res.json();
+            
+            if (json.status === 'error') throw new Error(`TwelveData API Error: ${json.message}`);
+            if (!json.values || json.values.length === 0) throw new Error("No data returned from provider.");
 
-            // Twelve Data returns newest candles first, so we MUST .reverse() them for math calculations
-            const data = raw.values.reverse().map(c => ({ 
-                time: new Date(c.datetime).getTime(), 
-                open: parseFloat(c.open), high: parseFloat(c.high), low: parseFloat(c.low), close: parseFloat(c.close)
-            }));
-            
-            const closedCandles = data; 
+            // Twelve Data provides data newest-to-oldest; reverse it to chronology order
+            const data = json.values.map(c => ({
+                time: new Date(c.datetime).getTime(),
+                open: parseFloat(c.open),
+                high: parseFloat(c.high),
+                low: parseFloat(c.low),
+                close: parseFloat(c.close)
+            })).reverse();
+
+            const closedCandles = data.slice(0, -1); 
             const justClosedCandle = closedCandles[closedCandles.length - 1];
-            
-            // Calculate when the NEXT candle (the one we are predicting) will close
-            const nextCandleTime = justClosedCandle.time + (5 * 60 * 1000);
+            const activelyFormingCandle = data[data.length - 1];
 
             // --- RECONCILIATION LOOP ---
             const activeCoinTrades = pendingTrades.filter(t => t.symbol === symbol);
             for (const trade of activeCoinTrades) {
-                // If the candle we predicted just finished closing
                 if (justClosedCandle.time >= trade.targetCandleTime) {
                     const isGreen = justClosedCandle.close > justClosedCandle.open;
                     const isRed = justClosedCandle.close < justClosedCandle.open;
                     
                     let result = 'LOSS';
-                    if ((trade.signal === 'CALL' && isGreen) || (trade.signal === 'PUT' && isRed)) {
-                        result = 'WIN';
-                    } else if (justClosedCandle.close === justClosedCandle.open) {
-                        result = 'TIE';
-                    }
+                    if ((trade.signal === 'CALL' && isGreen) || (trade.signal === 'PUT' && isRed)) result = 'WIN';
+                    else if (justClosedCandle.close === justClosedCandle.open) result = 'TIE';
 
                     await signalsRef.doc(trade.id).update({ 
-                        status: result, closePrice: justClosedCandle.close, resolvedAt: Date.now()
+                        status: result, 
+                        closePrice: justClosedCandle.close,
+                        resolvedAt: Date.now()
                     });
-                    console.log(`Resolved ${symbol} Forex Trade: ${result}`);
+                    console.log(`🏁 Resolved ${symbol}: ${result}`);
                 }
             }
 
-            // --- PREDICT THE NEXT CANDLE ---
+            // --- GENERATE ACTIVE SIGNALS ---
             if (activeCoinTrades.length === 0) {
                 const analysis = analyzeCandle(closedCandles, symbol);
                 
@@ -210,25 +191,25 @@ async function runBinaryBot() {
                     const newSignal = {
                         symbol: symbol,
                         signal: analysis.signal,
-                        probability: analysis.probability, // Dynamic precise percentage
+                        probability: analysis.probability,
                         status: 'PENDING',
                         timestamp: Date.now(),
-                        targetCandleTime: nextCandleTime,
-                        entryPrice: justClosedCandle.close
+                        targetCandleTime: activelyFormingCandle.time,
+                        entryPrice: activelyFormingCandle.open
                     };
                     await signalsRef.add(newSignal);
-                    console.log(`✅ Fired Forex Prediction: ${symbol} ${analysis.signal} at ${analysis.probability}%`);
+                    console.log(`🎯 Signal Sent: ${symbol} -> ${analysis.signal} (${analysis.probability}%)`);
                 }
             }
             
-            // Respect API limits (Twelve Data free tier is 8 requests/minute)
+            // Wait 8 seconds between requests to perfectly respect Twelve Data's free tier limits
             await new Promise(r => setTimeout(r, 8000)); 
             
         } catch (e) {
-            console.error(`Error processing ${symbol}:`, e.message);
+            console.error(`⚠️ Skipping ${symbol} iteration:`, e.message);
         }
     }
-    console.log("💤 Forex Binary Engine finished.");
+    console.log("💤 Scanning cycle finished.");
 }
 
 runBinaryBot();
