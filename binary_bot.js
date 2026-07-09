@@ -1,21 +1,51 @@
 const admin = require('firebase-admin');
 
-// Initialize Firebase Securely from GitHub Secrets
+// 1. Initialize Firebase Securely from GitHub Secrets
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 const db = admin.firestore();
 
-// Target high-liquidity assets for binary predictability
-const COINS = ['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT'];
+// 2. Config
+const COINS = ['BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','LINKUSDT'];
 
-// Probability Threshold: Only fire if we have >= 80% confluence
-const MIN_PROBABILITY = 80;
+// --- Indicator Math Functions ---
+function calcSMA(closes, period) {
+    let sma = [];
+    let sum = 0;
+    for (let i = 0; i < closes.length; i++) {
+        sum += closes[i];
+        if (i >= period) sum -= closes[i - period];
+        if (i >= period - 1) sma.push(sum / period);
+        else sma.push(null);
+    }
+    return sma;
+}
 
-// --- INDICATOR MATH FUNCTIONS ---
+function calcBB(closes, period = 20, multiplier = 2) {
+    let bb = [];
+    const sma = calcSMA(closes, period);
+    for (let i = 0; i < closes.length; i++) {
+        if (i < period - 1) {
+            bb.push({ upper: null, lower: null, mid: null });
+            continue;
+        }
+        let variance = 0;
+        for (let j = 0; j < period; j++) {
+            variance += Math.pow(closes[i - j] - sma[i], 2);
+        }
+        const stdDev = Math.sqrt(variance / period);
+        bb.push({
+            upper: sma[i] + (stdDev * multiplier),
+            lower: sma[i] - (stdDev * multiplier),
+            mid: sma[i]
+        });
+    }
+    return bb;
+}
 
-function calcRSI(closes, period=14) {
+function calcRSI(closes, period = 14) {
     let rsi = [], gain = 0, loss = 0;
     for(let i=1; i<closes.length; i++) {
         let diff = closes[i] - closes[i-1];
@@ -31,178 +61,126 @@ function calcRSI(closes, period=14) {
     return rsi;
 }
 
-function calcBollingerBands(closes, period=20, multiplier=2) {
-    let upper = [], lower = [], sma = [];
-    for(let i=0; i<closes.length; i++) {
-        if (i < period - 1) {
-            upper.push(null); lower.push(null); sma.push(null);
-            continue;
-        }
-        let slice = closes.slice(i - period + 1, i + 1);
-        let mean = slice.reduce((a, b) => a + b, 0) / period;
-        let variance = slice.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / period;
-        let stdDev = Math.sqrt(variance);
-        
-        sma.push(mean);
-        upper.push(mean + (multiplier * stdDev));
-        lower.push(mean - (multiplier * stdDev));
-    }
-    return { upper, lower, sma };
-}
-
-// --- BINARY OPTIONS SCORING ALGORITHM ---
-
-function analyzeNextCandle(data) {
-    // We analyze the last completely closed candle
-    // (If the bot runs at 12:05:15, data[data.length-2] is the 12:00 candle that just closed)
-    const closedIdx = data.length - 2; 
-    const prevIdx = closedIdx - 1;
-
-    const curr = data[closedIdx];
-    const prev = data[prevIdx];
+// 3. Binary Options Signal Logic
+function analyzeCandle(data, symbol) {
+    const closes = data.map(c => c.close);
+    const opens = data.map(c => c.open);
+    const highs = data.map(c => c.high);
+    const lows = data.map(c => c.low);
     
-    // Arrays for indicator math up to the closed candle
-    const closes = data.slice(0, closedIdx + 1).map(d => d.close);
+    const idx = closes.length - 1; // The candle that just perfectly closed
+    const pIdx = idx - 1; // The candle before that
     
-    const rsiArr = calcRSI(closes, 14);
-    const bb = calcBollingerBands(closes, 20, 2);
-    
-    const rsi = rsiArr[rsiArr.length - 1];
-    const upperBB = bb.upper[bb.upper.length - 1];
-    const lowerBB = bb.lower[bb.lower.length - 1];
+    let probability = 50;
+    let signal = null;
 
-    // Candlestick Anatomy
-    const body = Math.abs(curr.close - curr.open);
-    const isGreen = curr.close > curr.open;
-    const isRed = curr.close < curr.open;
-    const upperWick = curr.high - Math.max(curr.open, curr.close);
-    const lowerWick = Math.min(curr.open, curr.close) - curr.low;
+    const currClose = closes[idx], currOpen = opens[idx], currHigh = highs[idx], currLow = lows[idx];
+    const prevClose = closes[pIdx], prevOpen = opens[pIdx];
+    
+    // Engulfing Pattern Check
+    const bullishEngulfing = prevClose < prevOpen && currClose > currOpen && currClose > prevOpen && currOpen < prevClose;
+    const bearishEngulfing = prevClose > prevOpen && currClose < currOpen && currClose < prevOpen && currOpen > prevClose;
+
+    // Indicators
+    const rsi = calcRSI(closes)[idx];
+    const bb = calcBB(closes)[idx];
 
     // Confluence Scoring
-    let callScore = 50;
-    let putScore = 50;
+    if (bullishEngulfing && currLow <= bb.lower) {
+        signal = 'CALL';
+        probability += 30;
+        if (rsi < 40) probability += 10;
+    } else if (bearishEngulfing && currHigh >= bb.upper) {
+        signal = 'PUT';
+        probability += 30;
+        if (rsi > 60) probability += 10;
+    }
 
-    // 1. Engulfing Patterns (+20 points)
-    const prevBody = Math.abs(prev.close - prev.open);
-    const isBullishEngulfing = prev.close < prev.open && curr.close > curr.open && curr.close > prev.open && curr.open < prev.close;
-    const isBearishEngulfing = prev.close > prev.open && curr.close < curr.open && curr.close < prev.open && curr.open > prev.close;
-    
-    if (isBullishEngulfing && body > prevBody) callScore += 20;
-    if (isBearishEngulfing && body > prevBody) putScore += 20;
-
-    // 2. Rejection Wicks / Pin Bars (+15 points)
-    // Hammer: Long lower wick, small body
-    if (lowerWick > body * 2 && upperWick < body) callScore += 15;
-    // Shooting Star: Long upper wick, small body
-    if (upperWick > body * 2 && lowerWick < body) putScore += 15;
-
-    // 3. Bollinger Band Extremes (+15 points)
-    // Price pushed outside lower band, likely to snap back up
-    if (curr.low < lowerBB) callScore += 15;
-    // Price pushed outside upper band, likely to snap back down
-    if (curr.high > upperBB) putScore += 15;
-
-    // 4. RSI Momentum (+10 points)
-    if (rsi < 40) callScore += 10;
-    if (rsi > 60) putScore += 10;
-
-    // Evaluation
-    if (callScore >= MIN_PROBABILITY) return { signal: 'CALL', probability: callScore };
-    if (putScore >= MIN_PROBABILITY) return { signal: 'PUT', probability: putScore };
-    
-    // TEMPORARY TEST OVERRIDE: Uncomment the next line to force a random signal for testing
+    // ==========================================
+    // ⚠️ TEST MODE OVERRIDE (UNCOMMENT TO TEST UI)
+    // Remove the two slashes '//' below to force the bot to spit out fake trades
+    // ==========================================
     // return { signal: Math.random() > 0.5 ? 'CALL' : 'PUT', probability: Math.floor(Math.random() * (99 - 80 + 1) + 80) };
 
+    if (probability >= 85) return { signal, probability };
     return null;
 }
 
-// --- MAIN CLOUD ENGINE LOOP ---
-
+// 4. MAIN BINARY ENGINE LOOP
 async function runBinaryBot() {
-    console.log("⚡ Waking up Binary Options Engine...");
-    const now = Date.now();
+    console.log("🚀 Waking up Binary Engine...");
     const signalsRef = db.collection('binary_signals');
     
-    // A. Read existing PENDING binary trades from database
+    // A. Read existing PENDING trades
     const pendingSnap = await signalsRef.where('status', '==', 'PENDING').get();
     const pendingTrades = [];
     pendingSnap.forEach(doc => pendingTrades.push({ id: doc.id, ...doc.data() }));
-    console.log(`Tracking ${pendingTrades.length} unresolved predictions.`);
 
     for (const symbol of COINS) {
         try {
-            // Fetch live data from Binance Public API
-            const res = await fetch(`https://data-api.binance.vision/api/v3/klines?symbol=${symbol}&interval=5m&limit=50`);
+            // Fetch Binance Data using their public data-api
+            const res = await fetch(`https://data-api.binance.vision/api/v3/klines?symbol=${symbol}&interval=5m&limit=40`);
             if (!res.ok) throw new Error(`API HTTP Error: ${res.status}`);
             
             const raw = await res.json();
             if (!Array.isArray(raw)) throw new Error(`API Blocked/Invalid: ${JSON.stringify(raw)}`);
 
+            // Binance always returns the actively forming, incomplete candle as the last item in the array.
             const data = raw.map(c => ({ 
-                time: c[0], open: parseFloat(c[1]), high: parseFloat(c[2]), low: parseFloat(c[3]), close: parseFloat(c[4]), vol: parseFloat(c[5]) 
+                time: c[0], open: parseFloat(c[1]), high: parseFloat(c[2]), low: parseFloat(c[3]), close: parseFloat(c[4])
             }));
-
-            // --- RECONCILIATION LOOP: Determine Win/Loss for previous predictions ---
-            const symbolPending = pendingTrades.filter(t => t.symbol === symbol);
             
-            for (const trade of symbolPending) {
-                // Find the specific candle the bot predicted
-                // The target candle is the one that started at trade.targetCandleTime
-                const resolutionCandle = data.find(c => c.time === trade.targetCandleTime);
-                
-                if (resolutionCandle) {
-                    // Make sure this candle is completely closed
-                    // If the next candle exists in the array, the resolution candle is safely closed
-                    const isClosed = data[data.length - 1].time > resolutionCandle.time;
-                    
-                    if (isClosed) {
-                        const isGreen = resolutionCandle.close > resolutionCandle.open;
-                        const isRed = resolutionCandle.close < resolutionCandle.open;
-                        
-                        let result = 'DRAW';
-                        if (trade.signal === 'CALL' && isGreen) result = 'WIN';
-                        if (trade.signal === 'CALL' && isRed) result = 'LOSS';
-                        if (trade.signal === 'PUT' && isRed) result = 'WIN';
-                        if (trade.signal === 'PUT' && isGreen) result = 'LOSS';
+            // Isolate the perfectly closed candles from the actively forming one
+            const closedCandles = data.slice(0, -1); 
+            const justClosedCandle = closedCandles[closedCandles.length - 1];
+            const activelyFormingCandle = data[data.length - 1];
 
-                        await signalsRef.doc(trade.id).update({ 
-                            status: result, 
-                            closePrice: resolutionCandle.close,
-                            closeTime: now // Timestamp of resolution
-                        });
-                        console.log(`✅ Resolved ${symbol} ${trade.signal} as ${result}`);
+            // --- RECONCILIATION LOOP (Check Wins/Losses) ---
+            const activeCoinTrades = pendingTrades.filter(t => t.symbol === symbol);
+            for (const trade of activeCoinTrades) {
+                // Check if the candle that just closed is the exact one we predicted
+                if (justClosedCandle.time >= trade.targetCandleTime) {
+                    const isGreen = justClosedCandle.close > justClosedCandle.open;
+                    const isRed = justClosedCandle.close < justClosedCandle.open;
+                    
+                    let result = 'LOSS';
+                    if ((trade.signal === 'CALL' && isGreen) || (trade.signal === 'PUT' && isRed)) {
+                        result = 'WIN';
+                    } else if (justClosedCandle.close === justClosedCandle.open) {
+                        result = 'TIE';
                     }
-                } else if (now - trade.openTime > 15 * 60 * 1000) {
-                    // Fallback: If 15 mins passed and we can't find it, mark expired
-                    await signalsRef.doc(trade.id).update({ status: 'DRAW', closeTime: now });
+
+                    await signalsRef.doc(trade.id).update({ 
+                        status: result, 
+                        closePrice: justClosedCandle.close,
+                        resolvedAt: Date.now()
+                    });
+                    console.log(`Resolved ${symbol} Binary Trade: ${result}`);
                 }
             }
 
-            // --- SCAN FOR NEW NEXT-CANDLE SIGNALS ---
-            // Only search if there isn't already a pending prediction for this exact candle
-            const currentFormingCandleTime = data[data.length - 1].time;
-            const hasPendingForThisCandle = symbolPending.some(t => t.targetCandleTime === currentFormingCandleTime);
-
-            if (!hasPendingForThisCandle) {
-                const analysis = analyzeNextCandle(data);
+            // --- PREDICT THE NEXT CANDLE ---
+            // Only search if there isn't already a pending trade for this coin
+            if (activeCoinTrades.length === 0) {
+                const analysis = analyzeCandle(closedCandles, symbol);
                 
                 if (analysis) {
-                    const newPrediction = {
+                    // We are predicting the final closing color of the currently forming candle
+                    const newSignal = {
                         symbol: symbol,
                         signal: analysis.signal,
                         probability: analysis.probability,
                         status: 'PENDING',
-                        entryPrice: data[data.length - 1].open, // The price the predicted candle opened at
-                        targetCandleTime: currentFormingCandleTime, // The exact timestamp of the candle being predicted
-                        timestamp: new Date().toISOString(),
-                        openTime: now
+                        timestamp: Date.now(),
+                        targetCandleTime: activelyFormingCandle.time, // Identifies which exact 5m candle we are predicting
+                        entryPrice: activelyFormingCandle.open
                     };
-                    await signalsRef.add(newPrediction);
-                    console.log(`🎯 New Binary Signal: ${symbol} ${analysis.signal} (${analysis.probability}%)`);
+                    await signalsRef.add(newSignal);
+                    console.log(`✅ Fired Binary Prediction: ${symbol} ${analysis.signal}`);
                 }
             }
             
-            // Respect API limits
+            // API rate limit respect
             await new Promise(r => setTimeout(r, 200)); 
             
         } catch (e) {
@@ -210,7 +188,8 @@ async function runBinaryBot() {
         }
     }
     
-    console.log("💤 Binary Engine finished cycle.");
+    console.log("💤 Binary Engine finished.");
 }
 
-runBot();
+// Ensure function is called correctly at the end
+runBinaryBot();
