@@ -11,3 +11,4 @@ name: Binary Options Engineon:schedule:- cron: '*/5 * * * *'workflow_dispatch:jo
       FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
       TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
     run: node binary_bot.js
+
