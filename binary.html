@@ -34,7 +34,7 @@
             margin: 0 auto;
         }
 
-        /* HEADER & CLOCK */
+        /* HEADER & BADGES */
         .header {
             display: flex;
             justify-content: space-between;
@@ -47,18 +47,41 @@
         .tag { background: var(--accent-yellow); color: #000; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; }
         .status-badge { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;}
 
-        .clock-panel {
+        /* TOP DASHBOARD (TIMER & SIGNAL) */
+        .top-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .clock-panel, .signal-panel {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 30px;
             text-align: center;
-            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
-        .clock-panel h2 { margin: 0 0 10px 0; color: var(--text-muted); font-size: 14px; letter-spacing: 1px; }
+        
+        .clock-panel h2, .signal-panel h2 { margin: 0 0 15px 0; color: var(--text-muted); font-size: 14px; letter-spacing: 1px; }
+        
+        /* Timer Styles */
         .timer-display { font-size: 64px; font-weight: bold; font-family: 'Courier New', Courier, monospace; letter-spacing: 4px; margin: 0; }
         .pulse-yellow { color: var(--accent-yellow); text-shadow: 0 0 20px rgba(245, 158, 11, 0.4); animation: pulse 1s infinite; }
+        
+        /* Signal Styles */
+        .live-signal-box { font-size: 54px; font-weight: bold; margin-bottom: 10px; }
+        .live-signal-call { color: var(--accent-green); text-shadow: 0 0 25px rgba(16, 185, 129, 0.4); animation: pulse-green 1.5s infinite; }
+        .live-signal-put { color: var(--accent-red); text-shadow: 0 0 25px rgba(239, 68, 68, 0.4); animation: pulse-red 1.5s infinite; }
+        .live-signal-none { color: var(--text-muted); font-size: 36px; }
+        .live-conf { font-size: 16px; margin-top: 5px; }
+
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes pulse-green { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
         /* CHART CONTAINER */
         .chart-container {
@@ -92,12 +115,11 @@
 
         .result-win { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;}
         .result-loss { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;}
-        .result-pending { background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; animation: pulse 2s infinite;}
         .result-none { background: rgba(100, 116, 139, 0.1); color: var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;}
         
-        .conf-bar { height: 4px; background: var(--border-color); border-radius: 2px; margin-top: 4px; width: 60px; overflow: hidden; }
-        .conf-fill { height: 100%; }
-
+        @media (max-width: 768px) {
+            .top-dashboard { grid-template-columns: 1fr; gap: 15px; }
+        }
     </style>
 </head>
 <body>
@@ -110,13 +132,25 @@
         <div class="status-badge">🟢 Live · Connected to Database</div>
     </div>
 
-    <!-- 1. MASTER CLOCK -->
-    <div class="clock-panel">
-        <h2>TIME UNTIL NEXT 5M CANDLE EVALUATION</h2>
-        <div id="masterClock" class="timer-display">00:00</div>
+    <!-- NEW: TOP DASHBOARD (SPLIT TIMER & SIGNAL) -->
+    <div class="top-dashboard">
+        <!-- 1. MASTER CLOCK -->
+        <div class="clock-panel">
+            <h2>TIME UNTIL NEXT 5M CANDLE</h2>
+            <div id="masterClock" class="timer-display">00:00</div>
+        </div>
+        
+        <!-- 2. LIVE SIGNAL PANEL -->
+        <div class="signal-panel">
+            <h2>CURRENT CANDLE SIGNAL</h2>
+            <div id="liveSignalBox" class="live-signal-box">
+                <span style="color: var(--text-muted); font-size: 20px;">Fetching market data...</span>
+            </div>
+            <div id="liveSignalConf" class="live-conf"></div>
+        </div>
     </div>
 
-    <!-- 2. LIVE CHART (OFFICIAL TRADINGVIEW WIDGET) -->
+    <!-- 3. LIVE CHART -->
     <div class="chart-container">
         <div class="chart-header">
             <h3>📈 LIVE MARKET (USD/JPY)</h3>
@@ -147,21 +181,20 @@
         <!-- TradingView Widget END -->
     </div>
 
-    <!-- 3. RESOLUTION HISTORY -->
+    <!-- 4. RESOLUTION HISTORY (RESULTS ONLY) -->
     <div class="grid-panel">
-        <h3>📜 USD/JPY Candle Analysis History</h3>
+        <h3>📜 USD/JPY Candle Analysis History (Results Only)</h3>
         <table>
             <thead>
                 <tr>
                     <th>Local Time (BST)</th>
                     <th>Prediction</th>
-                    <th>Confidence</th>
                     <th>Entry Price</th>
                     <th>Result</th>
                 </tr>
             </thead>
             <tbody id="historyBody">
-                <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Fetching analysis history...</td></tr>
+                <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Fetching analysis history...</td></tr>
             </tbody>
         </table>
     </div>
@@ -201,26 +234,52 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // --- FIREBASE LISTENER FOR HISTORY ---
-    // FIX: Removed `.where('symbol', '==', 'USD/JPY')` to bypass the Firebase Index requirement.
+    // --- FIREBASE LISTENER FOR LIVE SIGNAL & HISTORY ---
     db.collection('binary_signals')
       .orderBy('timestamp', 'desc')
       .limit(20)
       .onSnapshot(snapshot => {
         const historyBody = document.getElementById('historyBody');
+        const liveBox = document.getElementById('liveSignalBox');
+        const liveConf = document.getElementById('liveSignalConf');
+        
         historyBody.innerHTML = '';
 
-        if (snapshot.empty) {
-            historyBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b;">No market analysis generated yet. Waiting for bot cycle...</td></tr>`;
+        const docs = [];
+        snapshot.forEach(doc => {
+            if(doc.data().symbol === 'USD/JPY') docs.push(doc.data());
+        });
+
+        if (docs.length === 0) {
+            liveBox.innerHTML = `<span style="color: var(--text-muted); font-size: 20px;">Waiting for first bot cycle...</span>`;
+            historyBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b;">No market analysis generated yet.</td></tr>`;
             return;
         }
 
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            
-            // Safety check in Javascript instead of a strict database rule
-            if(data.symbol !== 'USD/JPY') return;
+        // --- 1. RENDER THE CURRENT LIVE SIGNAL ---
+        const currentData = docs[0];
+        
+        if (currentData.signal === 'CALL') {
+            liveBox.innerHTML = `<div class="live-signal-call">CALL ⬆</div>`;
+            liveConf.innerHTML = `<span style="color: var(--accent-green); font-weight: bold;">Confidence: ${currentData.probability}%</span>`;
+        } else if (currentData.signal === 'PUT') {
+            liveBox.innerHTML = `<div class="live-signal-put">PUT ⬇</div>`;
+            liveConf.innerHTML = `<span style="color: var(--accent-red); font-weight: bold;">Confidence: ${currentData.probability}%</span>`;
+        } else {
+            liveBox.innerHTML = `<div class="live-signal-none">NO TRADE</div>`;
+            liveConf.innerHTML = `<span style="color: var(--text-muted);">Market condition: ${currentData.reason || 'Flat'}</span>`;
+        }
 
+        // --- 2. RENDER THE HISTORY TABLE (RESULTS ONLY) ---
+        // We skip the first document (index 0) because that is our live active signal
+        const historyData = docs.slice(1);
+
+        if (historyData.length === 0) {
+            historyBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b;">No past results to display yet.</td></tr>`;
+            return;
+        }
+
+        historyData.forEach(data => {
             const date = new Date(data.timestamp);
             const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             
@@ -229,29 +288,17 @@
             if (data.signal === 'CALL') sigHtml = `<span class="signal-call">CALL ⬆</span>`;
             if (data.signal === 'PUT') sigHtml = `<span class="signal-put">PUT ⬇</span>`;
 
-            // Format Confidence Bar
-            let confHtml = `<span style="color:#64748b; font-size: 12px;">--</span>`;
-            if (data.signal !== 'NO TRADE') {
-                const confColor = data.probability >= 80 ? 'var(--accent-green)' : 'var(--accent-yellow)';
-                confHtml = `
-                    <div style="font-weight:bold; font-size:14px;">${data.probability}%</div>
-                    <div class="conf-bar"><div class="conf-fill" style="width: ${data.probability}%; background: ${confColor};"></div></div>
-                `;
-            }
-
-            // Format Result Badge
-            let resHtml = `<span class="result-none">FLAT</span>`;
+            // Format Result Badge (Only show resolved states, skip pending)
+            let resHtml = `<span class="result-none">FLAT / NO TRADE</span>`;
             if (data.status === 'WIN') resHtml = `<span class="result-win">WIN</span>`;
             else if (data.status === 'LOSS') resHtml = `<span class="result-loss">LOSS</span>`;
-            else if (data.status === 'PENDING') resHtml = `<span class="result-pending">LIVE NOW</span>`;
-            else if (data.status === 'NO TRADE') resHtml = `<span class="result-none">--</span>`;
+            else if (data.status === 'PENDING') return; // Skip currently pending trades from history table
 
             historyBody.innerHTML += `
                 <tr>
                     <td><strong style="color:var(--text-main);">${timeStr}</strong></td>
                     <td>${sigHtml}</td>
-                    <td>${confHtml}</td>
-                    <td style="color:#64748b;">${data.signal === 'NO TRADE' || !data.entryPrice ? '--' : data.entryPrice.toFixed(4)}</td>
+                    <td style="color:#64748b; font-family: monospace;">${data.signal === 'NO TRADE' || !data.entryPrice ? '--' : data.entryPrice.toFixed(4)}</td>
                     <td>${resHtml}</td>
                 </tr>
             `;
